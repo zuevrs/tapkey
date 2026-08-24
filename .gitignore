@@ -1,0 +1,18 @@
+# Local-only working material: never committed
+internal/
+CLAUDE.md
+.claude/
+
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+build/
+dist/
+*.dmg
+*.p12
+*.cer
+*.mobileprovision
+secrets/

@@ -1,0 +1,23 @@
+# Notices
+
+tapkey is MIT licensed. See LICENSE.
+
+## Third-party marks
+
+tapkey displays the marks of the coding tools and API providers it works with, so that
+you can recognise them at a glance. Those marks belong to their respective owners:
+
+- Claude and the Anthropic mark are trademarks of Anthropic PBC
+- OpenAI and the OpenAI mark are trademarks of OpenAI, Inc.
+- OpenCode, DeepSeek, OpenRouter, Ollama, Qwen, Z.ai, Moonshot and any other provider
+  or tool marks are trademarks of their respective owners
+
+Marks are rendered monochrome, at a single optical weight, purely to identify the tool or
+provider a row refers to. tapkey is not affiliated with, endorsed by, or sponsored by any
+of these companies, and no mark is used to suggest otherwise.
+
+Mark outlines are taken from Simple Icons (CC0-1.0). The CC0 dedication covers the icon
+files, not the trademarks they depict.
+
+If you own one of these marks and would like its use here changed or removed, open an
+issue and it will be handled.
