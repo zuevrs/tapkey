@@ -1,0 +1,6 @@
+# `stable` rather than an exact version: pinning 1.95.0 made rustup try to fetch that
+# channel's spec on every invocation, which is a download the build does not need. CI
+# pins the version it installs instead, so the two stay honest about what they compiled.
+[toolchain]
+channel = "stable"
+components = ["clippy", "rustfmt"]

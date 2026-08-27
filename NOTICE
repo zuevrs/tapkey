@@ -9,15 +9,39 @@ you can recognise them at a glance. Those marks belong to their respective owner
 
 - Claude and the Anthropic mark are trademarks of Anthropic PBC
 - OpenAI and the OpenAI mark are trademarks of OpenAI, Inc.
-- OpenCode, DeepSeek, OpenRouter, Ollama, Qwen, Z.ai, Moonshot and any other provider
-  or tool marks are trademarks of their respective owners
+- OpenCode is a trademark of Anomaly Innovations, Inc.
+- DeepSeek, OpenRouter, Ollama, Qwen, Z.ai, Moonshot and any other provider or tool
+  marks are trademarks of their respective owners
 
 Marks are rendered monochrome, at a single optical weight, purely to identify the tool or
 provider a row refers to. tapkey is not affiliated with, endorsed by, or sponsored by any
 of these companies, and no mark is used to suggest otherwise.
 
-Mark outlines are taken from Simple Icons (CC0-1.0). The CC0 dedication covers the icon
-files, not the trademarks they depict.
+### Where each outline comes from
+
+Marks are traced from the owner's own current asset wherever one is published, not from an
+aggregator, because aggregators lag: at the time of writing Simple Icons carried a
+superseded OpenRouter mark, a pre-2025 OpenAI mark, and stale brand colours for two others.
+
+- OpenAI — the Blossom as refreshed in February 2025
+- OpenRouter — the "OR" monogram introduced 13 July 2026, from the vendor's own
+  `/brand/v2/` assets; the earlier routing glyph is retired
+- OpenCode — `packages/identity/mark.svg` from the project's own repository, normalised
+  from 512 to 24 units; its second tone is carried as reduced opacity rather than dropped
+- Z.ai — the glyph from the vendor's own logo asset, cropped out of its dark plate
+- Claude, DeepSeek, Ollama, Qwen — Simple Icons outlines, each verified against the
+  owner's live asset
+
+Simple Icons is CC0-1.0. The CC0 dedication covers the icon files, not the trademarks
+they depict.
+
+### Removal
+
+Several of these owners publish trademark guidelines that ask for prior written
+permission before their logo is displayed by a third party, and some ask that their mark
+not be altered, including recolouring. tapkey shows them monochrome under a nominative-use
+reading: the mark identifies the tool a row acts on and nothing more.
 
 If you own one of these marks and would like its use here changed or removed, open an
-issue and it will be handled.
+issue, or write to the address in the repository metadata, and it will be removed in the
+next release — no discussion required.

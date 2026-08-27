@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  core:
+    name: core (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux from the first commit: portability that is not compiled has already
+        # rotted (ADR-0016). macOS is the first shipping target.
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --component clippy,rustfmt
+          rustup default stable
+          rustc --version
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --all-targets
+
+      - name: Doc tests
+        run: cargo test --workspace --doc
+
+  hygiene:
+    name: repository hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No internal material in the tree
+        # internal/, CLAUDE.md and .scratch/ are local-only working material. If one is
+        # ever committed it must fail loudly here rather than be noticed by a reader.
+        run: |
+          fail=0
+          for path in internal CLAUDE.md .scratch .claude; do
+            if git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+              echo "::error::$path is tracked and must not be"
+              fail=1
+            fi
+          done
+          exit $fail

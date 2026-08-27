@@ -2,6 +2,11 @@
 internal/
 CLAUDE.md
 .claude/
+# wayfinder maps and decision tickets: planning, not product
+.scratch/
+
+# Rust
+/target/
 
 .DS_Store
 .build/
