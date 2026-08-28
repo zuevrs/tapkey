@@ -170,7 +170,16 @@ fn the_main_slots_unobservable_scopes_are_in_the_right_order() {
 
     assert_eq!(
         scopes,
-        vec!["session", "command line", "user", "shell", "user", "user", "shell", "cloud session"],
+        vec![
+            "session",
+            "command line",
+            "user",
+            "shell",
+            "user",
+            "user",
+            "shell",
+            "cloud session"
+        ],
         "session above the command line, then ANTHROPIC_MODEL, then the model key, then \
          ANTHROPIC_DEFAULT_MODEL"
     );
