@@ -1,0 +1,17 @@
+--- core/src/lock.rs
++++ replace <impl Drop for Lock>::drop with ()
+@@ -53,13 +53,11 @@
+     // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently
+     // succeeding, so the gap is collected along with the rest of the Windows seam.
+     Ok(())
+ }
+ 
+ #[cfg(unix)]
+ impl Drop for Lock {
+     fn drop(&mut self) {
+-        use std::os::unix::io::AsRawFd;
+-        // SAFETY: the descriptor is still owned by `self.file` here.
+-        unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
++        () /* ~ changed by cargo-mutants ~ */
+     }
+ }

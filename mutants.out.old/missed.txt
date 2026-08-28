@@ -1,2 +1,2 @@
-core/src/fingerprint.rs:20:11: replace ^= with |= in hash
-core/src/fingerprint.rs:20:11: replace ^= with &= in hash
+core/src/lock.rs:61:9: replace <impl Drop for Lock>::drop with ()
+core/src/lock.rs:44:70: replace | with ^ in take

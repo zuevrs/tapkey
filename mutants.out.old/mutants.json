@@ -1,202 +1,170 @@
 [
   {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace hash -> String with String::new()\n@@ -10,22 +10,17 @@\n use std::io;\n use std::path::Path;\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n-    let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n-    for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n-        h = h.wrapping_mul(0x0000_0100_0000_01b3);\n-    }\n-    format!(\"fnv1a64:{h:016x}\")\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n     pub version: u32,\n     #[serde(default)]\n     pub profile: String,\n",
-    "file": "core/src/fingerprint.rs",
+    "diff": "--- core/src/lock.rs\n+++ replace Lock::acquire -> Result<Lock, Busy> with Ok(Default::default())\n@@ -16,25 +16,17 @@\n pub struct Lock {\n     #[allow(dead_code)]\n     file: File,\n }\n \n impl Lock {\n     /// Take the lock, or report that somebody else has it.\n     pub fn acquire(store: &Path) -> Result<Lock, Busy> {\n-        let path = store.join(\"lock\");\n-        let file = OpenOptions::new()\n-            .write(true)\n-            .create(true)\n-            .truncate(false)\n-            .open(&path)\n-            .map_err(|e| Busy(e.to_string()))?;\n-        take(&file)?;\n-        Ok(Lock { file })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Somebody else is writing. Not an error in the file system sense — a fact about timing.\n #[derive(Debug)]\n pub struct Busy(pub String);\n \n #[cfg(unix)]\n",
+    "file": "core/src/lock.rs",
     "function": {
-      "function_name": "hash",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 24
-        },
-        "start": {
-          "column": 1,
-          "line": 13
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:18:5: replace hash -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 32,
-        "line": 23
-      },
-      "start": {
-        "column": 5,
-        "line": 18
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace hash -> String with \"xyzzy\".into()\n@@ -10,22 +10,17 @@\n use std::io;\n use std::path::Path;\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n-    let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n-    for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n-        h = h.wrapping_mul(0x0000_0100_0000_01b3);\n-    }\n-    format!(\"fnv1a64:{h:016x}\")\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n     pub version: u32,\n     #[serde(default)]\n     pub profile: String,\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "hash",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 24
-        },
-        "start": {
-          "column": 1,
-          "line": 13
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:18:5: replace hash -> String with \"xyzzy\".into()",
-    "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
-    "span": {
-      "end": {
-        "column": 32,
-        "line": 23
-      },
-      "start": {
-        "column": 5,
-        "line": 18
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace ^= with |= in hash\n@@ -12,17 +12,17 @@\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n     let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n     for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n+        h |= /* ~ changed by cargo-mutants ~ */ *byte as u64;\n         h = h.wrapping_mul(0x0000_0100_0000_01b3);\n     }\n     format!(\"fnv1a64:{h:016x}\")\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "hash",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 24
-        },
-        "start": {
-          "column": 1,
-          "line": 13
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/fingerprint.rs:20:11: replace ^= with |= in hash",
-    "package": "tapkey-core",
-    "replacement": "|=",
-    "span": {
-      "end": {
-        "column": 13,
-        "line": 20
-      },
-      "start": {
-        "column": 11,
-        "line": 20
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace ^= with &= in hash\n@@ -12,17 +12,17 @@\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n     let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n     for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n+        h &= /* ~ changed by cargo-mutants ~ */ *byte as u64;\n         h = h.wrapping_mul(0x0000_0100_0000_01b3);\n     }\n     format!(\"fnv1a64:{h:016x}\")\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "hash",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 24
-        },
-        "start": {
-          "column": 1,
-          "line": 13
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/fingerprint.rs:20:11: replace ^= with &= in hash",
-    "package": "tapkey-core",
-    "replacement": "&=",
-    "span": {
-      "end": {
-        "column": 13,
-        "line": 20
-      },
-      "start": {
-        "column": 11,
-        "line": 20
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace State::read -> State with Default::default()\n@@ -36,21 +36,17 @@\n }\n \n const VERSION: u32 = 1;\n \n impl State {\n     pub fn read(path: &Path) -> State {\n         // A state file that is missing or unreadable means tapkey owns nothing it can prove,\n         // which is the safe reading: it reports no drift rather than inventing some.\n-        std::fs::read(path)\n-            .ok()\n-            .and_then(|b| serde_json::from_slice::<State>(&b).ok())\n-            .filter(|s| s.version <= VERSION)\n-            .unwrap_or_default()\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n         let state = State {\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "State::read",
-      "return_type": "-> State",
+      "function_name": "Lock::acquire",
+      "return_type": "-> Result<Lock, Busy>",
       "span": {
         "end": {
           "column": 6,
-          "line": 49
+          "line": 33
         },
         "start": {
           "column": 5,
-          "line": 41
+          "line": 22
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()",
+    "name": "core/src/lock.rs:24:9: replace Lock::acquire -> Result<Lock, Busy> with Ok(Default::default())",
     "package": "tapkey-core",
-    "replacement": "Default::default()",
+    "replacement": "Ok(Default::default())",
     "span": {
       "end": {
-        "column": 33,
-        "line": 48
+        "column": 26,
+        "line": 32
       },
       "start": {
         "column": 9,
+        "line": 24
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/lock.rs\n+++ replace take -> Result<(), Busy> with Ok(())\n@@ -34,23 +34,17 @@\n }\n \n /// Somebody else is writing. Not an error in the file system sense — a fact about timing.\n #[derive(Debug)]\n pub struct Busy(pub String);\n \n #[cfg(unix)]\n fn take(file: &File) -> Result<(), Busy> {\n-    use std::os::unix::io::AsRawFd;\n-    // SAFETY: the descriptor is owned by `file` and outlives the call.\n-    let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };\n-    if taken == 0 {\n-        return Ok(());\n-    }\n-    Err(Busy(io::Error::last_os_error().to_string()))\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(not(unix))]\n fn take(_file: &File) -> Result<(), Busy> {\n     // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently\n     // succeeding, so the gap is collected along with the rest of the Windows seam.\n     Ok(())\n }\n",
+    "file": "core/src/lock.rs",
+    "function": {
+      "function_name": "take",
+      "return_type": "-> Result<(), Busy>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 49
+        },
+        "start": {
+          "column": 1,
+          "line": 40
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/lock.rs:42:5: replace take -> Result<(), Busy> with Ok(())",
+    "package": "tapkey-core",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 48
+      },
+      "start": {
+        "column": 5,
+        "line": 42
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/lock.rs\n+++ replace | with & in take\n@@ -36,17 +36,17 @@\n /// Somebody else is writing. Not an error in the file system sense — a fact about timing.\n #[derive(Debug)]\n pub struct Busy(pub String);\n \n #[cfg(unix)]\n fn take(file: &File) -> Result<(), Busy> {\n     use std::os::unix::io::AsRawFd;\n     // SAFETY: the descriptor is owned by `file` and outlives the call.\n-    let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };\n+    let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX & /* ~ changed by cargo-mutants ~ */ libc::LOCK_NB) };\n     if taken == 0 {\n         return Ok(());\n     }\n     Err(Busy(io::Error::last_os_error().to_string()))\n }\n \n #[cfg(not(unix))]\n fn take(_file: &File) -> Result<(), Busy> {\n",
+    "file": "core/src/lock.rs",
+    "function": {
+      "function_name": "take",
+      "return_type": "-> Result<(), Busy>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 49
+        },
+        "start": {
+          "column": 1,
+          "line": 40
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/lock.rs:44:70: replace | with & in take",
+    "package": "tapkey-core",
+    "replacement": "&",
+    "span": {
+      "end": {
+        "column": 71,
+        "line": 44
+      },
+      "start": {
+        "column": 70,
         "line": 44
       }
     }
   },
   {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace <= with > in State::read\n@@ -39,17 +39,17 @@\n \n impl State {\n     pub fn read(path: &Path) -> State {\n         // A state file that is missing or unreadable means tapkey owns nothing it can prove,\n         // which is the safe reading: it reports no drift rather than inventing some.\n         std::fs::read(path)\n             .ok()\n             .and_then(|b| serde_json::from_slice::<State>(&b).ok())\n-            .filter(|s| s.version <= VERSION)\n+            .filter(|s| s.version > /* ~ changed by cargo-mutants ~ */ VERSION)\n             .unwrap_or_default()\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n",
-    "file": "core/src/fingerprint.rs",
+    "diff": "--- core/src/lock.rs\n+++ replace | with ^ in take\n@@ -36,17 +36,17 @@\n /// Somebody else is writing. Not an error in the file system sense — a fact about timing.\n #[derive(Debug)]\n pub struct Busy(pub String);\n \n #[cfg(unix)]\n fn take(file: &File) -> Result<(), Busy> {\n     use std::os::unix::io::AsRawFd;\n     // SAFETY: the descriptor is owned by `file` and outlives the call.\n-    let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };\n+    let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX ^ /* ~ changed by cargo-mutants ~ */ libc::LOCK_NB) };\n     if taken == 0 {\n         return Ok(());\n     }\n     Err(Busy(io::Error::last_os_error().to_string()))\n }\n \n #[cfg(not(unix))]\n fn take(_file: &File) -> Result<(), Busy> {\n",
+    "file": "core/src/lock.rs",
     "function": {
-      "function_name": "State::read",
-      "return_type": "-> State",
+      "function_name": "take",
+      "return_type": "-> Result<(), Busy>",
       "span": {
         "end": {
-          "column": 6,
+          "column": 2,
           "line": 49
         },
         "start": {
-          "column": 5,
-          "line": 41
+          "column": 1,
+          "line": 40
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/fingerprint.rs:47:35: replace <= with > in State::read",
+    "name": "core/src/lock.rs:44:70: replace | with ^ in take",
     "package": "tapkey-core",
-    "replacement": ">",
+    "replacement": "^",
     "span": {
       "end": {
-        "column": 37,
-        "line": 47
+        "column": 71,
+        "line": 44
       },
       "start": {
-        "column": 35,
-        "line": 47
+        "column": 70,
+        "line": 44
       }
     }
   },
   {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace State::write -> io::Result<()> with Ok(())\n@@ -48,24 +48,17 @@\n             .unwrap_or_default()\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n-        let state = State {\n-            version: VERSION,\n-            profile: profile.to_string(),\n-            owned,\n-        };\n-        let bytes = serde_json::to_vec_pretty(&state)\n-            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-        crate::atomic::write_atomically(path, &bytes, 0o600)\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n         match self.owned.get(tool).and_then(|s| s.get(slot)) {\n             Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n",
-    "file": "core/src/fingerprint.rs",
+    "diff": "--- core/src/lock.rs\n+++ replace == with != in take\n@@ -37,17 +37,17 @@\n #[derive(Debug)]\n pub struct Busy(pub String);\n \n #[cfg(unix)]\n fn take(file: &File) -> Result<(), Busy> {\n     use std::os::unix::io::AsRawFd;\n     // SAFETY: the descriptor is owned by `file` and outlives the call.\n     let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };\n-    if taken == 0 {\n+    if taken != /* ~ changed by cargo-mutants ~ */ 0 {\n         return Ok(());\n     }\n     Err(Busy(io::Error::last_os_error().to_string()))\n }\n \n #[cfg(not(unix))]\n fn take(_file: &File) -> Result<(), Busy> {\n     // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently\n",
+    "file": "core/src/lock.rs",
     "function": {
-      "function_name": "State::write",
-      "return_type": "-> io::Result<()>",
+      "function_name": "take",
+      "return_type": "-> Result<(), Busy>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 49
+        },
+        "start": {
+          "column": 1,
+          "line": 40
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/lock.rs:45:14: replace == with != in take",
+    "package": "tapkey-core",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 45
+      },
+      "start": {
+        "column": 14,
+        "line": 45
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/lock.rs\n+++ replace <impl Drop for Lock>::drop with ()\n@@ -53,13 +53,11 @@\n     // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently\n     // succeeding, so the gap is collected along with the rest of the Windows seam.\n     Ok(())\n }\n \n #[cfg(unix)]\n impl Drop for Lock {\n     fn drop(&mut self) {\n-        use std::os::unix::io::AsRawFd;\n-        // SAFETY: the descriptor is still owned by `self.file` here.\n-        unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };\n+        () /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/lock.rs",
+    "function": {
+      "function_name": "<impl Drop for Lock>::drop",
+      "return_type": "",
       "span": {
         "end": {
           "column": 6,
@@ -204,118 +172,22 @@
         },
         "start": {
           "column": 5,
-          "line": 51
+          "line": 60
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:56:9: replace State::write -> io::Result<()> with Ok(())",
+    "name": "core/src/lock.rs:61:9: replace <impl Drop for Lock>::drop with ()",
     "package": "tapkey-core",
-    "replacement": "Ok(())",
+    "replacement": "()",
     "span": {
       "end": {
-        "column": 61,
+        "column": 70,
         "line": 63
       },
       "start": {
         "column": 9,
-        "line": 56
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace State::drifted -> bool with true\n@@ -62,14 +62,11 @@\n             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n-        match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n-            None => false,\n-        }\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "State::drifted",
-      "return_type": "-> bool",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 74
-        },
-        "start": {
-          "column": 5,
-          "line": 66
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with true",
-    "package": "tapkey-core",
-    "replacement": "true",
-    "span": {
-      "end": {
-        "column": 10,
-        "line": 73
-      },
-      "start": {
-        "column": 9,
-        "line": 70
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace State::drifted -> bool with false\n@@ -62,14 +62,11 @@\n             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n-        match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n-            None => false,\n-        }\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "State::drifted",
-      "return_type": "-> bool",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 74
-        },
-        "start": {
-          "column": 5,
-          "line": 66
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with false",
-    "package": "tapkey-core",
-    "replacement": "false",
-    "span": {
-      "end": {
-        "column": 10,
-        "line": 73
-      },
-      "start": {
-        "column": 9,
-        "line": 70
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/fingerprint.rs\n+++ replace != with == in State::drifted\n@@ -63,13 +63,13 @@\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n         match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n+            Some(recorded) => value.map(hash).as_deref() == /* ~ changed by cargo-mutants ~ */ Some(recorded.as_str()),\n             None => false,\n         }\n     }\n }\n",
-    "file": "core/src/fingerprint.rs",
-    "function": {
-      "function_name": "State::drifted",
-      "return_type": "-> bool",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 74
-        },
-        "start": {
-          "column": 5,
-          "line": 66
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/fingerprint.rs:71:58: replace != with == in State::drifted",
-    "package": "tapkey-core",
-    "replacement": "==",
-    "span": {
-      "end": {
-        "column": 60,
-        "line": 71
-      },
-      "start": {
-        "column": 58,
-        "line": 71
+        "line": 61
       }
     }
   }

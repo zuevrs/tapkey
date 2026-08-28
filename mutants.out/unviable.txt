@@ -1,0 +1,1 @@
+core/src/lock.rs:27:9: replace Lock::acquire -> Result<Lock, Busy> with Ok(Default::default())

@@ -1,0 +1,21 @@
+--- core/src/lock.rs
++++ replace == with != in take
+@@ -42,17 +42,17 @@
+ 
+ #[cfg(unix)]
+ fn take(file: &File) -> Result<(), Busy> {
+     use std::os::unix::io::AsRawFd;
+     // SAFETY: the descriptor is owned by `file` and outlives the call.
+     // Exclusive and non-blocking. A mutation run reports the `|` as survivable, and it is:
+     // the two flags share no bits, so exclusive-or has the same value here.
+     let taken = unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };
+-    if taken == 0 {
++    if taken != /* ~ changed by cargo-mutants ~ */ 0 {
+         return Ok(());
+     }
+     Err(Busy(io::Error::last_os_error().to_string()))
+ }
+ 
+ #[cfg(not(unix))]
+ fn take(_file: &File) -> Result<(), Busy> {
+     // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently

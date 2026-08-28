@@ -15,6 +15,7 @@ pub mod fingerprint;
 pub mod fs;
 pub mod instant;
 pub mod json;
+pub mod lock;
 pub mod profile;
 pub mod store;
 pub mod transaction;
@@ -102,6 +103,12 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         Ok(s) => s,
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
+    // Held until this call returns. A read never takes it: blocking `effective_state` for the
+    // duration of a write would blank the UI at the one moment it is most interesting.
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
     let transaction = transaction::Transaction::new(actions);
     let mut disk = env.filesystem();
     let captured = match transaction.capture(&**disk, "claude") {
@@ -168,6 +175,10 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
     let store = match store::Store::open(env.store()) {
         Ok(s) => s,
         Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
     };
     let which = match &target {
         wire::RestoreTarget::Snapshot => store::Target::Snapshot,

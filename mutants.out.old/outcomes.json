@@ -8,7 +8,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 5.224421291,
+          "duration": 5.621964459,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -20,7 +20,7 @@
         },
         {
           "phase": "Test",
-          "duration": 5.691665917,
+          "duration": 7.846597667,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -34,174 +34,163 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/fingerprint.rs:18:5: replace hash -> String with String::new()",
+          "name": "core/src/lock.rs:24:9: replace Lock::acquire -> Result<Lock, Busy> with Ok(Default::default())",
           "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
+          "file": "core/src/lock.rs",
           "function": {
-            "function_name": "hash",
-            "return_type": "-> String",
+            "function_name": "Lock::acquire",
+            "return_type": "-> Result<Lock, Busy>",
             "span": {
               "start": {
-                "line": 13,
-                "column": 1
-              },
-              "end": {
-                "line": 24,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 18,
-              "column": 5
-            },
-            "end": {
-              "line": 23,
-              "column": 32
-            }
-          },
-          "replacement": "String::new()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_18_col_5.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_18_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 1.293013584,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 6.8500869170000005,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:18:5: replace hash -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "hash",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 13,
-                "column": 1
-              },
-              "end": {
-                "line": 24,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 18,
-              "column": 5
-            },
-            "end": {
-              "line": 23,
-              "column": 32
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_18_col_5_001.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_18_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 8.551068584,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 9.50287525,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "State::read",
-            "return_type": "-> State",
-            "span": {
-              "start": {
-                "line": 41,
+                "line": 22,
                 "column": 5
               },
               "end": {
-                "line": 49,
+                "line": 33,
                 "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 24,
+              "column": 9
+            },
+            "end": {
+              "line": 32,
+              "column": 26
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__lock.rs_line_24_col_9.log",
+      "diff_path": "diff/core__src__lock.rs_line_24_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.409330583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/lock.rs:45:14: replace == with != in take",
+          "package": "tapkey-core",
+          "file": "core/src/lock.rs",
+          "function": {
+            "function_name": "take",
+            "return_type": "-> Result<(), Busy>",
+            "span": {
+              "start": {
+                "line": 40,
+                "column": 1
+              },
+              "end": {
+                "line": 49,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 14
+            },
+            "end": {
+              "line": 45,
+              "column": 16
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__lock.rs_line_45_col_14.log",
+      "diff_path": "diff/core__src__lock.rs_line_45_col_14.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.153088125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.222637083,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/lock.rs:44:70: replace | with & in take",
+          "package": "tapkey-core",
+          "file": "core/src/lock.rs",
+          "function": {
+            "function_name": "take",
+            "return_type": "-> Result<(), Busy>",
+            "span": {
+              "start": {
+                "line": 40,
+                "column": 1
+              },
+              "end": {
+                "line": 49,
+                "column": 2
               }
             }
           },
           "span": {
             "start": {
               "line": 44,
-              "column": 9
+              "column": 70
             },
             "end": {
-              "line": 48,
-              "column": 33
+              "line": 44,
+              "column": 71
             }
           },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
+          "replacement": "&",
+          "genre": "BinaryOperator"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_44_col_9.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_44_col_9.diff",
+      "log_path": "log/core__src__lock.rs_line_44_col_70.log",
+      "diff_path": "diff/core__src__lock.rs_line_44_col_70.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.96462525,
+          "duration": 7.509684958,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -213,7 +202,7 @@
         },
         {
           "phase": "Test",
-          "duration": 9.542019166,
+          "duration": 6.285631958,
           "process_status": {
             "Failure": 101
           },
@@ -229,235 +218,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/fingerprint.rs:20:11: replace ^= with |= in hash",
+          "name": "core/src/lock.rs:42:5: replace take -> Result<(), Busy> with Ok(())",
           "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
+          "file": "core/src/lock.rs",
           "function": {
-            "function_name": "hash",
-            "return_type": "-> String",
+            "function_name": "take",
+            "return_type": "-> Result<(), Busy>",
             "span": {
               "start": {
-                "line": 13,
+                "line": 40,
                 "column": 1
-              },
-              "end": {
-                "line": 24,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 20,
-              "column": 11
-            },
-            "end": {
-              "line": 20,
-              "column": 13
-            }
-          },
-          "replacement": "|=",
-          "genre": "BinaryOperator"
-        }
-      },
-      "summary": "MissedMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_20_col_11.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_20_col_11.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 6.011038208,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 12.643671125000001,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:20:11: replace ^= with &= in hash",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "hash",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 13,
-                "column": 1
-              },
-              "end": {
-                "line": 24,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 20,
-              "column": 11
-            },
-            "end": {
-              "line": 20,
-              "column": 13
-            }
-          },
-          "replacement": "&=",
-          "genre": "BinaryOperator"
-        }
-      },
-      "summary": "MissedMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_20_col_11_001.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_20_col_11_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 7.635214375,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 13.900983125,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:47:35: replace <= with > in State::read",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "State::read",
-            "return_type": "-> State",
-            "span": {
-              "start": {
-                "line": 41,
-                "column": 5
               },
               "end": {
                 "line": 49,
-                "column": 6
+                "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 47,
-              "column": 35
+              "line": 42,
+              "column": 5
             },
             "end": {
-              "line": 47,
-              "column": 37
+              "line": 48,
+              "column": 54
             }
           },
-          "replacement": ">",
-          "genre": "BinaryOperator"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_47_col_35.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_47_col_35.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 2.47839075,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 7.901027334,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with true",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "State::drifted",
-            "return_type": "-> bool",
-            "span": {
-              "start": {
-                "line": 66,
-                "column": 5
-              },
-              "end": {
-                "line": 74,
-                "column": 6
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 70,
-              "column": 9
-            },
-            "end": {
-              "line": 73,
-              "column": 10
-            }
-          },
-          "replacement": "true",
+          "replacement": "Ok(())",
           "genre": "FnValue"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_70_col_9.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_70_col_9.diff",
+      "log_path": "log/core__src__lock.rs_line_42_col_5.log",
+      "diff_path": "diff/core__src__lock.rs_line_42_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 2.414026959,
+          "duration": 8.338631167,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -469,7 +267,7 @@
         },
         {
           "phase": "Test",
-          "duration": 8.901142458,
+          "duration": 12.189624209,
           "process_status": {
             "Failure": 101
           },
@@ -485,15 +283,15 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/fingerprint.rs:56:9: replace State::write -> io::Result<()> with Ok(())",
+          "name": "core/src/lock.rs:61:9: replace <impl Drop for Lock>::drop with ()",
           "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
+          "file": "core/src/lock.rs",
           "function": {
-            "function_name": "State::write",
-            "return_type": "-> io::Result<()>",
+            "function_name": "<impl Drop for Lock>::drop",
+            "return_type": "",
             "span": {
               "start": {
-                "line": 51,
+                "line": 60,
                 "column": 5
               },
               "end": {
@@ -504,25 +302,25 @@
           },
           "span": {
             "start": {
-              "line": 56,
+              "line": 61,
               "column": 9
             },
             "end": {
               "line": 63,
-              "column": 61
+              "column": 70
             }
           },
-          "replacement": "Ok(())",
+          "replacement": "()",
           "genre": "FnValue"
         }
       },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_56_col_9.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_56_col_9.diff",
+      "summary": "MissedMutant",
+      "log_path": "log/core__src__lock.rs_line_61_col_9.log",
+      "diff_path": "diff/core__src__lock.rs_line_61_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 2.76957575,
+          "duration": 1.341536583,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -534,10 +332,8 @@
         },
         {
           "phase": "Test",
-          "duration": 8.809301667,
-          "process_status": {
-            "Failure": 101
-          },
+          "duration": 18.42204125,
+          "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
             "test",
@@ -550,109 +346,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with false",
+          "name": "core/src/lock.rs:44:70: replace | with ^ in take",
           "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
+          "file": "core/src/lock.rs",
           "function": {
-            "function_name": "State::drifted",
-            "return_type": "-> bool",
+            "function_name": "take",
+            "return_type": "-> Result<(), Busy>",
             "span": {
               "start": {
-                "line": 66,
-                "column": 5
+                "line": 40,
+                "column": 1
               },
               "end": {
-                "line": 74,
-                "column": 6
+                "line": 49,
+                "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 70,
-              "column": 9
+              "line": 44,
+              "column": 70
             },
             "end": {
-              "line": 73,
-              "column": 10
+              "line": 44,
+              "column": 71
             }
           },
-          "replacement": "false",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_70_col_9_001.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_70_col_9_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.8012005,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 9.2458835,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/fingerprint.rs:71:58: replace != with == in State::drifted",
-          "package": "tapkey-core",
-          "file": "core/src/fingerprint.rs",
-          "function": {
-            "function_name": "State::drifted",
-            "return_type": "-> bool",
-            "span": {
-              "start": {
-                "line": 66,
-                "column": 5
-              },
-              "end": {
-                "line": 74,
-                "column": 6
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 71,
-              "column": 58
-            },
-            "end": {
-              "line": 71,
-              "column": 60
-            }
-          },
-          "replacement": "==",
+          "replacement": "^",
           "genre": "BinaryOperator"
         }
       },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__fingerprint.rs_line_71_col_58.log",
-      "diff_path": "diff/core__src__fingerprint.rs_line_71_col_58.diff",
+      "summary": "MissedMutant",
+      "log_path": "log/core__src__lock.rs_line_44_col_70_001.log",
+      "diff_path": "diff/core__src__lock.rs_line_44_col_70_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.622077625,
+          "duration": 10.186135417,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -664,10 +395,8 @@
         },
         {
           "phase": "Test",
-          "duration": 4.563392625,
-          "process_status": {
-            "Failure": 101
-          },
+          "duration": 17.671243667,
+          "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
             "test",
@@ -678,13 +407,13 @@
       ]
     }
   ],
-  "total_mutants": 10,
+  "total_mutants": 6,
   "missed": 2,
-  "caught": 8,
+  "caught": 3,
   "timeout": 0,
-  "unviable": 0,
+  "unviable": 1,
   "success": 0,
-  "start_time": "2026-08-28T17:36:41.325671Z",
-  "end_time": "2026-08-28T17:37:26.186159Z",
+  "start_time": "2026-08-28T17:51:36.397615Z",
+  "end_time": "2026-08-28T17:52:17.95571Z",
   "cargo_mutants_version": "27.1.0"
 }

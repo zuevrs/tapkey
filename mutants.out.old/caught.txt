@@ -1,8 +1,3 @@
-core/src/fingerprint.rs:18:5: replace hash -> String with String::new()
-core/src/fingerprint.rs:18:5: replace hash -> String with "xyzzy".into()
-core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()
-core/src/fingerprint.rs:47:35: replace <= with > in State::read
-core/src/fingerprint.rs:70:9: replace State::drifted -> bool with true
-core/src/fingerprint.rs:56:9: replace State::write -> io::Result<()> with Ok(())
-core/src/fingerprint.rs:70:9: replace State::drifted -> bool with false
-core/src/fingerprint.rs:71:58: replace != with == in State::drifted
+core/src/lock.rs:45:14: replace == with != in take
+core/src/lock.rs:44:70: replace | with & in take
+core/src/lock.rs:42:5: replace take -> Result<(), Busy> with Ok(())

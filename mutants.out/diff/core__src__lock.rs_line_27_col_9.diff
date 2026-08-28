@@ -1,0 +1,29 @@
+--- core/src/lock.rs
++++ replace Lock::acquire -> Result<Lock, Busy> with Ok(Default::default())
+@@ -19,25 +19,17 @@
+ pub struct Lock {
+     #[allow(dead_code)]
+     file: File,
+ }
+ 
+ impl Lock {
+     /// Take the lock, or report that somebody else has it.
+     pub fn acquire(store: &Path) -> Result<Lock, Busy> {
+-        let path = store.join("lock");
+-        let file = OpenOptions::new()
+-            .write(true)
+-            .create(true)
+-            .truncate(false)
+-            .open(&path)
+-            .map_err(|e| Busy(e.to_string()))?;
+-        take(&file)?;
+-        Ok(Lock { file })
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Somebody else is writing. Not an error in the file system sense — a fact about timing.
+ #[derive(Debug)]
+ pub struct Busy(pub String);
+ 
+ #[cfg(unix)]
