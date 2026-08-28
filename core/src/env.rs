@@ -4,6 +4,8 @@
 //! global while tests run on threads, and a test-only field in the wire envelope would put
 //! scaffolding in the contract three consumers depend on.
 
+use crate::fs::{FileSystem, RealFs};
+use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
@@ -34,6 +36,10 @@ pub struct Env {
     managed: PathBuf,
     shell: BTreeMap<String, ShellVar>,
     now: std::time::SystemTime,
+    /// Given rather than constructed, for one reason: the transactional guarantee is provable
+    /// only by failing midway through several files, and a failure that cannot be injected is
+    /// a guarantee nobody has tested end to end.
+    filesystem: RefCell<Box<dyn FileSystem>>,
 }
 
 impl Env {
@@ -53,6 +59,7 @@ impl Env {
             managed: PathBuf::from(MANAGED_SETTINGS),
             shell: BTreeMap::new(),
             now: std::time::SystemTime::now(),
+            filesystem: RefCell::new(Box::new(RealFs)),
         }
     }
 
@@ -65,6 +72,7 @@ impl Env {
             managed: PathBuf::from(MANAGED_SETTINGS),
             shell: BTreeMap::new(),
             now: std::time::SystemTime::now(),
+            filesystem: RefCell::new(Box::new(RealFs)),
         }
     }
 
@@ -108,6 +116,17 @@ impl Env {
     /// the store's own layout can be compared byte for byte.
     pub fn now(&self) -> std::time::SystemTime {
         self.now
+    }
+
+    /// Substitute the filesystem, so a fixture can declare a failure partway through.
+    pub fn with_filesystem(mut self, filesystem: Box<dyn FileSystem>) -> Self {
+        self.filesystem = RefCell::new(filesystem);
+        self
+    }
+
+    /// Borrow the filesystem for the duration of one operation.
+    pub fn filesystem(&self) -> std::cell::RefMut<'_, Box<dyn FileSystem>> {
+        self.filesystem.borrow_mut()
     }
 
     /// Fix the clock. Without this a fixture could not compare the store it produced.

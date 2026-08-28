@@ -101,8 +101,8 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
     let transaction = transaction::Transaction::new(actions);
-    let mut disk = fs::RealFs;
-    let captured = match transaction.capture(&disk, "claude") {
+    let mut disk = env.filesystem();
+    let captured = match transaction.capture(&**disk, "claude") {
         Ok(c) => c,
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
@@ -122,7 +122,7 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         return refuse("permission_denied", "could not record a backup".into());
     }
 
-    if let Err(rolled_back) = transaction.apply(&mut disk) {
+    if let Err(rolled_back) = transaction.apply(&mut **disk) {
         return Response::Failed {
             ok: false,
             outcome: "rolled back",
@@ -137,6 +137,9 @@ fn switch(env: &Env, profile_id: &str) -> Response {
             },
         };
     }
+
+    // The read-back below goes to the real filesystem, so the borrow ends here.
+    drop(disk);
 
     // Read back rather than reporting what was written: the invariant forbids reporting intent,
     // and reading back is the only way a project config or a shell export that beat us shows up.

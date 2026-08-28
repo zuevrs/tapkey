@@ -230,3 +230,28 @@ fn an_unparsable_settings_file_refuses_the_switch() {
     assert_eq!(response["ok"], json!(false));
     assert_eq!(response["failure"]["kind"], json!("unparsable"));
 }
+
+/// A failing write through the one entry point: the file is exactly as it was, and the outcome
+/// says *rolled back* rather than *refused*, because a write was attempted.
+///
+/// What this does **not** prove is the multi-file half of ADR-0005. Claude Code's switch touches
+/// one file, so there is no earlier file here to put back; that guarantee is proved at the
+/// transaction's own seam, where three can be arranged. This case becomes the real thing when a
+/// second adapter arrives, and saying so beats letting the name imply more than it shows.
+#[test]
+fn a_failing_write_rolls_back_and_says_so() {
+    let before = b"{\n  \"theme\": \"dark\"\n}\n";
+    let machine = Machine::new("sw-rollback").failing_after(0);
+    machine.write_profiles(zai());
+    machine.write_user_settings_raw(before);
+
+    let response = call(&machine, switch("zai"));
+
+    assert_eq!(response["ok"], json!(false), "{response}");
+    assert_eq!(response["outcome"], json!("rolled back"));
+    assert_eq!(
+        user_settings(&machine).as_bytes(),
+        before,
+        "the file the switch failed on must be exactly as it was"
+    );
+}

@@ -43,6 +43,7 @@ use tapkey_core::env::{Env, ShellVar};
 pub struct Machine {
     dir: TempDir,
     shell: BTreeMap<String, ShellVar>,
+    fail_after: Option<usize>,
 }
 
 impl Machine {
@@ -52,6 +53,7 @@ impl Machine {
         Machine {
             dir,
             shell: BTreeMap::new(),
+            fail_after: None,
         }
     }
 
@@ -64,6 +66,12 @@ impl Machine {
             .path()
             .join("managed")
             .join("managed-settings.json")
+    }
+
+    /// Declare that the filesystem refuses one operation, after this many have succeeded.
+    pub fn failing_after(mut self, successes: usize) -> Self {
+        self.fail_after = Some(successes);
+        self
     }
 
     /// Declare what a login shell exports. Values only for what is safe to hold.
@@ -112,11 +120,16 @@ impl Machine {
 
     pub fn env(&self) -> Env {
         // A fixed clock, so a backup's name is the same on every run.
-        Env::for_test(self.home(), self.store())
+        let env = Env::for_test(self.home(), self.store())
             .with_clock(std::time::UNIX_EPOCH + std::time::Duration::from_millis(1_787_866_640_123))
             .with_project(self.project())
             .with_managed(self.managed())
-            .with_shell(self.shell.clone())
+            .with_shell(self.shell.clone());
+        let env = match self.fail_after {
+            Some(n) => env.with_filesystem(Box::new(tapkey_core::fs::FailOnce::after(n))),
+            None => env,
+        };
+        env
     }
 }
 
