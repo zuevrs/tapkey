@@ -1,0 +1,40 @@
+name: Bug report
+description: Something behaves differently from how it is meant to
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not report a security defect here — see [SECURITY.md](../blob/main/SECURITY.md)
+        for private reporting. Never paste an API key or token into an issue.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, and what you saw instead of what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: The configuration file, with credentials removed
+      description: >
+        If a managed configuration file is involved, the relevant part of it helps enormously.
+        Replace every key or token with an obvious placeholder before pasting.
+      render: json
+  - type: input
+    id: tool
+    attributes:
+      label: Which managed tool
+      placeholder: Claude Code 2.1.250
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: macOS 15.2
+  - type: input
+    id: version
+    attributes:
+      label: tapkey version or commit
+    validations:
+      required: true

@@ -1,0 +1,32 @@
+name: Support another tool
+description: Ask for a coding tool tapkey does not manage yet
+labels: ["adapter"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Every tool costs an adapter with its own golden fixtures, so these are weighed rather than
+        queued. The details below are what makes one possible to weigh.
+  - type: input
+    id: tool
+    attributes:
+      label: The tool
+      placeholder: Name, and a link to it
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Where it keeps provider and model settings
+      description: >
+        Which files, in which format, and whether it has more than one scope. If you know how it
+        takes a credential — a plain key in the file, an environment variable, a helper command —
+        say so, since that decides most of the work.
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: A real configuration file, with credentials removed
+      description: Replace every key or token with an obvious placeholder.
+      render: json
