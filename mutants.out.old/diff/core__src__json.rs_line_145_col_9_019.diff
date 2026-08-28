@@ -1,0 +1,67 @@
+--- core/src/json.rs
++++ replace Document::plan_set -> Result<(Range<usize>, Vec<u8>), Error> with Ok((Range::from(1), vec![0]))
+@@ -137,63 +137,17 @@
+         self.root = parse_root(&next)?;
+         self.bytes = next;
+         Ok(())
+     }
+ 
+     /// Where to splice, and what to put there, for one set.
+     fn plan_set(&self, path: &[&str], value: &str) -> Result<(Range<usize>, Vec<u8>), Error> {
+         // The whole path is already there: replace the value in place.
+-        if let Some(existing) = member(&self.root, path) {
+-            return Ok((existing.value.span(), encode_string(value)));
+-        }
+-
+-        // Walk as far as the file goes, then build what is missing as one nested literal.
+-        let mut node = &self.root;
+-        let mut depth = 0;
+-        while depth < path.len() {
+-            let Node::Object { members, .. } = node else {
+-                return Err(Error::NotAnObject {
+-                    path: path[..depth].join("."),
+-                });
+-            };
+-            match members.iter().find(|m| m.key == path[depth]) {
+-                Some(m) => {
+-                    node = &m.value;
+-                    depth += 1;
+-                }
+-                None => break,
+-            }
+-        }
+-        let Node::Object { members, span } = node else {
+-            return Err(Error::NotAnObject {
+-                path: path[..depth].join("."),
+-            });
+-        };
+-
+-        let style = Style::of(
+-            &self.bytes,
+-            members,
+-            span,
+-            document_step(&self.bytes, &self.root),
+-        );
+-        let literal = style.nested(&path[depth..], value);
+-        let at = match members.last() {
+-            Some(last) => last.span.end,
+-            None => span.start + 1,
+-        };
+-        let mut out = Vec::new();
+-        if !members.is_empty() {
+-            out.push(b',');
+-        }
+-        out.extend_from_slice(&literal);
+-        if members.is_empty() {
+-            out.extend_from_slice(style.close.as_bytes());
+-        }
+-        Ok((at..at, out))
++        Ok((Range::from(1), vec![0])) /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// How this file writes an object member, learned from the members already in it.
+ struct Style {
+     /// What comes after the separating comma and before the next key: a newline and
+     /// indentation in a laid-out file, a space or nothing in a one-line one.
+     lead: String,

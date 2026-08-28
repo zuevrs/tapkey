@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace += with *= in Parser<'a>::array
+@@ -492,17 +492,17 @@
+ 
+     fn array(&mut self) -> Result<Node, Error> {
+         let start = self.i;
+         self.i += 1; // '['
+         loop {
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+                 Some(b']') => {
+-                    self.i += 1;
++                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;
+                     return Ok(Node::Opaque {
+                         span: start..self.i,
+                         text: None,
+                     });
+                 }
+                 // Reaching the end mid-array is caught by `value()` below in any case; this
+                 // arm exists for the better message, which is why a mutation run reports it as
+                 // survivable. Verified: with it removed, every truncated form still refuses.

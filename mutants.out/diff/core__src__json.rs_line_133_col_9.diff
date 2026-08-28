@@ -1,0 +1,27 @@
+--- core/src/json.rs
++++ replace Document::splice -> Result<(), Error> with Ok(())
+@@ -125,23 +125,17 @@
+     }
+ 
+     /// The document's current bytes.
+     pub fn to_bytes(&self) -> Vec<u8> {
+         self.bytes.clone()
+     }
+ 
+     fn splice(&mut self, range: Range<usize>, replacement: &[u8]) -> Result<(), Error> {
+-        let mut next = Vec::with_capacity(self.bytes.len() + replacement.len());
+-        next.extend_from_slice(&self.bytes[..range.start]);
+-        next.extend_from_slice(replacement);
+-        next.extend_from_slice(&self.bytes[range.end..]);
+-        self.root = parse_root(&next)?;
+-        self.bytes = next;
+-        Ok(())
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Where to splice, and what to put there, for one set.
+     fn plan_set(&self, path: &[&str], value: &str) -> Result<(Range<usize>, Vec<u8>), Error> {
+         // The whole path is already there: replace the value in place.
+         if let Some(existing) = member(&self.root, path) {
+             return Ok((existing.value.span(), encode_string(value)));
+         }

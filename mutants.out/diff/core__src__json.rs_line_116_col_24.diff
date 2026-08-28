@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace + with - in Document::remove
+@@ -108,17 +108,17 @@
+         };
+         let index = members
+             .iter()
+             .position(|x| x.span == m.span)
+             .expect("the member came from these members");
+ 
+         let range = if members.len() == 1 {
+             // The only member: take everything between the braces, leaving `{}` as authored.
+-            span.start + 1..span.end - 1
++            span.start - /* ~ changed by cargo-mutants ~ */ 1..span.end - 1
+         } else if index + 1 < members.len() {
+             // Not the last: swallow forward to the next member's start, comma included.
+             m.span.start..members[index + 1].span.start
+         } else {
+             // The last: swallow backwards to the previous member's end.
+             members[index - 1].span.end..m.span.end
+         };
+         self.splice(range, b"")

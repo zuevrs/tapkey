@@ -221,13 +221,13 @@ fn setting_one_key_twice_keeps_only_the_last_value() {
 }
 
 #[test]
-fn a_path_that_is_not_there_is_reported_rather_than_created() {
-    let mut doc = Document::parse(br#"{"theme":"dark"}"#).expect("parse");
+fn setting_a_key_whose_parent_is_not_an_object_is_refused() {
+    let mut doc = Document::parse(br#"{"env":"a string, oddly"}"#).expect("parse");
 
     assert!(doc.set_string(&["env", "ANTHROPIC_MODEL"], "x").is_err());
     assert_eq!(
         doc.to_bytes(),
-        &br#"{"theme":"dark"}"#[..],
+        &br#"{"env":"a string, oddly"}"#[..],
         "and nothing moved"
     );
 }
@@ -246,4 +246,179 @@ fn every_truncated_array_refuses() {
             String::from_utf8_lossy(source)
         );
     }
+}
+
+// --- inserting and removing ------------------------------------------------------------
+
+/// A new key takes its layout from the siblings it joins, and goes last — which is also where
+/// Claude Code puts its own. Alphabetical or grouped insertion would impose an order the file
+/// did not have.
+#[test]
+fn a_new_key_joins_its_siblings_in_their_own_style_and_goes_last() {
+    let source = b"{\n  \"env\": {\n    \"A\": \"1\",\n    \"B\": \"2\"\n  }\n}\n";
+    let mut doc = Document::parse(source).expect("parse");
+
+    doc.set_string(&["env", "C"], "3").expect("set");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        "{\n  \"env\": {\n    \"A\": \"1\",\n    \"B\": \"2\",\n    \"C\": \"3\"\n  }\n}\n"
+    );
+}
+
+#[test]
+fn a_minified_object_stays_on_one_line_when_a_key_is_added() {
+    let mut doc = Document::parse(br#"{"env":{"A":"1"},"theme":"dark"}"#).expect("parse");
+
+    doc.set_string(&["env", "B"], "2").expect("set");
+
+    assert_eq!(
+        doc.to_bytes(),
+        &br#"{"env":{"A":"1","B":"2"},"theme":"dark"}"#[..]
+    );
+}
+
+#[test]
+fn a_key_and_value_separated_by_a_space_gets_a_sibling_with_one_too() {
+    let mut doc = Document::parse(br#"{"a": "1"}"#).expect("parse");
+
+    doc.set_string(&["b"], "2").expect("set");
+
+    assert_eq!(doc.to_bytes(), &br#"{"a": "1", "b": "2"}"#[..]);
+}
+
+#[test]
+fn an_empty_object_receives_its_first_key() {
+    let mut doc = Document::parse(b"{\n  \"env\": {}\n}\n").expect("parse");
+
+    doc.set_string(&["env", "A"], "1").expect("set");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        "{\n  \"env\": {\n    \"A\": \"1\"\n  }\n}\n"
+    );
+}
+
+/// Installing Claude Code creates no settings file, and a hand-written one need not have an
+/// `env` block. Creating one follows the same style rule, applied recursively.
+#[test]
+fn a_missing_intermediate_object_is_created_in_the_files_own_style() {
+    let source = b"{\n  \"theme\": \"dark\"\n}\n";
+    let mut doc = Document::parse(source).expect("parse");
+
+    doc.set_string(&["env", "ANTHROPIC_BASE_URL"], "https://x.test")
+        .expect("set");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        "{\n  \"theme\": \"dark\",\n  \"env\": {\n    \"ANTHROPIC_BASE_URL\": \"https://x.test\"\n  }\n}\n"
+    );
+}
+
+/// Removing has to take the separator and whitespace the insertion added, or adding and
+/// removing the same key would leave a trail and idempotence would hold only by luck.
+#[test]
+fn adding_then_removing_a_key_leaves_the_file_byte_identical() {
+    let source = b"{\n  \"env\": {\n    \"A\": \"1\"\n  }\n}\n";
+    let once = {
+        let mut doc = Document::parse(source).expect("parse");
+        doc.set_string(&["env", "B"], "2").expect("set");
+        doc.to_bytes()
+    };
+    let mut doc = Document::parse(&once).expect("reparse");
+
+    doc.remove(&["env", "B"]).expect("remove");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        String::from_utf8_lossy(source)
+    );
+}
+
+#[test]
+fn removing_the_only_key_leaves_an_empty_object() {
+    let mut doc = Document::parse(br#"{"env":{"A":"1"}}"#).expect("parse");
+
+    doc.remove(&["env", "A"]).expect("remove");
+
+    assert_eq!(doc.to_bytes(), &br#"{"env":{}}"#[..]);
+}
+
+#[test]
+fn removing_the_first_of_several_keys_takes_its_trailing_comma() {
+    let mut doc = Document::parse(br#"{"a":"1","b":"2"}"#).expect("parse");
+
+    doc.remove(&["a"]).expect("remove");
+
+    assert_eq!(doc.to_bytes(), &br#"{"b":"2"}"#[..]);
+}
+
+#[test]
+fn removing_something_that_is_not_there_is_not_an_error() {
+    let mut doc = Document::parse(br#"{"a":"1"}"#).expect("parse");
+
+    doc.remove(&["env", "B"]).expect("a no-op, not a failure");
+
+    assert_eq!(doc.to_bytes(), &br#"{"a":"1"}"#[..]);
+}
+
+#[test]
+fn a_four_space_file_gets_four_space_insertions() {
+    let source = b"{\n    \"theme\": \"dark\"\n}\n";
+    let mut doc = Document::parse(source).expect("parse");
+
+    doc.set_string(&["env", "A"], "1").expect("set");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        "{\n    \"theme\": \"dark\",\n    \"env\": {\n        \"A\": \"1\"\n    }\n}\n"
+    );
+}
+
+#[test]
+fn a_tab_indented_file_gets_tab_indented_insertions() {
+    let source = b"{\n\t\"theme\": \"dark\"\n}\n";
+    let mut doc = Document::parse(source).expect("parse");
+
+    doc.set_string(&["env", "A"], "1").expect("set");
+
+    assert_eq!(
+        String::from_utf8_lossy(&doc.to_bytes()),
+        "{\n\t\"theme\": \"dark\",\n\t\"env\": {\n\t\t\"A\": \"1\"\n\t}\n}\n"
+    );
+}
+
+/// What the golden harness needs to check merge-never-own by machine: the bytes as found, and
+/// the exact extent of each key tapkey owns, so everything else can be compared directly.
+#[test]
+fn the_original_bytes_and_a_members_extent_are_available_for_comparison() {
+    let source = br#"{"a":"1","b":"2"}"#;
+    let mut doc = Document::parse(source).expect("parse");
+    let span = doc.member_span(&["b"]).expect("b is there");
+
+    doc.set_string(&["a"], "changed").expect("set");
+
+    assert_eq!(
+        doc.original(),
+        source,
+        "the reading is kept, not overwritten"
+    );
+    assert_eq!(&source[span], br#""b":"2""#);
+    assert_eq!(doc.member_span(&["nope"]), None);
+}
+
+/// Creating an object inside a file that has no newlines at all. Expanding it would impose a
+/// layout the author did not choose, and every existing insertion test had a sibling or a
+/// newline to copy from.
+#[test]
+fn a_nested_object_created_in_a_minified_file_stays_inline() {
+    let mut doc = Document::parse(br#"{"theme":"dark"}"#).expect("parse");
+
+    doc.set_string(&["env", "ANTHROPIC_BASE_URL"], "https://x.test")
+        .expect("set");
+
+    assert_eq!(
+        doc.to_bytes(),
+        &br#"{"theme":"dark","env":{"ANTHROPIC_BASE_URL":"https://x.test"}}"#[..]
+    );
 }

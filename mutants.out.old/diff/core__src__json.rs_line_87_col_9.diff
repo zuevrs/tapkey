@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace Document::member_span -> Option<Range<usize>> with None
+@@ -79,17 +79,17 @@
+             Node::Opaque { text, .. } => text.as_deref(),
+             Node::Object { .. } => None,
+         }
+     }
+ 
+     /// Key start through value end for `path`, excluding the separating comma. What a caller
+     /// needs to excise the regions tapkey owns and compare everything else byte for byte.
+     pub fn member_span(&self, path: &[&str]) -> Option<Range<usize>> {
+-        member(&self.root, path).map(|m| m.span.clone())
++        None /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Set the string at `path`, creating whatever part of it is missing.
+     ///
+     /// A key that is not there yet is the ordinary case on a fresh machine, and a missing
+     /// intermediate object is created in the file's own style, recursively.
+     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<(), Error> {
+         let (range, replacement) = self.plan_set(path, value)?;

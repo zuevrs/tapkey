@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace < with == in Document::plan_set
+@@ -146,17 +146,17 @@
+             return Ok((existing.value.span(), encode_string(value)));
+         }
+ 
+         // Walk as far as the file goes, then build what is missing as one nested literal.
+         // The full path having been ruled out above, this loop always breaks before `depth`
+         // reaches the end — which is why a mutation widening the bound survives it.
+         let mut node = &self.root;
+         let mut depth = 0;
+-        while depth < path.len() {
++        while depth == /* ~ changed by cargo-mutants ~ */ path.len() {
+             let Node::Object { members, .. } = node else {
+                 return Err(Error::NotAnObject {
+                     path: path[..depth].join("."),
+                 });
+             };
+             match members.iter().find(|m| m.key == path[depth]) {
+                 Some(m) => {
+                     node = &m.value;

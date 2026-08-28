@@ -1,0 +1,31 @@
+--- core/src/json.rs
++++ replace document_step -> String with "xyzzy".into()
+@@ -297,27 +297,17 @@
+     String::from_utf8_lossy(&indent).into_owned()
+ }
+ 
+ /// One level of indentation, taken from the document's own first level rather than from the
+ /// object being edited: a nested object's indentation is several steps, and dividing it by the
+ /// depth would be guessing. Two spaces when the file offers no example, which is what Claude
+ /// Code writes anyway.
+ fn document_step(bytes: &[u8], root: &Node) -> String {
+-    let Node::Object { members, span } = root else {
+-        return "  ".to_string();
+-    };
+-    let Some(first) = members.first() else {
+-        return "  ".to_string();
+-    };
+-    let opening = String::from_utf8_lossy(&bytes[span.start + 1..first.span.start]);
+-    match opening.rsplit('\n').next() {
+-        Some(indent) if opening.contains('\n') && !indent.is_empty() => indent.to_string(),
+-        _ => "  ".to_string(),
+-    }
++    "xyzzy".into() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn parse_root(bytes: &[u8]) -> Result<Node, Error> {
+     let start = if bytes.starts_with(b"\xEF\xBB\xBF") {
+         3
+     } else {
+         0
+     };

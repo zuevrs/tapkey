@@ -7,11 +7,13 @@
 
 use std::ops::Range;
 
-/// A parsed document and the pending changes to it.
+/// A parsed document. Every edit is applied to the bytes and the document is re-parsed, so a
+/// second edit sees the first — which is what setting a key that a previous call created, or
+/// twice over, requires. The original bytes are kept for comparison.
 pub struct Document {
     original: Vec<u8>,
+    bytes: Vec<u8>,
     root: Node,
-    splices: Vec<Splice>,
 }
 
 /// Why a document could not be parsed, or an edit could not be made.
@@ -22,25 +24,17 @@ pub enum Error {
     /// The same key appears twice in one object. Parsers disagree about which one wins, so
     /// effective state cannot be promised and the file is refused rather than guessed at.
     DuplicateKey { offset: usize, key: String },
-    /// Nothing at that path, and this operation does not create.
-    Missing { path: String },
-    /// Something is there, but not of a shape this operation can replace.
-    NotAString { path: String },
-}
-
-struct Splice {
-    range: Range<usize>,
-    replacement: Vec<u8>,
+    /// Something of another shape is where a value or an object should go. An unexpected type
+    /// on a key tapkey owns is corrected; on the way to one, it is refused, because replacing
+    /// it would be rewriting something we do not own.
+    NotAnObject { path: String },
 }
 
 enum Node {
     Object {
         members: Vec<Member>,
-        #[allow(dead_code)]
         span: Range<usize>,
     },
-    /// An array or a scalar. tapkey never reaches inside one, so its contents are not modelled
-    /// — only where it begins and ends, which is what a splice needs.
     /// An array or a scalar. tapkey never reaches inside one, so its contents are not modelled
     /// — only where it begins and ends, which is what a splice needs, plus a string's decoded
     /// value, which is what reading effective state needs.
@@ -52,52 +46,26 @@ enum Node {
 
 struct Member {
     key: String,
-    #[allow(dead_code)]
     key_span: Range<usize>,
     value: Node,
+    /// Key start through value end, not including the comma that separates it from the next.
+    span: Range<usize>,
 }
 
 impl Document {
     /// Parse `bytes` as strict JSON.
     pub fn parse(bytes: &[u8]) -> Result<Self, Error> {
-        let start = if bytes.starts_with(b"\xEF\xBB\xBF") {
-            3
-        } else {
-            0
-        };
-        let mut parser = Parser { b: bytes, i: start };
-        parser.skip_whitespace();
-        let root = parser.value()?;
-        parser.skip_whitespace();
-        if parser.i != bytes.len() {
-            return Err(parser.error("trailing content after the top-level value"));
-        }
+        let root = parse_root(bytes)?;
         Ok(Document {
             original: bytes.to_vec(),
+            bytes: bytes.to_vec(),
             root,
-            splices: Vec::new(),
         })
     }
 
-    /// Replace the string at `path`. Creates nothing: a path that is not already there is an
-    /// error, because creating is a different decision with its own rules about placement.
-    pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {
-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {
-            path: path.join("."),
-        })?;
-        match node {
-            Node::Opaque {
-                span,
-                text: Some(_),
-            } => {
-                let range = span.clone();
-                self.record(range.clone(), encode_string(value));
-                Ok(range)
-            }
-            _ => Err(Error::NotAString {
-                path: path.join("."),
-            }),
-        }
+    /// The bytes this document was parsed from, before any edit.
+    pub fn original(&self) -> &[u8] {
+        &self.original
     }
 
     /// The string at `path`, or `None` if there is nothing there or it is not a string.
@@ -113,27 +81,286 @@ impl Document {
         }
     }
 
-    /// The document's bytes with every pending splice applied.
-    pub fn to_bytes(&self) -> Vec<u8> {
-        let mut ordered: Vec<&Splice> = self.splices.iter().collect();
-        ordered.sort_by_key(|s| s.range.start);
+    /// Key start through value end for `path`, excluding the separating comma. What a caller
+    /// needs to excise the regions tapkey owns and compare everything else byte for byte.
+    pub fn member_span(&self, path: &[&str]) -> Option<Range<usize>> {
+        member(&self.root, path).map(|m| m.span.clone())
+    }
 
-        let mut out = Vec::with_capacity(self.original.len());
-        let mut cursor = 0usize;
-        for splice in ordered {
-            out.extend_from_slice(&self.original[cursor..splice.range.start]);
-            out.extend_from_slice(&splice.replacement);
-            cursor = splice.range.end;
+    /// Set the string at `path`, creating whatever part of it is missing.
+    ///
+    /// A key that is not there yet is the ordinary case on a fresh machine, and a missing
+    /// intermediate object is created in the file's own style, recursively.
+    pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<(), Error> {
+        let (range, replacement) = self.plan_set(path, value)?;
+        self.splice(range, &replacement)
+    }
+
+    /// Remove the key at `path`, taking the separator and whitespace its insertion added.
+    /// Anything less and adding then removing the same key would leave a trail, so idempotence
+    /// would hold only by luck. A path that is not there is a no-op, not a failure.
+    pub fn remove(&mut self, path: &[&str]) -> Result<(), Error> {
+        let Some((parent, m)) = parent_and_member(&self.root, path) else {
+            return Ok(());
+        };
+        let Node::Object { members, span } = parent else {
+            return Ok(());
+        };
+        let index = members
+            .iter()
+            .position(|x| x.span == m.span)
+            .expect("the member came from these members");
+
+        let range = if members.len() == 1 {
+            // The only member: take everything between the braces, leaving `{}` as authored.
+            span.start + 1..span.end - 1
+        } else if index + 1 < members.len() {
+            // Not the last: swallow forward to the next member's start, comma included.
+            m.span.start..members[index + 1].span.start
+        } else {
+            // The last: swallow backwards to the previous member's end.
+            members[index - 1].span.end..m.span.end
+        };
+        self.splice(range, b"")
+    }
+
+    /// The document's current bytes.
+    pub fn to_bytes(&self) -> Vec<u8> {
+        self.bytes.clone()
+    }
+
+    fn splice(&mut self, range: Range<usize>, replacement: &[u8]) -> Result<(), Error> {
+        let mut next = Vec::with_capacity(self.bytes.len() + replacement.len());
+        next.extend_from_slice(&self.bytes[..range.start]);
+        next.extend_from_slice(replacement);
+        next.extend_from_slice(&self.bytes[range.end..]);
+        self.root = parse_root(&next)?;
+        self.bytes = next;
+        Ok(())
+    }
+
+    /// Where to splice, and what to put there, for one set.
+    fn plan_set(&self, path: &[&str], value: &str) -> Result<(Range<usize>, Vec<u8>), Error> {
+        // The whole path is already there: replace the value in place.
+        if let Some(existing) = member(&self.root, path) {
+            return Ok((existing.value.span(), encode_string(value)));
         }
-        out.extend_from_slice(&self.original[cursor..]);
+
+        // Walk as far as the file goes, then build what is missing as one nested literal.
+        // The full path having been ruled out above, this loop always breaks before `depth`
+        // reaches the end — which is why a mutation widening the bound survives it.
+        let mut node = &self.root;
+        let mut depth = 0;
+        while depth < path.len() {
+            let Node::Object { members, .. } = node else {
+                return Err(Error::NotAnObject {
+                    path: path[..depth].join("."),
+                });
+            };
+            match members.iter().find(|m| m.key == path[depth]) {
+                Some(m) => {
+                    node = &m.value;
+                    depth += 1;
+                }
+                None => break,
+            }
+        }
+        let Node::Object { members, span } = node else {
+            return Err(Error::NotAnObject {
+                path: path[..depth].join("."),
+            });
+        };
+
+        let style = Style::of(
+            &self.bytes,
+            members,
+            span,
+            document_step(&self.bytes, &self.root),
+        );
+        let literal = style.nested(&path[depth..], value);
+        let at = match members.last() {
+            Some(last) => last.span.end,
+            None => span.start + 1,
+        };
+        let mut out = Vec::new();
+        if !members.is_empty() {
+            out.push(b',');
+        }
+        out.extend_from_slice(&literal);
+        if members.is_empty() {
+            out.extend_from_slice(style.close.as_bytes());
+        }
+        Ok((at..at, out))
+    }
+}
+
+/// How this file writes an object member, learned from the members already in it.
+struct Style {
+    /// What comes after the separating comma and before the next key: a newline and
+    /// indentation in a laid-out file, a space or nothing in a one-line one.
+    lead: String,
+    /// What sits between a key and its value: a colon, and a space if the file uses one.
+    colon: String,
+    /// What comes before the closing brace, when this insertion has to write one.
+    close: String,
+    /// One level of indentation, for objects this insertion has to create.
+    step: String,
+}
+
+impl Style {
+    fn of(bytes: &[u8], members: &[Member], span: &Range<usize>, step: String) -> Style {
+        let text = |r: Range<usize>| String::from_utf8_lossy(&bytes[r]).into_owned();
+
+        if let Some(first) = members.first() {
+            let colon = text(first.key_span.end..first.value.span().start);
+            let opening = text(span.start + 1..first.span.start);
+            // Two members show exactly what goes between them; one member can only be
+            // inferred from. A file that writes `"a": 1` would write `, "b": 2`, and a
+            // minified one would not.
+            let lead = match members.get(1) {
+                Some(second) => text(first.span.end + 1..second.span.start),
+                None if !opening.is_empty() => opening.clone(),
+                None if colon.ends_with(' ') => " ".to_string(),
+                None => String::new(),
+            };
+            return Style {
+                lead,
+                colon,
+                // Only an object with no members needs a closing lead; this one has some.
+                close: String::new(),
+                step,
+            };
+        }
+
+        // An empty object has no sibling to copy, so the layout comes from the line the object
+        // itself sits on: one step further in, and the brace back where the line began.
+        let line_indent = indentation_before(bytes, span.start);
+        let multiline = bytes.contains(&b'\n');
+        if multiline {
+            Style {
+                lead: format!("\n{line_indent}{step}"),
+                colon: ": ".to_string(),
+                close: format!("\n{line_indent}"),
+                step,
+            }
+        } else {
+            Style {
+                lead: String::new(),
+                colon: ":".to_string(),
+                close: String::new(),
+                step,
+            }
+        }
+    }
+
+    /// `"a": {"b": {"c": value}}`, laid out the way this file lays things out.
+    fn nested(&self, path: &[&str], value: &str) -> Vec<u8> {
+        let mut out = Vec::new();
+        out.extend_from_slice(self.lead.as_bytes());
+        self.build(path, value, &self.lead, &mut out);
         out
     }
 
-    fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {
-        // Setting the same place twice replaces the earlier intent rather than stacking on it.
-        self.splices.retain(|s| s.range != range);
-        self.splices.push(Splice { range, replacement });
+    fn build(&self, path: &[&str], value: &str, lead: &str, out: &mut Vec<u8>) {
+        let (head, rest) = path
+            .split_first()
+            .expect("a path with at least one segment");
+        out.extend_from_slice(&encode_string(head));
+        out.extend_from_slice(self.colon.as_bytes());
+        if rest.is_empty() {
+            out.extend_from_slice(&encode_string(value));
+            return;
+        }
+        let inner = if lead.contains('\n') {
+            format!("{lead}{}", self.step)
+        } else {
+            lead.to_string()
+        };
+        out.push(b'{');
+        out.extend_from_slice(inner.as_bytes());
+        self.build(rest, value, &inner, out);
+        out.extend_from_slice(lead.as_bytes());
+        out.push(b'}');
     }
+}
+
+/// The whitespace run immediately before `offset`, back to the start of its line.
+fn indentation_before(bytes: &[u8], offset: usize) -> String {
+    let line_start = bytes[..offset]
+        .iter()
+        .rposition(|b| *b == b'\n')
+        .map(|i| i + 1)
+        .unwrap_or(0);
+    let indent: Vec<u8> = bytes[line_start..offset]
+        .iter()
+        .take_while(|b| **b == b' ' || **b == b'\t')
+        .copied()
+        .collect();
+    String::from_utf8_lossy(&indent).into_owned()
+}
+
+/// One level of indentation, taken from the document's own first level rather than from the
+/// object being edited: a nested object's indentation is several steps, and dividing it by the
+/// depth would be guessing. Two spaces when the file offers no example, which is what Claude
+/// Code writes anyway.
+///
+/// A mutation run reports this function's guard as survivable, and it is: the step is consumed
+/// only where the surrounding lead carries a newline, so in a file with none it is computed and
+/// never read. Verified by reachability rather than assumed.
+fn document_step(bytes: &[u8], root: &Node) -> String {
+    let Node::Object { members, span } = root else {
+        return "  ".to_string();
+    };
+    let Some(first) = members.first() else {
+        return "  ".to_string();
+    };
+    let opening = String::from_utf8_lossy(&bytes[span.start + 1..first.span.start]);
+    match opening.rsplit('\n').next() {
+        Some(indent) if opening.contains('\n') && !indent.is_empty() => indent.to_string(),
+        _ => "  ".to_string(),
+    }
+}
+
+fn parse_root(bytes: &[u8]) -> Result<Node, Error> {
+    let start = if bytes.starts_with(b"\xEF\xBB\xBF") {
+        3
+    } else {
+        0
+    };
+    let mut parser = Parser { b: bytes, i: start };
+    parser.skip_whitespace();
+    let root = parser.value()?;
+    parser.skip_whitespace();
+    if parser.i != bytes.len() {
+        return Err(parser.error("trailing content after the top-level value"));
+    }
+    Ok(root)
+}
+
+impl Node {
+    fn span(&self) -> Range<usize> {
+        match self {
+            Node::Object { span, .. } | Node::Opaque { span, .. } => span.clone(),
+        }
+    }
+}
+
+fn member<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Member> {
+    let (last, parents) = path.split_last()?;
+    let parent = resolve(node, parents)?;
+    let Node::Object { members, .. } = parent else {
+        return None;
+    };
+    members.iter().find(|m| m.key == *last)
+}
+
+fn parent_and_member<'a>(node: &'a Node, path: &[&str]) -> Option<(&'a Node, &'a Member)> {
+    let (last, parents) = path.split_last()?;
+    let parent = resolve(node, parents)?;
+    let Node::Object { members, .. } = parent else {
+        return None;
+    };
+    members.iter().find(|m| m.key == *last).map(|m| (parent, m))
 }
 
 fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {
@@ -252,9 +479,11 @@ impl<'a> Parser<'a> {
             }
 
             let value = self.value()?;
+            let member_end = self.i;
             members.push(Member {
                 key,
-                key_span,
+                key_span: key_span.clone(),
+                span: key_span.start..member_end,
                 value,
             });
 

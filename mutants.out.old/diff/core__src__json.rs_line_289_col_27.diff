@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace == with != in indentation_before
+@@ -281,17 +281,17 @@
+         out.push(b'}');
+     }
+ }
+ 
+ /// The whitespace run immediately before `offset`, back to the start of its line.
+ fn indentation_before(bytes: &[u8], offset: usize) -> String {
+     let line_start = bytes[..offset]
+         .iter()
+-        .rposition(|b| *b == b'\n')
++        .rposition(|b| *b != /* ~ changed by cargo-mutants ~ */ b'\n')
+         .map(|i| i + 1)
+         .unwrap_or(0);
+     let indent: Vec<u8> = bytes[line_start..offset]
+         .iter()
+         .take_while(|b| **b == b' ' || **b == b'\t')
+         .copied()
+         .collect();
+     String::from_utf8_lossy(&indent).into_owned()

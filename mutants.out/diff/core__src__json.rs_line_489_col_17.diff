@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete match arm Some(b'}') in Parser<'a>::object
+@@ -481,17 +481,17 @@
+                 key_span: key_span.clone(),
+                 span: key_span.start..member_end,
+                 value,
+             });
+ 
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+                 Some(b',') => self.i += 1,
+-                Some(b'}') => {}
++                 /* ~ changed by cargo-mutants ~ */
+                 _ => return Err(self.error("a comma or a closing brace was expected")),
+             }
+         }
+     }
+ 
+     fn array(&mut self) -> Result<Node, Error> {
+         let start = self.i;
+         self.i += 1; // '['

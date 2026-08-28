@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace + with - in document_step
+@@ -305,17 +305,17 @@
+ /// Code writes anyway.
+ fn document_step(bytes: &[u8], root: &Node) -> String {
+     let Node::Object { members, span } = root else {
+         return "  ".to_string();
+     };
+     let Some(first) = members.first() else {
+         return "  ".to_string();
+     };
+-    let opening = String::from_utf8_lossy(&bytes[span.start + 1..first.span.start]);
++    let opening = String::from_utf8_lossy(&bytes[span.start - /* ~ changed by cargo-mutants ~ */ 1..first.span.start]);
+     match opening.rsplit('\n').next() {
+         Some(indent) if opening.contains('\n') && !indent.is_empty() => indent.to_string(),
+         _ => "  ".to_string(),
+     }
+ }
+ 
+ fn parse_root(bytes: &[u8]) -> Result<Node, Error> {
+     let start = if bytes.starts_with(b"\xEF\xBB\xBF") {

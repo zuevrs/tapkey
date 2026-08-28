@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace != with == in parse_root
+@@ -322,17 +322,17 @@
+         3
+     } else {
+         0
+     };
+     let mut parser = Parser { b: bytes, i: start };
+     parser.skip_whitespace();
+     let root = parser.value()?;
+     parser.skip_whitespace();
+-    if parser.i != bytes.len() {
++    if parser.i == /* ~ changed by cargo-mutants ~ */ bytes.len() {
+         return Err(parser.error("trailing content after the top-level value"));
+     }
+     Ok(root)
+ }
+ 
+ impl Node {
+     fn span(&self) -> Range<usize> {
+         match self {

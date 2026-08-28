@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace == with != in Document::plan_set
+@@ -150,17 +150,17 @@
+         let mut node = &self.root;
+         let mut depth = 0;
+         while depth < path.len() {
+             let Node::Object { members, .. } = node else {
+                 return Err(Error::NotAnObject {
+                     path: path[..depth].join("."),
+                 });
+             };
+-            match members.iter().find(|m| m.key == path[depth]) {
++            match members.iter().find(|m| m.key != /* ~ changed by cargo-mutants ~ */ path[depth]) {
+                 Some(m) => {
+                     node = &m.value;
+                     depth += 1;
+                 }
+                 None => break,
+             }
+         }
+         let Node::Object { members, span } = node else {

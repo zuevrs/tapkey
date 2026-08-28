@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace == with != in parent_and_member
+@@ -349,17 +349,17 @@
+ }
+ 
+ fn parent_and_member<'a>(node: &'a Node, path: &[&str]) -> Option<(&'a Node, &'a Member)> {
+     let (last, parents) = path.split_last()?;
+     let parent = resolve(node, parents)?;
+     let Node::Object { members, .. } = parent else {
+         return None;
+     };
+-    members.iter().find(|m| m.key == *last).map(|m| (parent, m))
++    members.iter().find(|m| m.key != /* ~ changed by cargo-mutants ~ */ *last).map(|m| (parent, m))
+ }
+ 
+ fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {
+     let Some((head, rest)) = path.split_first() else {
+         return Some(node);
+     };
+     let Node::Object { members, .. } = node else {
+         return None;

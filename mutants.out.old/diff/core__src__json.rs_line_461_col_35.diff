@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace != with == in Parser<'a>::object
+@@ -453,17 +453,17 @@
+                 Some(b'"') => {}
+                 _ => return Err(self.error("a key or a closing brace was expected")),
+             }
+             let key_start = self.i;
+             let key = self.string()?;
+             let key_span = key_start..self.i;
+ 
+             self.skip_whitespace();
+-            if self.b.get(self.i) != Some(&b':') {
++            if self.b.get(self.i) == /* ~ changed by cargo-mutants ~ */ Some(&b':') {
+                 return Err(self.error("a colon was expected after a key"));
+             }
+             self.i += 1;
+             self.skip_whitespace();
+ 
+             if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {
+                 let _ = previous;
+                 return Err(Error::DuplicateKey {

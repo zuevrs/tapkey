@@ -1,0 +1,37 @@
+--- core/src/json.rs
++++ replace Parser<'a>::scalar -> Result<(), Error> with Ok(())
+@@ -579,33 +579,11 @@
+                     })?);
+                     let _ = byte;
+                 }
+             }
+         }
+     }
+ 
+     fn scalar(&mut self) -> Result<(), Error> {
+-        let start = self.i;
+-        while matches!(
+-            self.b.get(self.i),
+-            Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\t' | b'\n' | b'\r')
+-        ) {
+-            self.i += 1;
+-        }
+-        if self.i == start {
+-            return Err(self.error("a value was expected"));
+-        }
+-        match &self.b[start..self.i] {
+-            b"true" | b"false" | b"null" => Ok(()),
+-            other => {
+-                let text = std::str::from_utf8(other).map_err(|_| Error::Syntax {
+-                    offset: start,
+-                    message: "a value that is not UTF-8".to_string(),
+-                })?;
+-                text.parse::<f64>().map(|_| ()).map_err(|_| Error::Syntax {
+-                    offset: start,
+-                    message: format!("{text:?} is not a JSON value"),
+-                })
+-            }
+-        }
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ }

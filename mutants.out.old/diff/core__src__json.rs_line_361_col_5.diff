@@ -1,0 +1,28 @@
+--- core/src/json.rs
++++ replace resolve -> Option<&'a Node> with None
+@@ -353,24 +353,17 @@
+     let parent = resolve(node, parents)?;
+     let Node::Object { members, .. } = parent else {
+         return None;
+     };
+     members.iter().find(|m| m.key == *last).map(|m| (parent, m))
+ }
+ 
+ fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {
+-    let Some((head, rest)) = path.split_first() else {
+-        return Some(node);
+-    };
+-    let Node::Object { members, .. } = node else {
+-        return None;
+-    };
+-    let member = members.iter().find(|m| m.key == *head)?;
+-    resolve(&member.value, rest)
++    None /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Only what the format requires: a value tapkey writes must not arrive in the file more
+ /// escaped than the user's own values are.
+ fn encode_string(value: &str) -> Vec<u8> {
+     let mut out = Vec::with_capacity(value.len() + 2);
+     out.push(b'"');
+     for ch in value.chars() {

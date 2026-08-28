@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace += with -= in Parser<'a>::object
+@@ -480,17 +480,17 @@
+                 key,
+                 key_span: key_span.clone(),
+                 span: key_span.start..member_end,
+                 value,
+             });
+ 
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+-                Some(b',') => self.i += 1,
++                Some(b',') => self.i -= /* ~ changed by cargo-mutants ~ */ 1,
+                 Some(b'}') => {}
+                 _ => return Err(self.error("a comma or a closing brace was expected")),
+             }
+         }
+     }
+ 
+     fn array(&mut self) -> Result<Node, Error> {
+         let start = self.i;

@@ -1,0 +1,88 @@
+
+*** core/src/json.rs:416:9: replace Parser<'a>::value -> Result<Node, Error> with Ok(Default::default())
+
+*** mutation diff:
+--- core/src/json.rs
++++ replace Parser<'a>::value -> Result<Node, Error> with Ok(Default::default())
+@@ -408,37 +408,17 @@
+ 
+     fn skip_whitespace(&mut self) {
+         while matches!(self.b.get(self.i), Some(b' ' | b'\t' | b'\n' | b'\r')) {
+             self.i += 1;
+         }
+     }
+ 
+     fn value(&mut self) -> Result<Node, Error> {
+-        match self.b.get(self.i) {
+-            Some(b'{') => self.object(),
+-            Some(b'[') => self.array(),
+-            Some(b'"') => {
+-                let start = self.i;
+-                let text = self.string()?;
+-                Ok(Node::Opaque {
+-                    span: start..self.i,
+-                    text: Some(text),
+-                })
+-            }
+-            Some(_) => {
+-                let start = self.i;
+-                self.scalar()?;
+-                Ok(Node::Opaque {
+-                    span: start..self.i,
+-                    text: None,
+-                })
+-            }
+-            None => Err(self.error("a value was expected")),
+-        }
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn object(&mut self) -> Result<Node, Error> {
+         let start = self.i;
+         self.i += 1; // '{'
+         let mut members = Vec::new();
+         loop {
+             self.skip_whitespace();
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh unicode-ident v1.0.24
+       Fresh itoa v1.0.18
+       Fresh memchr v2.8.3
+       Fresh proc-macro2 v1.0.107
+       Fresh quote v1.0.47
+       Fresh serde_core v1.0.229
+       Fresh zmij v1.0.23
+       Fresh libc v0.2.189
+       Fresh syn v3.0.4
+       Fresh serde_json v1.0.151
+       Fresh serde_derive v1.0.229
+       Fresh serde v1.0.229
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/core): the file `core/src/json.rs` has changed (1787937333.634876083s, 9s after last build at 1787937324.948905023s)
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta`
+error[E0277]: the trait bound `Node: Default` is not satisfied
+   --> core/src/json.rs:416:12
+    |
+416 |         Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+    |            ^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+    |
+help: the trait `Default` is not implemented for `Node`
+   --> core/src/json.rs:33:1
+    |
+ 33 | enum Node {
+    | ^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `tapkey-core` (lib test) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `tapkey-core` (lib) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-x8Z42t.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta` (exit status: 1)
+
+*** result: Failure(101)

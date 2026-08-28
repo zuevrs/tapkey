@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace == with != in resolve
+@@ -359,17 +359,17 @@
+ 
+ fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {
+     let Some((head, rest)) = path.split_first() else {
+         return Some(node);
+     };
+     let Node::Object { members, .. } = node else {
+         return None;
+     };
+-    let member = members.iter().find(|m| m.key == *head)?;
++    let member = members.iter().find(|m| m.key != /* ~ changed by cargo-mutants ~ */ *head)?;
+     resolve(&member.value, rest)
+ }
+ 
+ /// Only what the format requires: a value tapkey writes must not arrive in the file more
+ /// escaped than the user's own values are.
+ fn encode_string(value: &str) -> Vec<u8> {
+     let mut out = Vec::with_capacity(value.len() + 2);
+     out.push(b'"');

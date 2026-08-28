@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete ! in Style::of
+@@ -214,17 +214,17 @@
+         if let Some(first) = members.first() {
+             let colon = text(first.key_span.end..first.value.span().start);
+             let opening = text(span.start + 1..first.span.start);
+             // Two members show exactly what goes between them; one member can only be
+             // inferred from. A file that writes `"a": 1` would write `, "b": 2`, and a
+             // minified one would not.
+             let lead = match members.get(1) {
+                 Some(second) => text(first.span.end + 1..second.span.start),
+-                None if !opening.is_empty() => opening.clone(),
++                None if  /* ~ changed by cargo-mutants ~ */opening.is_empty() => opening.clone(),
+                 None if colon.ends_with(' ') => " ".to_string(),
+                 None => String::new(),
+             };
+             return Style {
+                 lead,
+                 colon,
+                 // Only an object with no members needs a closing lead; this one has some.
+                 close: String::new(),

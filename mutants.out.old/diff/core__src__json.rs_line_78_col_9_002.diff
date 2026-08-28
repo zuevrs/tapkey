@@ -1,0 +1,24 @@
+--- core/src/json.rs
++++ replace Document::get_string -> Option<&str> with Some("xyzzy")
+@@ -70,20 +70,17 @@
+ 
+     /// The string at `path`, or `None` if there is nothing there or it is not a string.
+     ///
+     /// Reading goes through this reader rather than a general-purpose one so that the refusals
+     /// apply on the read path too: a duplicate key means effective state cannot be promised,
+     /// and promising it from a second parser that silently picks a winner would be worse than
+     /// not answering.
+     pub fn get_string(&self, path: &[&str]) -> Option<&str> {
+-        match resolve(&self.root, path)? {
+-            Node::Opaque { text, .. } => text.as_deref(),
+-            Node::Object { .. } => None,
+-        }
++        Some("xyzzy") /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Key start through value end for `path`, excluding the separating comma. What a caller
+     /// needs to excise the regions tapkey owns and compare everything else byte for byte.
+     pub fn member_span(&self, path: &[&str]) -> Option<Range<usize>> {
+         member(&self.root, path).map(|m| m.span.clone())
+     }
+ 

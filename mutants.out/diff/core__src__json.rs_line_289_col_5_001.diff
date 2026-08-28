@@ -1,0 +1,31 @@
+--- core/src/json.rs
++++ replace indentation_before -> String with "xyzzy".into()
+@@ -281,27 +281,17 @@
+         self.build(rest, value, &inner, out);
+         out.extend_from_slice(lead.as_bytes());
+         out.push(b'}');
+     }
+ }
+ 
+ /// The whitespace run immediately before `offset`, back to the start of its line.
+ fn indentation_before(bytes: &[u8], offset: usize) -> String {
+-    let line_start = bytes[..offset]
+-        .iter()
+-        .rposition(|b| *b == b'\n')
+-        .map(|i| i + 1)
+-        .unwrap_or(0);
+-    let indent: Vec<u8> = bytes[line_start..offset]
+-        .iter()
+-        .take_while(|b| **b == b' ' || **b == b'\t')
+-        .copied()
+-        .collect();
+-    String::from_utf8_lossy(&indent).into_owned()
++    "xyzzy".into() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// One level of indentation, taken from the document's own first level rather than from the
+ /// object being edited: a nested object's indentation is several steps, and dividing it by the
+ /// depth would be guessing. Two spaces when the file offers no example, which is what Claude
+ /// Code writes anyway.
+ fn document_step(bytes: &[u8], root: &Node) -> String {
+     let Node::Object { members, span } = root else {

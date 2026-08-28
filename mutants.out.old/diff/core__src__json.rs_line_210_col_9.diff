@@ -1,0 +1,62 @@
+--- core/src/json.rs
++++ replace Style::of -> Style with Default::default()
+@@ -202,58 +202,17 @@
+     /// What comes before the closing brace, when this insertion has to write one.
+     close: String,
+     /// One level of indentation, for objects this insertion has to create.
+     step: String,
+ }
+ 
+ impl Style {
+     fn of(bytes: &[u8], members: &[Member], span: &Range<usize>, step: String) -> Style {
+-        let text = |r: Range<usize>| String::from_utf8_lossy(&bytes[r]).into_owned();
+-
+-        if let Some(first) = members.first() {
+-            let colon = text(first.key_span.end..first.value.span().start);
+-            let opening = text(span.start + 1..first.span.start);
+-            // Two members show exactly what goes between them; one member can only be
+-            // inferred from. A file that writes `"a": 1` would write `, "b": 2`, and a
+-            // minified one would not.
+-            let lead = match members.get(1) {
+-                Some(second) => text(first.span.end + 1..second.span.start),
+-                None if !opening.is_empty() => opening.clone(),
+-                None if colon.ends_with(' ') => " ".to_string(),
+-                None => String::new(),
+-            };
+-            return Style {
+-                lead,
+-                colon,
+-                // Only an object with no members needs a closing lead; this one has some.
+-                close: String::new(),
+-                step,
+-            };
+-        }
+-
+-        // An empty object has no sibling to copy, so the layout comes from the line the object
+-        // itself sits on: one step further in, and the brace back where the line began.
+-        let line_indent = indentation_before(bytes, span.start);
+-        let multiline = bytes.contains(&b'\n');
+-        if multiline {
+-            Style {
+-                lead: format!("\n{line_indent}{step}"),
+-                colon: ": ".to_string(),
+-                close: format!("\n{line_indent}"),
+-                step,
+-            }
+-        } else {
+-            Style {
+-                lead: String::new(),
+-                colon: ":".to_string(),
+-                close: String::new(),
+-                step,
+-            }
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// `"a": {"b": {"c": value}}`, laid out the way this file lays things out.
+     fn nested(&self, path: &[&str], value: &str) -> Vec<u8> {
+         let mut out = Vec::new();
+         out.extend_from_slice(self.lead.as_bytes());
+         self.build(path, value, &self.lead, &mut out);
+         out

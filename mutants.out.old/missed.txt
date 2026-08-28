@@ -1,3 +1,5 @@
-core/src/fs.rs:28:23: replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::remove
-core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)
-core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)
+core/src/json.rs:152:21: replace < with <= in Document::plan_set
+core/src/json.rs:311:61: replace + with * in document_step
+core/src/json.rs:313:25: replace match guard opening.contains('\n') && !indent.is_empty() with true in document_step
+core/src/json.rs:313:48: replace && with || in document_step
+core/src/json.rs:509:17: delete match arm None in Parser<'a>::array

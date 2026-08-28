@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete match arm Some(b'"') in Parser<'a>::object
+@@ -445,17 +445,17 @@
+             match self.b.get(self.i) {
+                 Some(b'}') => {
+                     self.i += 1;
+                     return Ok(Node::Object {
+                         members,
+                         span: start..self.i,
+                     });
+                 }
+-                Some(b'"') => {}
++                 /* ~ changed by cargo-mutants ~ */
+                 _ => return Err(self.error("a key or a closing brace was expected")),
+             }
+             let key_start = self.i;
+             let key = self.string()?;
+             let key_span = key_start..self.i;
+ 
+             self.skip_whitespace();
+             if self.b.get(self.i) != Some(&b':') {
