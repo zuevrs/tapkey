@@ -1,0 +1,15 @@
+--- core/src/profile.rs
++++ replace == with != in Profiles::find
+@@ -33,11 +33,11 @@
+ 
+ impl Profiles {
+     pub fn read(path: &Path) -> Result<Profiles, String> {
+         let bytes = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
+         serde_json::from_slice(&bytes).map_err(|e| format!("{}: {e}", path.display()))
+     }
+ 
+     pub fn find(&self, id: &str) -> Option<&Profile> {
+-        self.profiles.iter().find(|p| p.id == id)
++        self.profiles.iter().find(|p| p.id != /* ~ changed by cargo-mutants ~ */ id)
+     }
+ }

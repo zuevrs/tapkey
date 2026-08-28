@@ -1,5 +1,0 @@
-core/src/json.rs:154:21: replace < with <= in Document::plan_set
-core/src/json.rs:313:61: replace + with * in document_step
-core/src/json.rs:315:25: replace match guard opening.contains('\n') && !indent.is_empty() with true in document_step
-core/src/json.rs:315:48: replace && with || in document_step
-core/src/json.rs:511:17: delete match arm None in Parser<'a>::array

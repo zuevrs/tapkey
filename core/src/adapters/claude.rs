@@ -111,7 +111,9 @@ const SLOTS: &[SlotSpec] = &[
     },
 ];
 
-const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var("ANTHROPIC_BASE_URL")];
+pub const ENDPOINT_VAR: &str = "ANTHROPIC_BASE_URL";
+
+const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var(ENDPOINT_VAR)];
 
 /// Read what Claude Code will actually use, resolved across the scopes it consults.
 pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {
@@ -253,4 +255,85 @@ fn settle(chain: &mut [Link]) {
 
 fn winning_value(chain: &[Link]) -> Option<String> {
     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())
+}
+
+// -------------------------------------------------------------------------------------------
+// Writing
+// -------------------------------------------------------------------------------------------
+
+use crate::json::Error as JsonError;
+use crate::profile::ToolAssignment;
+use crate::transaction::Action;
+
+/// Which environment variable each owned slot writes to, and whether it carries a display
+/// companion. The endpoint is not a slot: the glossary reserves that word for where a model
+/// goes, and Claude Code chooses its provider once for the whole tool.
+const OWNED: &[(&str, &str, bool)] = &[
+    ("main", "ANTHROPIC_MODEL", false),
+    ("utility", "ANTHROPIC_DEFAULT_HAIKU_MODEL", false),
+    ("subagent", "CLAUDE_CODE_SUBAGENT_MODEL", false),
+    ("opus", "ANTHROPIC_DEFAULT_OPUS_MODEL", true),
+    ("sonnet", "ANTHROPIC_DEFAULT_SONNET_MODEL", true),
+    ("fable", "ANTHROPIC_DEFAULT_FABLE_MODEL", true),
+];
+
+/// The variable that still wins the background path though it lost its name. Mirrored, never
+/// created: an unconditional write would leave tapkey's fingerprints where nobody asked.
+const DEPRECATED_UTILITY: &str = "ANTHROPIC_SMALL_FAST_MODEL";
+
+/// Turn one tool's assignment into the single write that applies it.
+///
+/// Nothing is written here; the transaction owns that, so the all-or-nothing guarantee lives
+/// in one place.
+pub fn plan_switch(env: &Env, assignment: &ToolAssignment) -> Result<Vec<Action>, JsonError> {
+    let path = env.home().join(".claude").join("settings.json");
+    let existing = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
+    let mut doc = Document::parse(&existing)?;
+
+    match &assignment.endpoint {
+        Some(url) => doc.set_string(&["env", ENDPOINT_VAR], url)?,
+        None => clear(&mut doc, env, ENDPOINT_VAR)?,
+    }
+
+    for (slot, var, has_companion) in OWNED {
+        match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {
+            Some(model) => {
+                doc.set_string(&["env", var], model)?;
+                if *has_companion {
+                    // Without it the tool's own picker keeps announcing Opus 5 over somebody
+                    // else's model, which is making another interface lie.
+                    doc.set_string(&["env", &format!("{var}_NAME")], model)?;
+                }
+                if *slot == "utility" && doc.get_string(&["env", DEPRECATED_UTILITY]).is_some() {
+                    doc.set_string(&["env", DEPRECATED_UTILITY], model)?;
+                }
+            }
+            None => {
+                clear(&mut doc, env, var)?;
+                if *has_companion {
+                    clear(&mut doc, env, &format!("{var}_NAME"))?;
+                }
+            }
+        }
+    }
+
+    Ok(vec![Action::Write {
+        path,
+        bytes: doc.to_bytes(),
+        // A file that already exists keeps its mode; this is only for one tapkey creates.
+        mode: 0o600,
+    }])
+}
+
+/// Remove what tapkey wrote, and neutralise an inherited export if there is one.
+///
+/// A settings file can set a variable and cannot unset one, so an export is overridden with an
+/// empty value — measured to work, and only when an export exists: writing `""` unconditionally
+/// would leave tapkey's fingerprints in a file it claims to have cleaned.
+fn clear(doc: &mut Document, env: &Env, var: &str) -> Result<(), JsonError> {
+    doc.remove(&["env", var])?;
+    if env.shell_var(var).is_some() {
+        doc.set_string(&["env", var], "")?;
+    }
+    Ok(())
 }

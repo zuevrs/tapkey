@@ -1,0 +1,21 @@
+--- core/src/adapters/claude.rs
++++ replace && with || in plan_switch
+@@ -299,17 +299,17 @@
+         match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {
+             Some(model) => {
+                 doc.set_string(&["env", var], model)?;
+                 if *has_companion {
+                     // Without it the tool's own picker keeps announcing Opus 5 over somebody
+                     // else's model, which is making another interface lie.
+                     doc.set_string(&["env", &format!("{var}_NAME")], model)?;
+                 }
+-                if *slot == "utility" && doc.get_string(&["env", DEPRECATED_UTILITY]).is_some() {
++                if *slot == "utility" || /* ~ changed by cargo-mutants ~ */ doc.get_string(&["env", DEPRECATED_UTILITY]).is_some() {
+                     doc.set_string(&["env", DEPRECATED_UTILITY], model)?;
+                 }
+             }
+             None => {
+                 clear(&mut doc, env, var)?;
+                 if *has_companion {
+                     clear(&mut doc, env, &format!("{var}_NAME"))?;
+                 }

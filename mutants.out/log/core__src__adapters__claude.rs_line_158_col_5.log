@@ -1,0 +1,129 @@
+
+*** core/src/adapters/claude.rs:158:5: replace resolve -> Resolved with Default::default()
+
+*** mutation diff:
+--- core/src/adapters/claude.rs
++++ replace resolve -> Resolved with Default::default()
+@@ -150,67 +150,17 @@
+             continue;
+         };
+         out.push((scope, path, Document::parse(&bytes)?));
+     }
+     Ok(Files(out))
+ }
+ 
+ fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
+-    let mut chain = Vec::new();
+-    for source in sources {
+-        match *source {
+-            Source::Unseen { scope, why } => chain.push(unseen(scope, why, "")),
+-            Source::Key(path) => {
+-                for (scope, file, doc) in &files.0 {
+-                    chain.push(Link {
+-                        source: display_path(file, env),
+-                        scope,
+-                        key: path.join("."),
+-                        value: doc.get_string(path).map(str::to_owned),
+-                        observable: true,
+-                        wins: false,
+-                    });
+-                }
+-            }
+-            Source::Var(name) => {
+-                for (scope, file, doc) in &files.0 {
+-                    chain.push(Link {
+-                        source: display_path(file, env),
+-                        scope,
+-                        key: name.to_string(),
+-                        value: doc.get_string(&["env", name]).map(str::to_owned),
+-                        observable: true,
+-                        wins: false,
+-                    });
+-                }
+-                chain.push(Link {
+-                    source: "login shell".to_string(),
+-                    scope: "shell",
+-                    key: name.to_string(),
+-                    // A withheld credential and an unset variable both read as no value. The
+-                    // difference is a credential concern, reported as an attention rather than
+-                    // by pretending to know a value we deliberately did not read.
+-                    value: match env.shell_var(name) {
+-                        Some(ShellVar::Value(v)) => Some(v.clone()),
+-                        Some(ShellVar::SetButWithheld) | None => None,
+-                    },
+-                    observable: true,
+-                    wins: false,
+-                });
+-            }
+-        }
+-    }
+-    chain.push(unseen_from(CLOUD));
+-
+-    settle(&mut chain);
+-    Resolved {
+-        effective: winning_value(&chain),
+-        chain,
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn unseen(scope: &'static str, why: &str, key: &str) -> Link {
+     Link {
+         source: why.to_string(),
+         scope,
+         key: key.to_string(),
+         value: None,
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.107
+       Fresh itoa v1.0.18
+       Fresh memchr v2.8.3
+       Fresh quote v1.0.47
+       Fresh serde_core v1.0.229
+       Fresh zmij v1.0.23
+       Fresh libc v0.2.189
+       Fresh syn v3.0.4
+       Fresh serde_json v1.0.151
+       Fresh serde_derive v1.0.229
+       Fresh serde v1.0.229
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/core): couldn't read metadata for file `target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta`
+warning: unused import: `ShellVar`
+ --> core/src/adapters/claude.rs:8:23
+  |
+8 | use crate::env::{Env, ShellVar};
+  |                       ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: the trait bound `Resolved: Default` is not satisfied
+   --> core/src/adapters/claude.rs:158:5
+    |
+158 |     Default::default() /* ~ changed by cargo-mutants ~ */
+    |     ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `Resolved`
+    |
+help: consider annotating `Resolved` with `#[derive(Default)]`
+   --> core/src/wire.rs:73:1
+    |
+ 73 + #[derive(Default)]
+ 74 | pub struct Resolved {
+    |
+
+For more information about this error, try `rustc --explain E0277`.
+warning: `tapkey-core` (lib test) generated 1 warning
+error: could not compile `tapkey-core` (lib test) due to 1 previous error; 1 warning emitted
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+warning: `tapkey-core` (lib) generated 1 warning (1 duplicate)
+error: could not compile `tapkey-core` (lib) due to 1 previous error; 1 warning emitted
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-yw3kAs.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta` (exit status: 1)
+
+*** result: Failure(101)

@@ -14,6 +14,7 @@ pub mod env;
 pub mod fs;
 pub mod instant;
 pub mod json;
+pub mod profile;
 pub mod store;
 pub mod transaction;
 pub mod wire;
@@ -60,10 +61,92 @@ fn dispatch(env: &Env, request: &str) -> Response {
         Request::EffectiveState {} => match adapters::claude::effective_state(env) {
             Ok(tool) => Response::Ok {
                 ok: true,
+                outcome: None,
                 tools: vec![tool],
             },
             Err(e) => refuse("unparsable", format!("{e:?}")),
         },
+        Request::Switch { profile_id } => switch(env, &profile_id),
+    }
+}
+
+/// Apply a profile to every tool it covers, all or nothing.
+fn switch(env: &Env, profile_id: &str) -> Response {
+    let profiles = match profile::Profiles::read(&env.store().join("profiles.json")) {
+        Ok(p) => p,
+        Err(e) => return refuse("unknown_profile", e),
+    };
+    let Some(profile) = profiles.find(profile_id) else {
+        return refuse(
+            "unknown_profile",
+            format!("no profile named {profile_id:?}"),
+        );
+    };
+    let Some(assignment) = profile.tools.get("claude") else {
+        return refuse(
+            "unknown_profile",
+            "the profile covers no managed tool".into(),
+        );
+    };
+
+    // Planned before anything is staged, so a file we cannot parse is a refusal rather than a
+    // rollback: nothing was touched.
+    let actions = match adapters::claude::plan_switch(env, assignment) {
+        Ok(a) => a,
+        Err(e) => return refuse("unparsable", format!("{e:?}")),
+    };
+
+    let store = match store::Store::open(env.store()) {
+        Ok(s) => s,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    let transaction = transaction::Transaction::new(actions);
+    let mut disk = fs::RealFs;
+    let captured = match transaction.capture(&disk, "claude") {
+        Ok(c) => c,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+
+    // The floor under every restore goes down before the first change, over every managed
+    // file rather than only the touched ones: full restoration is its job.
+    if !store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {
+        return refuse(
+            "permission_denied",
+            "could not record the first-run snapshot".into(),
+        );
+    }
+    if store
+        .take_backup(&captured, &profile.name, env.now())
+        .is_err()
+    {
+        return refuse("permission_denied", "could not record a backup".into());
+    }
+
+    if let Err(rolled_back) = transaction.apply(&mut disk) {
+        return Response::Failed {
+            ok: false,
+            outcome: "rolled back",
+            failure: Failure {
+                kind: "write_failed",
+                detail: format!(
+                    "{}: {} — {} file(s) restored",
+                    rolled_back.failed_at.display(),
+                    rolled_back.reason,
+                    rolled_back.restored
+                ),
+            },
+        };
+    }
+
+    // Read back rather than reporting what was written: the invariant forbids reporting intent,
+    // and reading back is the only way a project config or a shell export that beat us shows up.
+    match adapters::claude::effective_state(env) {
+        Ok(tool) => Response::Ok {
+            ok: true,
+            outcome: Some("applied"),
+            tools: vec![tool],
+        },
+        Err(e) => refuse("unparsable", format!("{e:?}")),
     }
 }
 

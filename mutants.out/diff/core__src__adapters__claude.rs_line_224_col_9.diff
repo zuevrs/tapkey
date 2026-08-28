@@ -1,0 +1,21 @@
+--- core/src/adapters/claude.rs
++++ delete match arm Source::Unseen{scope, why} in unseen_from
+@@ -216,17 +216,17 @@
+         value: None,
+         observable: false,
+         wins: false,
+     }
+ }
+ 
+ fn unseen_from(source: Source) -> Link {
+     match source {
+-        Source::Unseen { scope, why } => unseen(scope, why, ""),
++         /* ~ changed by cargo-mutants ~ */
+         _ => unreachable!("only an Unseen source becomes an unseen link"),
+     }
+ }
+ 
+ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
+     match scope {
+         "managed" => Some(env.managed().to_path_buf()),
+         "project local" => Some(env.project()?.join(".claude").join("settings.local.json")),

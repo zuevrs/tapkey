@@ -1,6 +1,0 @@
-core/src/json.rs:411:20: replace += with *= in Parser<'a>::skip_whitespace
-core/src/json.rs:515:38: replace += with -= in Parser<'a>::array
-core/src/json.rs:541:28: replace += with -= in Parser<'a>::string
-core/src/json.rs:562:36: replace += with -= in Parser<'a>::string
-core/src/json.rs:573:32: replace += with *= in Parser<'a>::string
-core/src/json.rs:592:20: replace += with *= in Parser<'a>::scalar

@@ -1,127 +1,20 @@
-core/src/json.rs:78:9: replace Document::get_string -> Option<&str> with None
-core/src/json.rs:78:9: replace Document::get_string -> Option<&str> with Some("")
-core/src/json.rs:68:9: replace Document::original -> &[u8] with Vec::leak(vec![1])
-core/src/json.rs:78:9: replace Document::get_string -> Option<&str> with Some("xyzzy")
-core/src/json.rs:68:9: replace Document::original -> &[u8] with Vec::leak(vec![0])
-core/src/json.rs:68:9: replace Document::original -> &[u8] with Vec::leak(Vec::new())
-core/src/json.rs:87:9: replace Document::member_span -> Option<Range<usize>> with None
-core/src/json.rs:95:9: replace Document::set_string -> Result<(), Error> with Ok(())
-core/src/json.rs:103:9: replace Document::remove -> Result<(), Error> with Ok(())
-core/src/json.rs:111:34: replace == with != in Document::remove
-core/src/json.rs:114:38: replace == with != in Document::remove
-core/src/json.rs:116:24: replace + with - in Document::remove
-core/src/json.rs:116:24: replace + with * in Document::remove
-core/src/json.rs:116:38: replace - with + in Document::remove
-core/src/json.rs:116:38: replace - with / in Document::remove
-core/src/json.rs:117:29: replace < with == in Document::remove
-core/src/json.rs:117:29: replace < with > in Document::remove
-core/src/json.rs:117:29: replace < with <= in Document::remove
-core/src/json.rs:117:25: replace + with - in Document::remove
-core/src/json.rs:117:25: replace + with * in Document::remove
-core/src/json.rs:119:41: replace + with - in Document::remove
-core/src/json.rs:119:41: replace + with * in Document::remove
-core/src/json.rs:122:27: replace - with + in Document::remove
-core/src/json.rs:122:27: replace - with / in Document::remove
-core/src/json.rs:129:9: replace Document::to_bytes -> Vec<u8> with vec![]
-core/src/json.rs:129:9: replace Document::to_bytes -> Vec<u8> with vec![0]
-core/src/json.rs:129:9: replace Document::to_bytes -> Vec<u8> with vec![1]
-core/src/json.rs:133:9: replace Document::splice -> Result<(), Error> with Ok(())
-core/src/json.rs:152:21: replace < with == in Document::plan_set
-core/src/json.rs:152:21: replace < with > in Document::plan_set
-core/src/json.rs:158:49: replace == with != in Document::plan_set
-core/src/json.rs:161:27: replace += with -= in Document::plan_set
-core/src/json.rs:161:27: replace += with *= in Document::plan_set
-core/src/json.rs:181:32: replace + with - in Document::plan_set
-core/src/json.rs:181:32: replace + with * in Document::plan_set
-core/src/json.rs:184:12: delete ! in Document::plan_set
-core/src/json.rs:214:43: replace + with - in Style::of
-core/src/json.rs:214:43: replace + with * in Style::of
-core/src/json.rs:220:25: replace match guard !opening.is_empty() with true in Style::of
-core/src/json.rs:220:25: replace match guard !opening.is_empty() with false in Style::of
-core/src/json.rs:221:25: replace match guard colon.ends_with(' ') with true in Style::of
-core/src/json.rs:221:25: replace match guard colon.ends_with(' ') with false in Style::of
-core/src/json.rs:219:53: replace + with - in Style::of
-core/src/json.rs:219:53: replace + with * in Style::of
-core/src/json.rs:220:25: delete ! in Style::of
-core/src/json.rs:256:9: replace Style::nested -> Vec<u8> with vec![]
-core/src/json.rs:256:9: replace Style::nested -> Vec<u8> with vec![0]
-core/src/json.rs:256:9: replace Style::nested -> Vec<u8> with vec![1]
-core/src/json.rs:263:9: replace Style::build with ()
-core/src/json.rs:287:5: replace indentation_before -> String with String::new()
-core/src/json.rs:287:5: replace indentation_before -> String with "xyzzy".into()
-core/src/json.rs:289:27: replace == with != in indentation_before
-core/src/json.rs:290:20: replace + with - in indentation_before
-core/src/json.rs:290:20: replace + with * in indentation_before
-core/src/json.rs:294:37: replace || with && in indentation_before
-core/src/json.rs:294:29: replace == with != in indentation_before
-core/src/json.rs:294:44: replace == with != in indentation_before
-core/src/json.rs:305:5: replace document_step -> String with String::new()
-core/src/json.rs:305:5: replace document_step -> String with "xyzzy".into()
-core/src/json.rs:311:61: replace + with - in document_step
-core/src/json.rs:313:25: replace match guard opening.contains('\n') && !indent.is_empty() with false in document_step
-core/src/json.rs:328:17: replace != with == in parse_root
-core/src/json.rs:313:51: delete ! in document_step
-core/src/json.rs:343:5: replace member -> Option<&'a Member> with None
-core/src/json.rs:348:35: replace == with != in member
-core/src/json.rs:352:5: replace parent_and_member -> Option<(&'a Node, &'a Member)> with None
-core/src/json.rs:357:35: replace == with != in parent_and_member
-core/src/json.rs:361:5: replace resolve -> Option<&'a Node> with None
-core/src/json.rs:367:48: replace == with != in resolve
-core/src/json.rs:374:5: replace encode_string -> Vec<u8> with vec![]
-core/src/json.rs:374:5: replace encode_string -> Vec<u8> with vec![0]
-core/src/json.rs:374:5: replace encode_string -> Vec<u8> with vec![1]
-core/src/json.rs:383:18: replace match guard (c as u32) < 0x20 with true in encode_string
-core/src/json.rs:383:18: replace match guard (c as u32) < 0x20 with false in encode_string
-core/src/json.rs:383:29: replace < with == in encode_string
-core/src/json.rs:383:29: replace < with > in encode_string
-core/src/json.rs:383:29: replace < with <= in encode_string
-core/src/json.rs:410:9: replace Parser<'a>::skip_whitespace with ()
-core/src/json.rs:411:20: replace += with -= in Parser<'a>::skip_whitespace
-core/src/json.rs:441:16: replace += with -= in Parser<'a>::object
-core/src/json.rs:441:16: replace += with *= in Parser<'a>::object
-core/src/json.rs:446:17: delete match arm Some(b'}') in Parser<'a>::object
-core/src/json.rs:453:17: delete match arm Some(b'"') in Parser<'a>::object
-core/src/json.rs:447:28: replace += with -= in Parser<'a>::object
-core/src/json.rs:447:28: replace += with *= in Parser<'a>::object
-core/src/json.rs:461:35: replace != with == in Parser<'a>::object
-core/src/json.rs:464:20: replace += with -= in Parser<'a>::object
-core/src/json.rs:464:20: replace += with *= in Parser<'a>::object
-core/src/json.rs:467:77: replace == with != in Parser<'a>::object
-core/src/json.rs:486:17: delete match arm Some(b',') in Parser<'a>::object
-core/src/json.rs:487:17: delete match arm Some(b'}') in Parser<'a>::object
-core/src/json.rs:486:38: replace += with -= in Parser<'a>::object
-core/src/json.rs:486:38: replace += with *= in Parser<'a>::object
-core/src/json.rs:495:16: replace += with -= in Parser<'a>::array
-core/src/json.rs:495:16: replace += with *= in Parser<'a>::array
-core/src/json.rs:499:17: delete match arm Some(b']') in Parser<'a>::array
-core/src/json.rs:500:28: replace += with -= in Parser<'a>::array
-core/src/json.rs:500:28: replace += with *= in Parser<'a>::array
-core/src/json.rs:515:17: delete match arm Some(b',') in Parser<'a>::array
-core/src/json.rs:523:9: replace Parser<'a>::string -> Result<String, Error> with Ok(String::new())
-core/src/json.rs:516:17: delete match arm Some(b']') in Parser<'a>::array
-core/src/json.rs:515:38: replace += with *= in Parser<'a>::array
-core/src/json.rs:523:9: replace Parser<'a>::string -> Result<String, Error> with Ok("xyzzy".into())
-core/src/json.rs:523:31: replace != with == in Parser<'a>::string
-core/src/json.rs:526:16: replace += with -= in Parser<'a>::string
-core/src/json.rs:526:16: replace += with *= in Parser<'a>::string
-core/src/json.rs:532:28: replace += with -= in Parser<'a>::string
-core/src/json.rs:532:28: replace += with *= in Parser<'a>::string
-core/src/json.rs:536:28: replace += with -= in Parser<'a>::string
-core/src/json.rs:536:28: replace += with *= in Parser<'a>::string
-core/src/json.rs:541:28: replace += with *= in Parser<'a>::string
-core/src/json.rs:543:25: delete match arm b'"' in Parser<'a>::string
-core/src/json.rs:544:25: delete match arm b'\\' in Parser<'a>::string
-core/src/json.rs:545:25: delete match arm b'/' in Parser<'a>::string
-core/src/json.rs:546:25: delete match arm b'b' in Parser<'a>::string
-core/src/json.rs:547:25: delete match arm b'f' in Parser<'a>::string
-core/src/json.rs:548:25: delete match arm b'n' in Parser<'a>::string
-core/src/json.rs:549:25: delete match arm b'r' in Parser<'a>::string
-core/src/json.rs:550:25: delete match arm b't' in Parser<'a>::string
-core/src/json.rs:551:25: delete match arm b'u' in Parser<'a>::string
-core/src/json.rs:554:53: replace + with - in Parser<'a>::string
-core/src/json.rs:554:53: replace + with * in Parser<'a>::string
-core/src/json.rs:562:36: replace += with *= in Parser<'a>::string
-core/src/json.rs:573:32: replace += with -= in Parser<'a>::string
-core/src/json.rs:587:9: replace Parser<'a>::scalar -> Result<(), Error> with Ok(())
-core/src/json.rs:592:20: replace += with -= in Parser<'a>::scalar
-core/src/json.rs:594:19: replace == with != in Parser<'a>::scalar
+core/src/adapters/claude.rs:224:9: delete match arm Source::Unseen{scope, why} in unseen_from
+core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with None
+core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with Some(Default::default())
+core/src/adapters/claude.rs:231:9: delete match arm "managed" in scope_path
+core/src/adapters/claude.rs:232:9: delete match arm "project local" in scope_path
+core/src/adapters/claude.rs:234:9: delete match arm "user" in scope_path
+core/src/adapters/claude.rs:233:9: delete match arm "project" in scope_path
+core/src/profile.rs:41:44: replace == with != in Profiles::find
+core/src/profile.rs:41:9: replace Profiles::find -> Option<&Profile> with None
+core/src/adapters/claude.rs:241:5: replace display_path -> String with String::new()
+core/src/adapters/claude.rs:241:5: replace display_path -> String with "xyzzy".into()
+core/src/adapters/claude.rs:251:5: replace settle with ()
+core/src/adapters/claude.rs:251:64: replace && with || in settle
+core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with None
+core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some(String::new())
+core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some("xyzzy".into())
+core/src/adapters/claude.rs:289:5: replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![])
+core/src/adapters/claude.rs:307:39: replace && with || in plan_switch
+core/src/adapters/claude.rs:307:26: replace == with != in plan_switch
+core/src/adapters/claude.rs:334:5: replace clear -> Result<(), JsonError> with Ok(())

@@ -91,6 +91,14 @@ impl Machine {
         );
     }
 
+    pub fn store(&self) -> PathBuf {
+        self.dir.path().join("store")
+    }
+
+    pub fn write_profiles(&self, value: Value) {
+        write_json(&self.store().join("profiles.json"), value);
+    }
+
     pub fn write_managed_settings(&self, value: Value) {
         write_json(&self.managed(), value);
     }
@@ -103,7 +111,9 @@ impl Machine {
     }
 
     pub fn env(&self) -> Env {
-        Env::for_test(self.home(), self.dir.path().join("store"))
+        // A fixed clock, so a backup's name is the same on every run.
+        Env::for_test(self.home(), self.store())
+            .with_clock(std::time::UNIX_EPOCH + std::time::Duration::from_millis(1_787_866_640_123))
             .with_project(self.project())
             .with_managed(self.managed())
             .with_shell(self.shell.clone())

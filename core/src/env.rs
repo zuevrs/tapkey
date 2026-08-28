@@ -33,6 +33,7 @@ pub struct Env {
     project: Option<PathBuf>,
     managed: PathBuf,
     shell: BTreeMap<String, ShellVar>,
+    now: std::time::SystemTime,
 }
 
 impl Env {
@@ -51,6 +52,7 @@ impl Env {
             project: None,
             managed: PathBuf::from(MANAGED_SETTINGS),
             shell: BTreeMap::new(),
+            now: std::time::SystemTime::now(),
         }
     }
 
@@ -62,6 +64,7 @@ impl Env {
             project: None,
             managed: PathBuf::from(MANAGED_SETTINGS),
             shell: BTreeMap::new(),
+            now: std::time::SystemTime::now(),
         }
     }
 
@@ -99,6 +102,18 @@ impl Env {
 
     pub fn managed(&self) -> &Path {
         &self.managed
+    }
+
+    /// The clock, given rather than read, so a backup's name is deterministic under test and
+    /// the store's own layout can be compared byte for byte.
+    pub fn now(&self) -> std::time::SystemTime {
+        self.now
+    }
+
+    /// Fix the clock. Without this a fixture could not compare the store it produced.
+    pub fn with_clock(mut self, now: std::time::SystemTime) -> Self {
+        self.now = now;
+        self
     }
 
     /// What the login shell exports under `name`, if anything.

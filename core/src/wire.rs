@@ -17,13 +17,31 @@ pub struct Envelope {
 pub enum Request {
     /// What is every managed tool actually using right now.
     EffectiveState {},
+    /// Apply a profile to every tool it covers, all or nothing.
+    Switch { profile_id: String },
 }
 
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum Response {
-    Ok { ok: bool, tools: Vec<ToolState> },
-    Refused { ok: bool, failure: Failure },
+    Ok {
+        ok: bool,
+        /// How a switch ended. Absent for a read, which does not end anything.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        outcome: Option<&'static str>,
+        tools: Vec<ToolState>,
+    },
+    /// A rollback undid work already done, which a refusal did not — the difference matters to
+    /// the person reading it, so it is named rather than inferred from an error.
+    Failed {
+        ok: bool,
+        outcome: &'static str,
+        failure: Failure,
+    },
+    Refused {
+        ok: bool,
+        failure: Failure,
+    },
 }
 
 #[derive(Debug, Serialize)]
