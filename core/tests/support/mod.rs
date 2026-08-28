@@ -125,11 +125,10 @@ impl Machine {
             .with_project(self.project())
             .with_managed(self.managed())
             .with_shell(self.shell.clone());
-        let env = match self.fail_after {
+        match self.fail_after {
             Some(n) => env.with_filesystem(Box::new(tapkey_core::fs::FailOnce::after(n))),
             None => env,
-        };
-        env
+        }
     }
 }
 
