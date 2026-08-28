@@ -1,9 +1,12 @@
-# Local-only working material: never committed
-internal/
-CLAUDE.md
-.claude/
+# Local-only working material: never committed. Anchored to the repository root with a leading
+# slash: an unanchored `.claude/` matches at any depth, and it silently swallowed the fixture
+# trees under core/tests/fixtures — which look fine locally, because the files are on disk, and
+# arrive in CI as cases with no input at all.
+/internal/
+/CLAUDE.md
+/.claude/
 # wayfinder maps and decision tickets: planning, not product
-.scratch/
+/.scratch/
 
 # Rust
 /target/

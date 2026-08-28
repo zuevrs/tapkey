@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ANTHROPIC_MODEL": "was-here",
+    "ANTHROPIC_BASE_URL": "https://old.test"
+  }
+}

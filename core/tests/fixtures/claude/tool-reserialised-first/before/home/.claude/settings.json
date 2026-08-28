@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-PLACEHOLDER-NOT-A-REAL-KEY"
+  },
+  "theme": "dark"
+}

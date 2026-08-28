@@ -106,3 +106,50 @@ fn walk(root: &Path) -> Vec<PathBuf> {
     }
     out
 }
+
+/// A fixture that exists on disk and not in the repository is invisible: every test passes on
+/// the machine that wrote it and the case arrives in CI with no input at all.
+///
+/// This is not hypothetical. The ignore rule keeping the agent's own `.claude/` directory out of
+/// the repository was unanchored, so it matched `.claude` at any depth and silently swallowed
+/// every `before/home/.claude/settings.json` in this tree.
+#[test]
+fn every_fixture_file_is_tracked_by_git() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
+    let listing = std::process::Command::new("git")
+        .arg("-C")
+        .arg(&root)
+        .args(["ls-files", "core/tests/fixtures"])
+        .output();
+    let Ok(listing) = listing else {
+        // No git, no repository to check against — a source tarball, not a working copy.
+        return;
+    };
+    if !listing.status.success() {
+        return;
+    }
+    let tracked: Vec<String> = String::from_utf8_lossy(&listing.stdout)
+        .lines()
+        .map(|l| l.to_string())
+        .collect();
+    assert!(
+        !tracked.is_empty(),
+        "git reports no fixtures tracked at all"
+    );
+
+    let mut untracked = Vec::new();
+    for file in walk(&fixtures()) {
+        let relative = file
+            .strip_prefix(root.canonicalize().unwrap_or(root.clone()))
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or_else(|_| file.to_string_lossy().into_owned());
+        if !tracked.iter().any(|t| relative.ends_with(t.as_str())) {
+            untracked.push(relative);
+        }
+    }
+    assert!(
+        untracked.is_empty(),
+        "fixtures on disk but not in the repository:\n  {}",
+        untracked.join("\n  ")
+    );
+}
