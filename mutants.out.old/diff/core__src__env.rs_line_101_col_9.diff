@@ -1,0 +1,20 @@
+--- core/src/env.rs
++++ replace Env::managed -> &Path with Box::leak(Box::new(Default::default()))
+@@ -93,16 +93,16 @@
+         &self.store
+     }
+ 
+     pub fn project(&self) -> Option<&Path> {
+         self.project.as_deref()
+     }
+ 
+     pub fn managed(&self) -> &Path {
+-        &self.managed
++        Box::leak(Box::new(Default::default())) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// What the login shell exports under `name`, if anything.
+     pub fn shell_var(&self, name: &str) -> Option<&ShellVar> {
+         self.shell.get(name)
+     }
+ }

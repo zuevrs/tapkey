@@ -1,0 +1,24 @@
+--- core/src/lib.rs
++++ replace refuse -> Response with Default::default()
+@@ -59,20 +59,17 @@
+                 tools: vec![tool],
+             },
+             Err(e) => refuse("unparsable", format!("{e:?}")),
+         },
+     }
+ }
+ 
+ fn refuse(kind: &'static str, detail: String) -> Response {
+-    Response::Refused {
+-        ok: false,
+-        failure: Failure { kind, detail },
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     #[test]
+     fn an_unknown_schema_version_is_refused_rather_than_guessed_at() {

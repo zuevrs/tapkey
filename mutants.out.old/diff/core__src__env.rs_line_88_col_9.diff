@@ -1,0 +1,21 @@
+--- core/src/env.rs
++++ replace Env::home -> &Path with Box::leak(Box::new(Default::default()))
+@@ -80,17 +80,17 @@
+ 
+     /// The project directory a tool would resolve its project scope against.
+     pub fn with_project(mut self, project: PathBuf) -> Self {
+         self.project = Some(project);
+         self
+     }
+ 
+     pub fn home(&self) -> &Path {
+-        &self.home
++        Box::leak(Box::new(Default::default())) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     #[allow(dead_code)]
+     pub fn store(&self) -> &Path {
+         &self.store
+     }
+ 
+     pub fn project(&self) -> Option<&Path> {

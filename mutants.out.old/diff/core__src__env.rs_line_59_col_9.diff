@@ -1,0 +1,27 @@
+--- core/src/env.rs
++++ replace Env::for_test -> Self with Default::default()
+@@ -51,23 +51,17 @@
+             project: None,
+             managed: PathBuf::from(MANAGED_SETTINGS),
+             shell: BTreeMap::new(),
+         }
+     }
+ 
+     /// The environment a test builds by hand.
+     pub fn for_test(home: PathBuf, store: PathBuf) -> Self {
+-        Env {
+-            home,
+-            store,
+-            project: None,
+-            managed: PathBuf::from(MANAGED_SETTINGS),
+-            shell: BTreeMap::new(),
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Declare what the login shell exports. Values are only supplied for variables it is safe
+     /// to hold; a credential is recorded as present and nothing more.
+     pub fn with_shell(mut self, shell: BTreeMap<String, ShellVar>) -> Self {
+         self.shell = shell;
+         self
+     }

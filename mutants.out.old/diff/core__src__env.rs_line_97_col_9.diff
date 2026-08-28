@@ -1,0 +1,21 @@
+--- core/src/env.rs
++++ replace Env::project -> Option<&Path> with None
+@@ -89,17 +89,17 @@
+     }
+ 
+     #[allow(dead_code)]
+     pub fn store(&self) -> &Path {
+         &self.store
+     }
+ 
+     pub fn project(&self) -> Option<&Path> {
+-        self.project.as_deref()
++        None /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn managed(&self) -> &Path {
+         &self.managed
+     }
+ 
+     /// What the login shell exports under `name`, if anything.
+     pub fn shell_var(&self, name: &str) -> Option<&ShellVar> {

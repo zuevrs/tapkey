@@ -1,0 +1,21 @@
+--- core/src/env.rs
++++ replace Env::store -> &Path with Box::leak(Box::new(Default::default()))
+@@ -85,17 +85,17 @@
+     }
+ 
+     pub fn home(&self) -> &Path {
+         &self.home
+     }
+ 
+     #[allow(dead_code)]
+     pub fn store(&self) -> &Path {
+-        &self.store
++        Box::leak(Box::new(Default::default())) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn project(&self) -> Option<&Path> {
+         self.project.as_deref()
+     }
+ 
+     pub fn managed(&self) -> &Path {
+         &self.managed

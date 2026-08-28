@@ -1,0 +1,29 @@
+--- core/src/lib.rs
++++ replace handle_with -> String with String::new()
+@@ -25,25 +25,17 @@
+     handle_with(&Env::real(), request)
+ }
+ 
+ /// The same call, told what world it is acting in rather than going and finding one.
+ ///
+ /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is
+ /// still one string in and one string out.
+ pub fn handle_with(env: &Env, request: &str) -> String {
+-    let response = dispatch(env, request);
+-    serde_json::to_string(&response).unwrap_or_else(|e| {
+-        // Serialising our own response cannot fail on well-formed data, but a panic here would
+-        // take the host application down, so it degrades to a refusal instead.
+-        format!(
+-            r#"{{"ok":false,"failure":{{"kind":"internal","detail":{:?}}}}}"#,
+-            e.to_string()
+-        )
+-    })
++    String::new() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn dispatch(env: &Env, request: &str) -> Response {
+     let envelope: Envelope = match serde_json::from_str(request) {
+         Ok(e) => e,
+         Err(e) => return refuse("malformed_request", e.to_string()),
+     };
+     if envelope.version != SCHEMA_VERSION {

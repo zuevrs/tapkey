@@ -1,0 +1,21 @@
+--- core/src/lib.rs
++++ replace handle -> String with "xyzzy".into()
+@@ -17,17 +17,17 @@
+ use env::Env;
+ use wire::{Envelope, Failure, Request, Response};
+ 
+ /// The schema version carried by every request and response.
+ pub const SCHEMA_VERSION: u32 = 1;
+ 
+ /// The one entry point: a JSON request in, a JSON response out.
+ pub fn handle(request: &str) -> String {
+-    handle_with(&Env::real(), request)
++    "xyzzy".into() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// The same call, told what world it is acting in rather than going and finding one.
+ ///
+ /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is
+ /// still one string in and one string out.
+ pub fn handle_with(env: &Env, request: &str) -> String {
+     let response = dispatch(env, request);

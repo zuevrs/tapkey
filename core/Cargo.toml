@@ -11,6 +11,13 @@ rust-version.workspace = true
 name = "tapkey_core"
 
 [dependencies]
+# The wire envelope only. Files belonging to the tools are read and spliced by `json`,
+# never by serde: serde would reorder and reformat what ADR-0010 requires be preserved.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[dev-dependencies]
+serde_json = "1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 # Only for `fcntl(fd, F_FULLFSYNC)`: Darwin's plain `fsync` returns once the data reaches the

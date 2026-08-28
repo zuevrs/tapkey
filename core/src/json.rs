@@ -41,7 +41,13 @@ enum Node {
     },
     /// An array or a scalar. tapkey never reaches inside one, so its contents are not modelled
     /// — only where it begins and ends, which is what a splice needs.
-    Opaque { span: Range<usize>, is_string: bool },
+    /// An array or a scalar. tapkey never reaches inside one, so its contents are not modelled
+    /// — only where it begins and ends, which is what a splice needs, plus a string's decoded
+    /// value, which is what reading effective state needs.
+    Opaque {
+        span: Range<usize>,
+        text: Option<String>,
+    },
 }
 
 struct Member {
@@ -82,7 +88,7 @@ impl Document {
         match node {
             Node::Opaque {
                 span,
-                is_string: true,
+                text: Some(_),
             } => {
                 let range = span.clone();
                 self.record(range.clone(), encode_string(value));
@@ -91,6 +97,19 @@ impl Document {
             _ => Err(Error::NotAString {
                 path: path.join("."),
             }),
+        }
+    }
+
+    /// The string at `path`, or `None` if there is nothing there or it is not a string.
+    ///
+    /// Reading goes through this reader rather than a general-purpose one so that the refusals
+    /// apply on the read path too: a duplicate key means effective state cannot be promised,
+    /// and promising it from a second parser that silently picks a winner would be worse than
+    /// not answering.
+    pub fn get_string(&self, path: &[&str]) -> Option<&str> {
+        match resolve(&self.root, path)? {
+            Node::Opaque { text, .. } => text.as_deref(),
+            Node::Object { .. } => None,
         }
     }
 
@@ -178,10 +197,10 @@ impl<'a> Parser<'a> {
             Some(b'[') => self.array(),
             Some(b'"') => {
                 let start = self.i;
-                self.string()?;
+                let text = self.string()?;
                 Ok(Node::Opaque {
                     span: start..self.i,
-                    is_string: true,
+                    text: Some(text),
                 })
             }
             Some(_) => {
@@ -189,7 +208,7 @@ impl<'a> Parser<'a> {
                 self.scalar()?;
                 Ok(Node::Opaque {
                     span: start..self.i,
-                    is_string: false,
+                    text: None,
                 })
             }
             None => Err(self.error("a value was expected")),
@@ -258,7 +277,7 @@ impl<'a> Parser<'a> {
                     self.i += 1;
                     return Ok(Node::Opaque {
                         span: start..self.i,
-                        is_string: false,
+                        text: None,
                     });
                 }
                 // Reaching the end mid-array is caught by `value()` below in any case; this

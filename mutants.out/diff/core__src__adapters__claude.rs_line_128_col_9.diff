@@ -1,0 +1,21 @@
+--- core/src/adapters/claude.rs
++++ delete match arm "project local" in scope_path
+@@ -120,17 +120,17 @@
+         observable: false,
+         wins: false,
+     }
+ }
+ 
+ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
+     match scope {
+         "managed" => Some(env.managed().to_path_buf()),
+-        "project local" => Some(env.project()?.join(".claude").join("settings.local.json")),
++         /* ~ changed by cargo-mutants ~ */
+         "project" => Some(env.project()?.join(".claude").join("settings.json")),
+         "user" => Some(env.home().join(".claude").join("settings.json")),
+         _ => None,
+     }
+ }
+ 
+ fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {
+     match std::fs::read(path) {

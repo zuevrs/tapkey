@@ -1,0 +1,27 @@
+--- core/src/adapters/claude.rs
++++ replace unobservable -> Link with Default::default()
+@@ -108,23 +108,17 @@
+         }
+     }
+ 
+     settle(&mut chain);
+     Ok(chain)
+ }
+ 
+ fn unobservable(scope: &'static str, source: &str) -> Link {
+-    Link {
+-        source: source.to_string(),
+-        scope,
+-        value: None,
+-        observable: false,
+-        wins: false,
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
+     match scope {
+         "managed" => Some(env.managed().to_path_buf()),
+         "project local" => Some(env.project()?.join(".claude").join("settings.local.json")),
+         "project" => Some(env.project()?.join(".claude").join("settings.json")),
+         "user" => Some(env.home().join(".claude").join("settings.json")),

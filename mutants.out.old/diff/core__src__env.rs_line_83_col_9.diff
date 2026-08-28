@@ -1,0 +1,22 @@
+--- core/src/env.rs
++++ replace Env::with_project -> Self with Default::default()
+@@ -75,18 +75,17 @@
+     /// Where the administrator's managed settings would be, if there are any.
+     pub fn with_managed(mut self, managed: PathBuf) -> Self {
+         self.managed = managed;
+         self
+     }
+ 
+     /// The project directory a tool would resolve its project scope against.
+     pub fn with_project(mut self, project: PathBuf) -> Self {
+-        self.project = Some(project);
+-        self
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn home(&self) -> &Path {
+         &self.home
+     }
+ 
+     #[allow(dead_code)]
+     pub fn store(&self) -> &Path {

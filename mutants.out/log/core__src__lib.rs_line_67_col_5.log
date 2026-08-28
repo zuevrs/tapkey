@@ -1,0 +1,81 @@
+
+*** core/src/lib.rs:67:5: replace refuse -> Response with Default::default()
+
+*** mutation diff:
+--- core/src/lib.rs
++++ replace refuse -> Response with Default::default()
+@@ -59,20 +59,17 @@
+                 tools: vec![tool],
+             },
+             Err(e) => refuse("unparsable", format!("{e:?}")),
+         },
+     }
+ }
+ 
+ fn refuse(kind: &'static str, detail: String) -> Response {
+-    Response::Refused {
+-        ok: false,
+-        failure: Failure { kind, detail },
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     /// The public wrapper is what three consumers actually call, so it needs a test of its
+     /// own — and one that refuses before touching the filesystem, or it would read whatever
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.107
+       Fresh memchr v2.8.3
+       Fresh quote v1.0.47
+       Fresh serde_core v1.0.229
+       Fresh zmij v1.0.23
+       Fresh itoa v1.0.18
+       Fresh libc v0.2.189
+       Fresh syn v3.0.4
+       Fresh serde_json v1.0.151
+       Fresh serde_derive v1.0.229
+       Fresh serde v1.0.229
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/core): the file `core/src/lib.rs` has changed (1787934070.249327142s, 2s after last build at 1787934068.662801450s)
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta`
+warning: unused import: `Failure`
+  --> core/src/lib.rs:18:22
+   |
+18 | use wire::{Envelope, Failure, Request, Response};
+   |                      ^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: the trait bound `Response: Default` is not satisfied
+  --> core/src/lib.rs:67:5
+   |
+67 |     Default::default() /* ~ changed by cargo-mutants ~ */
+   |     ^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+   |
+help: the trait `Default` is not implemented for `Response`
+  --> core/src/wire.rs:24:1
+   |
+24 | pub enum Response {
+   | ^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0277`.
+warning: `tapkey-core` (lib) generated 1 warning
+error: could not compile `tapkey-core` (lib) due to 1 previous error; 1 warning emitted
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+warning: `tapkey-core` (lib test) generated 1 warning (1 duplicate)
+error: could not compile `tapkey-core` (lib test) due to 1 previous error; 1 warning emitted
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-VlxTMJ.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib` (exit status: 1)
+
+*** result: Failure(101)
