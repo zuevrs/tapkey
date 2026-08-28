@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace -= with += in Store::sweep
+@@ -214,17 +214,17 @@
+         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();
+         let mut count = sizes.len();
+         for (id, size) in sizes {
+             if count <= max_backups && total <= max_bytes {
+                 break;
+             }
+             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;
+             total = total.saturating_sub(size);
+-            count -= 1;
++            count += /* ~ changed by cargo-mutants ~ */ 1;
+         }
+         Ok(())
+     }
+ 
+     fn snapshot_dir(&self) -> PathBuf {
+         self.root.join("snapshot")
+     }
+ 

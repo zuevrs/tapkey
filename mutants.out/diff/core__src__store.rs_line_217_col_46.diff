@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace <= with > in Store::sweep
+@@ -209,17 +209,17 @@
+         for summary in &listed {
+             let dir = self.backups_dir().join(summary.id.as_str());
+             sizes.push((summary.id.clone(), directory_size(&dir)?));
+         }
+ 
+         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();
+         let mut count = sizes.len();
+         for (id, size) in sizes {
+-            if count <= max_backups && total <= max_bytes {
++            if count <= max_backups && total > /* ~ changed by cargo-mutants ~ */ max_bytes {
+                 break;
+             }
+             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;
+             total = total.saturating_sub(size);
+             count -= 1;
+         }
+         Ok(())
+     }

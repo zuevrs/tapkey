@@ -1,0 +1,23 @@
+--- core/src/store.rs
++++ replace Store::take_snapshot -> io::Result<()> with Ok(())
+@@ -116,19 +116,17 @@
+     }
+ 
+     pub fn has_snapshot(&self) -> bool {
+         self.snapshot_dir().join("manifest.json").exists()
+     }
+ 
+     /// Record the configs as they were before tapkey first changed anything.
+     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {
+-        let dir = self.snapshot_dir();
+-        write_group(&dir, files, at, "")?;
+-        Ok(())
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Save the files one change is about to touch.
+     pub fn take_backup(
+         &self,
+         files: &[Captured],
+         profile: &str,
+         at: SystemTime,

@@ -1,0 +1,25 @@
+--- core/src/store.rs
++++ replace Store::open -> io::Result<Store> with Ok(Default::default())
+@@ -103,21 +103,17 @@
+ pub struct Store {
+     root: PathBuf,
+ }
+ 
+ impl Store {
+     /// Open the store, creating it closed. The store is ours, unlike the tools' files, and a
+     /// copy inside it may contain a key.
+     pub fn open(root: &Path) -> io::Result<Store> {
+-        create_dir_closed(root)?;
+-        create_dir_closed(&root.join("backups"))?;
+-        Ok(Store {
+-            root: root.to_path_buf(),
+-        })
++        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn has_snapshot(&self) -> bool {
+         self.snapshot_dir().join("manifest.json").exists()
+     }
+ 
+     /// Record the configs as they were before tapkey first changed anything.
+     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {

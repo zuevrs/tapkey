@@ -1,0 +1,30 @@
+--- core/src/store.rs
++++ replace directory_size -> io::Result<u64> with Ok(1)
+@@ -299,26 +299,16 @@
+ 
+ #[cfg(not(unix))]
+ fn set_dir_mode(_path: &Path) -> io::Result<()> {
+     // Windows has no equivalent; revisited with the Windows platform seam.
+     Ok(())
+ }
+ 
+ fn directory_size(dir: &Path) -> io::Result<u64> {
+-    let mut total = 0;
+-    for entry in fs::read_dir(dir)? {
+-        let entry = entry?;
+-        let meta = entry.metadata()?;
+-        total += if meta.is_dir() {
+-            directory_size(&entry.path())?
+-        } else {
+-            meta.len()
+-        };
+-    }
+-    Ok(total)
++    Ok(1) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn file_name(path: &Path) -> String {
+     path.file_name()
+         .map(|n| n.to_string_lossy().into_owned())
+         .unwrap_or_default()
+ }

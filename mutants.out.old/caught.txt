@@ -1,81 +1,27 @@
-core/src/instant.rs:13:5: replace format_utc -> String with String::new()
-core/src/instant.rs:13:5: replace format_utc -> String with "xyzzy".into()
-core/src/instant.rs:17:29: replace / with * in format_utc
-core/src/instant.rs:17:29: replace / with % in format_utc
-core/src/instant.rs:18:22: replace % with / in format_utc
-core/src/instant.rs:18:22: replace % with + in format_utc
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 1)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 1)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 1)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 1)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 1)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 0)
-core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 1)
-core/src/instant.rs:41:18: replace + with - in civil_from_days
-core/src/instant.rs:41:18: replace + with * in civil_from_days
-core/src/instant.rs:42:17: replace / with % in civil_from_days
-core/src/instant.rs:42:17: replace / with * in civil_from_days
-core/src/instant.rs:43:17: replace - with + in civil_from_days
-core/src/instant.rs:43:17: replace - with / in civil_from_days
-core/src/instant.rs:43:23: replace * with + in civil_from_days
-core/src/instant.rs:43:23: replace * with / in civil_from_days
-core/src/instant.rs:44:65: replace / with % in civil_from_days
-core/src/instant.rs:44:65: replace / with * in civil_from_days
-core/src/instant.rs:44:48: replace - with + in civil_from_days
-core/src/instant.rs:44:48: replace - with / in civil_from_days
-core/src/instant.rs:44:33: replace + with * in civil_from_days
-core/src/instant.rs:44:20: replace - with + in civil_from_days
-core/src/instant.rs:44:20: replace - with / in civil_from_days
-core/src/instant.rs:44:26: replace / with % in civil_from_days
-core/src/instant.rs:44:26: replace / with * in civil_from_days
-core/src/instant.rs:44:39: replace / with % in civil_from_days
-core/src/instant.rs:44:39: replace / with * in civil_from_days
-core/src/instant.rs:44:54: replace / with % in civil_from_days
-core/src/instant.rs:44:54: replace / with * in civil_from_days
-core/src/instant.rs:45:24: replace + with - in civil_from_days
-core/src/instant.rs:45:24: replace + with * in civil_from_days
-core/src/instant.rs:45:37: replace * with + in civil_from_days
-core/src/instant.rs:45:37: replace * with / in civil_from_days
-core/src/instant.rs:46:19: replace - with + in civil_from_days
-core/src/instant.rs:46:19: replace - with / in civil_from_days
-core/src/instant.rs:46:42: replace - with + in civil_from_days
-core/src/instant.rs:46:42: replace - with / in civil_from_days
-core/src/instant.rs:46:32: replace + with - in civil_from_days
-core/src/instant.rs:46:32: replace + with * in civil_from_days
-core/src/instant.rs:46:26: replace * with + in civil_from_days
-core/src/instant.rs:46:26: replace * with / in civil_from_days
-core/src/instant.rs:46:38: replace / with % in civil_from_days
-core/src/instant.rs:46:38: replace / with * in civil_from_days
-core/src/instant.rs:46:48: replace / with % in civil_from_days
-core/src/instant.rs:46:48: replace / with * in civil_from_days
-core/src/instant.rs:47:28: replace / with % in civil_from_days
-core/src/instant.rs:47:28: replace / with * in civil_from_days
-core/src/instant.rs:47:23: replace + with - in civil_from_days
-core/src/instant.rs:47:23: replace + with * in civil_from_days
-core/src/instant.rs:47:17: replace * with + in civil_from_days
-core/src/instant.rs:47:17: replace * with / in civil_from_days
-core/src/instant.rs:48:39: replace + with - in civil_from_days
-core/src/instant.rs:48:39: replace + with * in civil_from_days
-core/src/instant.rs:48:18: replace - with + in civil_from_days
-core/src/instant.rs:48:18: replace - with / in civil_from_days
-core/src/instant.rs:48:35: replace / with % in civil_from_days
-core/src/instant.rs:48:35: replace / with * in civil_from_days
-core/src/instant.rs:48:30: replace + with - in civil_from_days
-core/src/instant.rs:48:30: replace + with * in civil_from_days
-core/src/instant.rs:48:25: replace * with + in civil_from_days
-core/src/instant.rs:48:25: replace * with / in civil_from_days
-core/src/instant.rs:49:19: replace < with == in civil_from_days
-core/src/instant.rs:49:19: replace < with > in civil_from_days
-core/src/instant.rs:49:19: replace < with <= in civil_from_days
-core/src/instant.rs:49:29: replace + with - in civil_from_days
-core/src/instant.rs:49:29: replace + with * in civil_from_days
-core/src/instant.rs:49:45: replace - with + in civil_from_days
-core/src/instant.rs:49:45: replace - with / in civil_from_days
-core/src/instant.rs:50:11: replace <= with > in civil_from_days
-core/src/instant.rs:50:20: replace + with - in civil_from_days
-core/src/instant.rs:50:20: replace + with * in civil_from_days
+core/src/store.rs:57:9: replace BackupId::as_str -> &str with ""
+core/src/store.rs:57:9: replace BackupId::as_str -> &str with "xyzzy"
+core/src/store.rs:119:9: replace Store::has_snapshot -> bool with false
+core/src/store.rs:124:9: replace Store::take_snapshot -> io::Result<()> with Ok(())
+core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])
+core/src/store.rs:149:16: delete ! in Store::backups
+core/src/store.rs:153:16: delete ! in Store::backups
+core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])
+core/src/store.rs:207:9: replace Store::sweep -> io::Result<()> with Ok(())
+core/src/store.rs:217:37: replace && with || in Store::sweep
+core/src/store.rs:217:22: replace <= with > in Store::sweep
+core/src/store.rs:217:46: replace <= with > in Store::sweep
+core/src/store.rs:222:19: replace -= with += in Store::sweep
+core/src/store.rs:222:19: replace -= with /= in Store::sweep
+core/src/store.rs:228:9: replace Store::snapshot_dir -> PathBuf with Default::default()
+core/src/store.rs:239:5: replace write_group -> io::Result<()> with Ok(())
+core/src/store.rs:232:9: replace Store::backups_dir -> PathBuf with Default::default()
+core/src/store.rs:276:25: replace > with == in read_manifest
+core/src/store.rs:276:25: replace > with >= in read_manifest
+core/src/store.rs:290:5: replace create_dir_closed -> io::Result<()> with Ok(())
+core/src/store.rs:296:5: replace set_dir_mode -> io::Result<()> with Ok(())
+core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(0)
+core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(1)
+core/src/store.rs:311:15: replace += with -= in directory_size
+core/src/store.rs:311:15: replace += with *= in directory_size
+core/src/store.rs:321:5: replace file_name -> String with String::new()
+core/src/store.rs:321:5: replace file_name -> String with "xyzzy".into()

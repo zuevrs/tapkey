@@ -1,0 +1,6 @@
+core/src/store.rs:111:9: replace Store::open -> io::Result<Store> with Ok(Default::default())
+core/src/store.rs:63:9: replace <impl From<&str> for BackupId>::from -> Self with Default::default()
+core/src/store.rs:136:9: replace Store::take_backup -> io::Result<BackupId> with Ok(Default::default())
+core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![Default::default()])
+core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![Default::default()])
+core/src/store.rs:273:5: replace read_manifest -> io::Result<Manifest> with Ok(Default::default())

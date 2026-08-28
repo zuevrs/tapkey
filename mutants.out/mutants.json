@@ -1,2625 +1,1121 @@
 [
   {
-    "diff": "--- core/src/instant.rs\n+++ replace format_utc -> String with String::new()\n@@ -5,34 +5,17 @@\n //! and the history list use comes from the manifest, but a name that also sorts makes a\n //! directory listing legible, which is worth thirty lines of civil-calendar arithmetic rather\n //! than a dependency.\n \n use std::time::{SystemTime, UNIX_EPOCH};\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n-    let ms = t\n-        .duration_since(UNIX_EPOCH)\n-        .map(|d| d.as_millis())\n-        .unwrap_or(0);\n-    let total_seconds = (ms / 1000) as i64;\n-    let millis = (ms % 1000) as u32;\n-\n-    // Clamped above, so the calendar never sees a day before the epoch.\n-    let days = (total_seconds.div_euclid(86_400)) as u64;\n-    let secs_of_day = total_seconds.rem_euclid(86_400);\n-    let (year, month, day) = civil_from_days(days);\n-\n-    format!(\n-        \"{year:04}{month:02}{day:02}T{:02}{:02}{:02}.{millis:03}Z\",\n-        secs_of_day / 3600,\n-        (secs_of_day % 3600) / 60,\n-        secs_of_day % 60,\n-    )\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace BackupId::as_str -> &str with \"\"\n@@ -49,17 +49,17 @@\n     Backup(BackupId),\n }\n \n #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]\n pub struct BackupId(String);\n \n impl BackupId {\n     pub fn as_str(&self) -> &str {\n-        &self.0\n+        \"\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n         BackupId(s.to_string())\n     }\n }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "BackupId::as_str",
+      "return_type": "-> &str",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 58
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 56
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/instant.rs:13:5: replace format_utc -> String with String::new()",
+    "name": "core/src/store.rs:57:9: replace BackupId::as_str -> &str with \"\"",
     "package": "tapkey-core",
-    "replacement": "String::new()",
+    "replacement": "\"\"",
     "span": {
       "end": {
-        "column": 6,
-        "line": 30
+        "column": 16,
+        "line": 57
       },
       "start": {
-        "column": 5,
-        "line": 13
+        "column": 9,
+        "line": 57
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace format_utc -> String with \"xyzzy\".into()\n@@ -5,34 +5,17 @@\n //! and the history list use comes from the manifest, but a name that also sorts makes a\n //! directory listing legible, which is worth thirty lines of civil-calendar arithmetic rather\n //! than a dependency.\n \n use std::time::{SystemTime, UNIX_EPOCH};\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n-    let ms = t\n-        .duration_since(UNIX_EPOCH)\n-        .map(|d| d.as_millis())\n-        .unwrap_or(0);\n-    let total_seconds = (ms / 1000) as i64;\n-    let millis = (ms % 1000) as u32;\n-\n-    // Clamped above, so the calendar never sees a day before the epoch.\n-    let days = (total_seconds.div_euclid(86_400)) as u64;\n-    let secs_of_day = total_seconds.rem_euclid(86_400);\n-    let (year, month, day) = civil_from_days(days);\n-\n-    format!(\n-        \"{year:04}{month:02}{day:02}T{:02}{:02}{:02}.{millis:03}Z\",\n-        secs_of_day / 3600,\n-        (secs_of_day % 3600) / 60,\n-        secs_of_day % 60,\n-    )\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace BackupId::as_str -> &str with \"xyzzy\"\n@@ -49,17 +49,17 @@\n     Backup(BackupId),\n }\n \n #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]\n pub struct BackupId(String);\n \n impl BackupId {\n     pub fn as_str(&self) -> &str {\n-        &self.0\n+        \"xyzzy\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n         BackupId(s.to_string())\n     }\n }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "BackupId::as_str",
+      "return_type": "-> &str",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 58
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 56
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/instant.rs:13:5: replace format_utc -> String with \"xyzzy\".into()",
+    "name": "core/src/store.rs:57:9: replace BackupId::as_str -> &str with \"xyzzy\"",
     "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
+    "replacement": "\"xyzzy\"",
     "span": {
       "end": {
-        "column": 6,
-        "line": 30
+        "column": 16,
+        "line": 57
       },
       "start": {
-        "column": 5,
-        "line": 13
+        "column": 9,
+        "line": 57
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in format_utc\n@@ -9,17 +9,17 @@\n use std::time::{SystemTime, UNIX_EPOCH};\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n     let ms = t\n         .duration_since(UNIX_EPOCH)\n         .map(|d| d.as_millis())\n         .unwrap_or(0);\n-    let total_seconds = (ms / 1000) as i64;\n+    let total_seconds = (ms % /* ~ changed by cargo-mutants ~ */ 1000) as i64;\n     let millis = (ms % 1000) as u32;\n \n     // Clamped above, so the calendar never sees a day before the epoch.\n     let days = (total_seconds.div_euclid(86_400)) as u64;\n     let secs_of_day = total_seconds.rem_euclid(86_400);\n     let (year, month, day) = civil_from_days(days);\n \n     format!(\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace <impl From<&str> for BackupId>::from -> Self with Default::default()\n@@ -55,17 +55,17 @@\n impl BackupId {\n     pub fn as_str(&self) -> &str {\n         &self.0\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n-        BackupId(s.to_string())\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n #[derive(Debug)]\n pub struct BackupSummary {\n     pub id: BackupId,\n     pub profile: String,\n     pub instant: String,\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "<impl From<&str> for BackupId>::from",
+      "return_type": "-> Self",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 64
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 62
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:17:29: replace / with % in format_utc",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:63:9: replace <impl From<&str> for BackupId>::from -> Self with Default::default()",
     "package": "tapkey-core",
-    "replacement": "%",
+    "replacement": "Default::default()",
     "span": {
       "end": {
-        "column": 30,
-        "line": 17
+        "column": 32,
+        "line": 63
       },
       "start": {
-        "column": 29,
-        "line": 17
+        "column": 9,
+        "line": 63
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in format_utc\n@@ -9,17 +9,17 @@\n use std::time::{SystemTime, UNIX_EPOCH};\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n     let ms = t\n         .duration_since(UNIX_EPOCH)\n         .map(|d| d.as_millis())\n         .unwrap_or(0);\n-    let total_seconds = (ms / 1000) as i64;\n+    let total_seconds = (ms * /* ~ changed by cargo-mutants ~ */ 1000) as i64;\n     let millis = (ms % 1000) as u32;\n \n     // Clamped above, so the calendar never sees a day before the epoch.\n     let days = (total_seconds.div_euclid(86_400)) as u64;\n     let secs_of_day = total_seconds.rem_euclid(86_400);\n     let (year, month, day) = civil_from_days(days);\n \n     format!(\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::open -> io::Result<Store> with Ok(Default::default())\n@@ -103,21 +103,17 @@\n pub struct Store {\n     root: PathBuf,\n }\n \n impl Store {\n     /// Open the store, creating it closed. The store is ours, unlike the tools' files, and a\n     /// copy inside it may contain a key.\n     pub fn open(root: &Path) -> io::Result<Store> {\n-        create_dir_closed(root)?;\n-        create_dir_closed(&root.join(\"backups\"))?;\n-        Ok(Store {\n-            root: root.to_path_buf(),\n-        })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n         self.snapshot_dir().join(\"manifest.json\").exists()\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "Store::open",
+      "return_type": "-> io::Result<Store>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 116
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 108
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:17:29: replace / with * in format_utc",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:111:9: replace Store::open -> io::Result<Store> with Ok(Default::default())",
     "package": "tapkey-core",
-    "replacement": "*",
+    "replacement": "Ok(Default::default())",
     "span": {
       "end": {
-        "column": 30,
-        "line": 17
+        "column": 11,
+        "line": 115
       },
       "start": {
-        "column": 29,
-        "line": 17
+        "column": 9,
+        "line": 111
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace % with / in format_utc\n@@ -10,17 +10,17 @@\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n     let ms = t\n         .duration_since(UNIX_EPOCH)\n         .map(|d| d.as_millis())\n         .unwrap_or(0);\n     let total_seconds = (ms / 1000) as i64;\n-    let millis = (ms % 1000) as u32;\n+    let millis = (ms / /* ~ changed by cargo-mutants ~ */ 1000) as u32;\n \n     // Clamped above, so the calendar never sees a day before the epoch.\n     let days = (total_seconds.div_euclid(86_400)) as u64;\n     let secs_of_day = total_seconds.rem_euclid(86_400);\n     let (year, month, day) = civil_from_days(days);\n \n     format!(\n         \"{year:04}{month:02}{day:02}T{:02}{:02}{:02}.{millis:03}Z\",\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::has_snapshot -> bool with true\n@@ -111,17 +111,17 @@\n         create_dir_closed(root)?;\n         create_dir_closed(&root.join(\"backups\"))?;\n         Ok(Store {\n             root: root.to_path_buf(),\n         })\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n-        self.snapshot_dir().join(\"manifest.json\").exists()\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n         let dir = self.snapshot_dir();\n         write_group(&dir, files, at, \"\")?;\n         Ok(())\n     }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "Store::has_snapshot",
+      "return_type": "-> bool",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 120
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 118
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:18:22: replace % with / in format_utc",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:119:9: replace Store::has_snapshot -> bool with true",
     "package": "tapkey-core",
-    "replacement": "/",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 59,
+        "line": 119
+      },
+      "start": {
+        "column": 9,
+        "line": 119
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::has_snapshot -> bool with false\n@@ -111,17 +111,17 @@\n         create_dir_closed(root)?;\n         create_dir_closed(&root.join(\"backups\"))?;\n         Ok(Store {\n             root: root.to_path_buf(),\n         })\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n-        self.snapshot_dir().join(\"manifest.json\").exists()\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n         let dir = self.snapshot_dir();\n         write_group(&dir, files, at, \"\")?;\n         Ok(())\n     }\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::has_snapshot",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 120
+        },
+        "start": {
+          "column": 5,
+          "line": 118
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:119:9: replace Store::has_snapshot -> bool with false",
+    "package": "tapkey-core",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 59,
+        "line": 119
+      },
+      "start": {
+        "column": 9,
+        "line": 119
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::take_snapshot -> io::Result<()> with Ok(())\n@@ -116,19 +116,17 @@\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n         self.snapshot_dir().join(\"manifest.json\").exists()\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n-        let dir = self.snapshot_dir();\n-        write_group(&dir, files, at, \"\")?;\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Save the files one change is about to touch.\n     pub fn take_backup(\n         &self,\n         files: &[Captured],\n         profile: &str,\n         at: SystemTime,\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::take_snapshot",
+      "return_type": "-> io::Result<()>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 127
+        },
+        "start": {
+          "column": 5,
+          "line": 122
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:124:9: replace Store::take_snapshot -> io::Result<()> with Ok(())",
+    "package": "tapkey-core",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 126
+      },
+      "start": {
+        "column": 9,
+        "line": 124
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::take_backup -> io::Result<BackupId> with Ok(Default::default())\n@@ -128,19 +128,17 @@\n \n     /// Save the files one change is about to touch.\n     pub fn take_backup(\n         &self,\n         files: &[Captured],\n         profile: &str,\n         at: SystemTime,\n     ) -> io::Result<BackupId> {\n-        let id = BackupId(format_utc(at));\n-        write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n-        Ok(id)\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n         let mut out = Vec::new();\n         let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n             return Ok(out);\n         };\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::take_backup",
+      "return_type": "-> io::Result<BackupId>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 139
+        },
+        "start": {
+          "column": 5,
+          "line": 129
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:136:9: replace Store::take_backup -> io::Result<BackupId> with Ok(Default::default())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 15,
+        "line": 138
+      },
+      "start": {
+        "column": 9,
+        "line": 136
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])\n@@ -135,52 +135,17 @@\n     ) -> io::Result<BackupId> {\n         let id = BackupId(format_utc(at));\n         write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n         Ok(id)\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n-        let mut out = Vec::new();\n-        let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n-            return Ok(out);\n-        };\n-        for entry in entries {\n-            let path = entry?.path();\n-            if !path.is_dir() {\n-                continue;\n-            }\n-            let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n-                // No manifest means the write never committed. Ours, not theirs.\n-                fs::remove_dir_all(&path)?;\n-                continue;\n-            }\n-            let id = BackupId(file_name(&path));\n-            out.push(match read_manifest(&manifest_path) {\n-                Ok(m) => BackupSummary {\n-                    profile: m.profile,\n-                    instant: m.instant,\n-                    restorable: m.files.iter().all(|e| match &e.stored {\n-                        Some(name) => path.join(\"files\").join(name).exists(),\n-                        None => true,\n-                    }),\n-                    id,\n-                },\n-                Err(_) => BackupSummary {\n-                    profile: String::new(),\n-                    instant: id.0.clone(),\n-                    restorable: false,\n-                    id,\n-                },\n-            });\n-        }\n-        out.sort_by(|a, b| a.id.cmp(&b.id));\n-        Ok(out)\n+        Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n         let dir = match target {\n             Target::Snapshot => self.snapshot_dir(),\n             Target::Backup(id) => self.backups_dir().join(&id.0),\n         };\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::backups",
+      "return_type": "-> io::Result<Vec<BackupSummary>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 179
+        },
+        "start": {
+          "column": 5,
+          "line": 141
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])",
+    "package": "tapkey-core",
+    "replacement": "Ok(vec![])",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 178
+      },
+      "start": {
+        "column": 9,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![Default::default()])\n@@ -135,52 +135,17 @@\n     ) -> io::Result<BackupId> {\n         let id = BackupId(format_utc(at));\n         write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n         Ok(id)\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n-        let mut out = Vec::new();\n-        let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n-            return Ok(out);\n-        };\n-        for entry in entries {\n-            let path = entry?.path();\n-            if !path.is_dir() {\n-                continue;\n-            }\n-            let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n-                // No manifest means the write never committed. Ours, not theirs.\n-                fs::remove_dir_all(&path)?;\n-                continue;\n-            }\n-            let id = BackupId(file_name(&path));\n-            out.push(match read_manifest(&manifest_path) {\n-                Ok(m) => BackupSummary {\n-                    profile: m.profile,\n-                    instant: m.instant,\n-                    restorable: m.files.iter().all(|e| match &e.stored {\n-                        Some(name) => path.join(\"files\").join(name).exists(),\n-                        None => true,\n-                    }),\n-                    id,\n-                },\n-                Err(_) => BackupSummary {\n-                    profile: String::new(),\n-                    instant: id.0.clone(),\n-                    restorable: false,\n-                    id,\n-                },\n-            });\n-        }\n-        out.sort_by(|a, b| a.id.cmp(&b.id));\n-        Ok(out)\n+        Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n         let dir = match target {\n             Target::Snapshot => self.snapshot_dir(),\n             Target::Backup(id) => self.backups_dir().join(&id.0),\n         };\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::backups",
+      "return_type": "-> io::Result<Vec<BackupSummary>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 179
+        },
+        "start": {
+          "column": 5,
+          "line": 141
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![Default::default()])",
+    "package": "tapkey-core",
+    "replacement": "Ok(vec![Default::default()])",
+    "span": {
+      "end": {
+        "column": 16,
+        "line": 178
+      },
+      "start": {
+        "column": 9,
+        "line": 143
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ delete ! in Store::backups\n@@ -141,17 +141,17 @@\n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n         let mut out = Vec::new();\n         let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n             return Ok(out);\n         };\n         for entry in entries {\n             let path = entry?.path();\n-            if !path.is_dir() {\n+            if  /* ~ changed by cargo-mutants ~ */path.is_dir() {\n                 continue;\n             }\n             let manifest_path = path.join(\"manifest.json\");\n             if !manifest_path.exists() {\n                 // No manifest means the write never committed. Ours, not theirs.\n                 fs::remove_dir_all(&path)?;\n                 continue;\n             }\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::backups",
+      "return_type": "-> io::Result<Vec<BackupSummary>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 179
+        },
+        "start": {
+          "column": 5,
+          "line": 141
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "core/src/store.rs:149:16: delete ! in Store::backups",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 149
+      },
+      "start": {
+        "column": 16,
+        "line": 149
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ delete ! in Store::backups\n@@ -145,17 +145,17 @@\n             return Ok(out);\n         };\n         for entry in entries {\n             let path = entry?.path();\n             if !path.is_dir() {\n                 continue;\n             }\n             let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n+            if  /* ~ changed by cargo-mutants ~ */manifest_path.exists() {\n                 // No manifest means the write never committed. Ours, not theirs.\n                 fs::remove_dir_all(&path)?;\n                 continue;\n             }\n             let id = BackupId(file_name(&path));\n             out.push(match read_manifest(&manifest_path) {\n                 Ok(m) => BackupSummary {\n                     profile: m.profile,\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::backups",
+      "return_type": "-> io::Result<Vec<BackupSummary>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 179
+        },
+        "start": {
+          "column": 5,
+          "line": 141
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "core/src/store.rs:153:16: delete ! in Store::backups",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 153
+      },
+      "start": {
+        "column": 16,
+        "line": 153
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])\n@@ -175,33 +175,17 @@\n             });\n         }\n         out.sort_by(|a, b| a.id.cmp(&b.id));\n         Ok(out)\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n-        let dir = match target {\n-            Target::Snapshot => self.snapshot_dir(),\n-            Target::Backup(id) => self.backups_dir().join(&id.0),\n-        };\n-        let manifest = read_manifest(&dir.join(\"manifest.json\"))?;\n-        manifest\n-            .files\n-            .into_iter()\n-            .map(|e| match e.stored {\n-                Some(name) => Ok(RestoreAction::Write {\n-                    bytes: fs::read(dir.join(\"files\").join(name))?,\n-                    path: e.path,\n-                    mode: e.mode,\n-                }),\n-                None => Ok(RestoreAction::Delete { path: e.path }),\n-            })\n-            .collect()\n+        Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n         let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "Store::restore_plan",
+      "return_type": "-> io::Result<Vec<RestoreAction>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 200
+        },
+        "start": {
+          "column": 5,
+          "line": 181
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])",
+    "package": "tapkey-core",
+    "replacement": "Ok(vec![])",
     "span": {
       "end": {
         "column": 23,
-        "line": 18
+        "line": 199
       },
       "start": {
-        "column": 22,
-        "line": 18
+        "column": 9,
+        "line": 183
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace % with + in format_utc\n@@ -10,17 +10,17 @@\n \n /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.\n pub fn format_utc(t: SystemTime) -> String {\n     let ms = t\n         .duration_since(UNIX_EPOCH)\n         .map(|d| d.as_millis())\n         .unwrap_or(0);\n     let total_seconds = (ms / 1000) as i64;\n-    let millis = (ms % 1000) as u32;\n+    let millis = (ms + /* ~ changed by cargo-mutants ~ */ 1000) as u32;\n \n     // Clamped above, so the calendar never sees a day before the epoch.\n     let days = (total_seconds.div_euclid(86_400)) as u64;\n     let secs_of_day = total_seconds.rem_euclid(86_400);\n     let (year, month, day) = civil_from_days(days);\n \n     format!(\n         \"{year:04}{month:02}{day:02}T{:02}{:02}{:02}.{millis:03}Z\",\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![Default::default()])\n@@ -175,33 +175,17 @@\n             });\n         }\n         out.sort_by(|a, b| a.id.cmp(&b.id));\n         Ok(out)\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n-        let dir = match target {\n-            Target::Snapshot => self.snapshot_dir(),\n-            Target::Backup(id) => self.backups_dir().join(&id.0),\n-        };\n-        let manifest = read_manifest(&dir.join(\"manifest.json\"))?;\n-        manifest\n-            .files\n-            .into_iter()\n-            .map(|e| match e.stored {\n-                Some(name) => Ok(RestoreAction::Write {\n-                    bytes: fs::read(dir.join(\"files\").join(name))?,\n-                    path: e.path,\n-                    mode: e.mode,\n-                }),\n-                None => Ok(RestoreAction::Delete { path: e.path }),\n-            })\n-            .collect()\n+        Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n         let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "format_utc",
-      "return_type": "-> String",
+      "function_name": "Store::restore_plan",
+      "return_type": "-> io::Result<Vec<RestoreAction>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 31
+          "column": 6,
+          "line": 200
         },
         "start": {
-          "column": 1,
-          "line": 11
+          "column": 5,
+          "line": 181
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:18:22: replace % with + in format_utc",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![Default::default()])",
     "package": "tapkey-core",
-    "replacement": "+",
+    "replacement": "Ok(vec![Default::default()])",
     "span": {
       "end": {
         "column": 23,
-        "line": 18
+        "line": 199
       },
       "start": {
-        "column": 22,
-        "line": 18
+        "column": 9,
+        "line": 183
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (0, 0, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (0, 0, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::sweep -> io::Result<()> with Ok(())\n@@ -199,34 +199,17 @@\n             .collect()\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n-        let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n-        let mut sizes: Vec<(BackupId, u64)> = Vec::new();\n-        for summary in &listed {\n-            let dir = self.backups_dir().join(summary.id.as_str());\n-            sizes.push((summary.id.clone(), directory_size(&dir)?));\n-        }\n-\n-        let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n-        let mut count = sizes.len();\n-        for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n-                break;\n-            }\n-            fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n-            total = total.saturating_sub(size);\n-            count -= 1;\n-        }\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 0)",
+    "name": "core/src/store.rs:207:9: replace Store::sweep -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
-    "replacement": "(0, 0, 0)",
+    "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 43,
-        "line": 50
+        "column": 15,
+        "line": 224
       },
       "start": {
-        "column": 5,
-        "line": 41
+        "column": 9,
+        "line": 207
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (0, 0, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (0, 0, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace && with || in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count <= max_backups || /* ~ changed by cargo-mutants ~ */ total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 1)",
-    "package": "tapkey-core",
-    "replacement": "(0, 0, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (0, 1, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (0, 1, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 0)",
-    "package": "tapkey-core",
-    "replacement": "(0, 1, 0)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (0, 1, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (0, 1, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 1)",
-    "package": "tapkey-core",
-    "replacement": "(0, 1, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (1, 0, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (1, 0, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 0)",
-    "package": "tapkey-core",
-    "replacement": "(1, 0, 0)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (1, 0, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (1, 0, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 1)",
-    "package": "tapkey-core",
-    "replacement": "(1, 0, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (1, 1, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (1, 1, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 0)",
-    "package": "tapkey-core",
-    "replacement": "(1, 1, 0)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (1, 1, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (1, 1, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 1)",
-    "package": "tapkey-core",
-    "replacement": "(1, 1, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (-1, 0, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (-1, 0, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 0)",
-    "package": "tapkey-core",
-    "replacement": "(-1, 0, 0)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (-1, 0, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (-1, 0, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 1)",
-    "package": "tapkey-core",
-    "replacement": "(-1, 0, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (-1, 1, 0)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (-1, 1, 0) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 0)",
-    "package": "tapkey-core",
-    "replacement": "(-1, 1, 0)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace civil_from_days -> (i64, u32, u32) with (-1, 1, 1)\n@@ -33,19 +33,10 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n-    let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (-1, 1, 1) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 1)",
-    "package": "tapkey-core",
-    "replacement": "(-1, 1, 1)",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 50
-      },
-      "start": {
-        "column": 5,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -33,17 +33,17 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n+    let z = days - /* ~ changed by cargo-mutants ~ */ 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:41:18: replace + with - in civil_from_days",
+    "name": "core/src/store.rs:217:37: replace && with || in Store::sweep",
     "package": "tapkey-core",
-    "replacement": "-",
+    "replacement": "||",
     "span": {
       "end": {
-        "column": 19,
-        "line": 41
-      },
-      "start": {
-        "column": 18,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -33,17 +33,17 @@\n /// Howard Hinnant's `civil_from_days`: days since 1970-01-01 to a calendar date, with the year\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n-    let z = days + 719_468;\n+    let z = days * /* ~ changed by cargo-mutants ~ */ 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:41:18: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 19,
-        "line": 41
-      },
-      "start": {
-        "column": 18,
-        "line": 41
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -34,17 +34,17 @@\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n-    let era = z / 146_097;\n+    let era = z % /* ~ changed by cargo-mutants ~ */ 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:42:17: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 18,
-        "line": 42
-      },
-      "start": {
-        "column": 17,
-        "line": 42
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -34,17 +34,17 @@\n /// shifted so that leap days land at the end of the era. Copied deliberately rather than\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n-    let era = z / 146_097;\n+    let era = z * /* ~ changed by cargo-mutants ~ */ 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:42:17: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 18,
-        "line": 42
-      },
-      "start": {
-        "column": 17,
-        "line": 42
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -35,17 +35,17 @@\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n+    let doe = z + /* ~ changed by cargo-mutants ~ */ era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:43:17: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 18,
-        "line": 43
-      },
-      "start": {
-        "column": 17,
-        "line": 43
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -35,17 +35,17 @@\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n+    let doe = z / /* ~ changed by cargo-mutants ~ */ era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:43:17: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 18,
-        "line": 43
-      },
-      "start": {
-        "column": 17,
-        "line": 43
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with + in civil_from_days\n@@ -35,17 +35,17 @@\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n+    let doe = z - era + /* ~ changed by cargo-mutants ~ */ 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:43:23: replace * with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 24,
-        "line": 43
-      },
-      "start": {
-        "column": 23,
-        "line": 43
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with / in civil_from_days\n@@ -35,17 +35,17 @@\n /// improvised — month lengths and leap years are exactly where a hand-rolled version is wrong\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n-    let doe = z - era * 146_097; // [0, 146096]\n+    let doe = z - era / /* ~ changed by cargo-mutants ~ */ 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:43:23: replace * with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 24,
-        "line": 43
-      },
-      "start": {
-        "column": 23,
-        "line": 43
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) % /* ~ changed by cargo-mutants ~ */ 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:65: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 66,
-        "line": 44
-      },
-      "start": {
-        "column": 65,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) * /* ~ changed by cargo-mutants ~ */ 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:65: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 66,
-        "line": 44
-      },
-      "start": {
-        "column": 65,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 + /* ~ changed by cargo-mutants ~ */ doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:48: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 49,
-        "line": 44
-      },
-      "start": {
-        "column": 48,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 / /* ~ changed by cargo-mutants ~ */ doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:48: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 49,
-        "line": 44
-      },
-      "start": {
-        "column": 48,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 - /* ~ changed by cargo-mutants ~ */ doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:33: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
-    "span": {
-      "end": {
-        "column": 34,
-        "line": 44
-      },
-      "start": {
-        "column": 33,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 * /* ~ changed by cargo-mutants ~ */ doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:33: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 34,
-        "line": 44
-      },
-      "start": {
-        "column": 33,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe + /* ~ changed by cargo-mutants ~ */ doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:20: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 44
-      },
-      "start": {
-        "column": 20,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe / /* ~ changed by cargo-mutants ~ */ doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:20: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 44
-      },
-      "start": {
-        "column": 20,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe % /* ~ changed by cargo-mutants ~ */ 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:26: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 44
-      },
-      "start": {
-        "column": 26,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe * /* ~ changed by cargo-mutants ~ */ 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:26: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 44
-      },
-      "start": {
-        "column": 26,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe % /* ~ changed by cargo-mutants ~ */ 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:39: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 40,
-        "line": 44
-      },
-      "start": {
         "column": 39,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe * /* ~ changed by cargo-mutants ~ */ 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:39: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 40,
-        "line": 44
-      },
-      "start": {
-        "column": 39,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe % /* ~ changed by cargo-mutants ~ */ 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:54: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 55,
-        "line": 44
-      },
-      "start": {
-        "column": 54,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -36,16 +36,16 @@\n /// once every four years, and the wrong backup would then be the one evicted.\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe * /* ~ changed by cargo-mutants ~ */ 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:44:54: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 55,
-        "line": 44
-      },
-      "start": {
-        "column": 54,
-        "line": 44
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -37,15 +37,15 @@\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n+    let y = yoe as i64 - /* ~ changed by cargo-mutants ~ */ era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:45:24: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
-    "span": {
-      "end": {
-        "column": 25,
-        "line": 45
-      },
-      "start": {
-        "column": 24,
-        "line": 45
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -37,15 +37,15 @@\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n+    let y = yoe as i64 * /* ~ changed by cargo-mutants ~ */ era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:45:24: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 25,
-        "line": 45
-      },
-      "start": {
-        "column": 24,
-        "line": 45
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with + in civil_from_days\n@@ -37,15 +37,15 @@\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n+    let y = yoe as i64 + era as i64 + /* ~ changed by cargo-mutants ~ */ 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:45:37: replace * with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 38,
-        "line": 45
+        "line": 217
       },
       "start": {
         "column": 37,
-        "line": 45
+        "line": 217
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace * with / in civil_from_days\n@@ -37,15 +37,15 @@\n ///\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n-    let y = yoe as i64 + era as i64 * 400;\n+    let y = yoe as i64 + era as i64 / /* ~ changed by cargo-mutants ~ */ 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace <= with > in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count > /* ~ changed by cargo-mutants ~ */ max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:45:37: replace * with / in civil_from_days",
+    "name": "core/src/store.rs:217:22: replace <= with > in Store::sweep",
     "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 38,
-        "line": 45
-      },
-      "start": {
-        "column": 37,
-        "line": 45
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe + /* ~ changed by cargo-mutants ~ */ (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:19: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 20,
-        "line": 46
-      },
-      "start": {
-        "column": 19,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe / /* ~ changed by cargo-mutants ~ */ (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:19: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 20,
-        "line": 46
-      },
-      "start": {
-        "column": 19,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe / 4 + /* ~ changed by cargo-mutants ~ */ yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:42: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 46
-      },
-      "start": {
-        "column": 42,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe / 4 / /* ~ changed by cargo-mutants ~ */ yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:42: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 43,
-        "line": 46
-      },
-      "start": {
-        "column": 42,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe - /* ~ changed by cargo-mutants ~ */ yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:32: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
-    "span": {
-      "end": {
-        "column": 33,
-        "line": 46
-      },
-      "start": {
-        "column": 32,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe * /* ~ changed by cargo-mutants ~ */ yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:32: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 33,
-        "line": 46
-      },
-      "start": {
-        "column": 32,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with + in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 + /* ~ changed by cargo-mutants ~ */ yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:26: replace * with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 46
-      },
-      "start": {
-        "column": 26,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with / in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 / /* ~ changed by cargo-mutants ~ */ yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:26: replace * with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 46
-      },
-      "start": {
-        "column": 26,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe % /* ~ changed by cargo-mutants ~ */ 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:38: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 46
-      },
-      "start": {
-        "column": 38,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe * /* ~ changed by cargo-mutants ~ */ 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:38: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 46
-      },
-      "start": {
-        "column": 38,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe / 4 - yoe % /* ~ changed by cargo-mutants ~ */ 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:48: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 49,
-        "line": 46
-      },
-      "start": {
-        "column": 48,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -38,14 +38,14 @@\n /// The original handles days before the epoch; `format_utc` clamps there, so that branch would\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n+    let doy = doe - (365 * yoe + yoe / 4 - yoe * /* ~ changed by cargo-mutants ~ */ 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:46:48: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 49,
-        "line": 46
-      },
-      "start": {
-        "column": 48,
-        "line": 46
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 * doy + 2) % /* ~ changed by cargo-mutants ~ */ 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:28: replace / with % in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "%",
-    "span": {
-      "end": {
-        "column": 29,
-        "line": 47
-      },
-      "start": {
-        "column": 28,
-        "line": 47
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 * doy + 2) * /* ~ changed by cargo-mutants ~ */ 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:28: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 29,
-        "line": 47
-      },
-      "start": {
-        "column": 28,
-        "line": 47
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 * doy - /* ~ changed by cargo-mutants ~ */ 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:23: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
+    "replacement": ">",
     "span": {
       "end": {
         "column": 24,
-        "line": 47
+        "line": 217
       },
       "start": {
-        "column": 23,
-        "line": 47
+        "column": 22,
+        "line": 217
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 * doy * /* ~ changed by cargo-mutants ~ */ 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace <= with > in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count <= max_backups && total > /* ~ changed by cargo-mutants ~ */ max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:23: replace + with * in civil_from_days",
+    "name": "core/src/store.rs:217:46: replace <= with > in Store::sweep",
     "package": "tapkey-core",
-    "replacement": "*",
+    "replacement": ">",
     "span": {
       "end": {
-        "column": 24,
-        "line": 47
+        "column": 48,
+        "line": 217
       },
       "start": {
-        "column": 23,
-        "line": 47
+        "column": 46,
+        "line": 217
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace * with + in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 + /* ~ changed by cargo-mutants ~ */ doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace -= with += in Store::sweep\n@@ -214,17 +214,17 @@\n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n             if count <= max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n-            count -= 1;\n+            count += /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:17: replace * with + in civil_from_days",
+    "name": "core/src/store.rs:222:19: replace -= with += in Store::sweep",
     "package": "tapkey-core",
-    "replacement": "+",
+    "replacement": "+=",
     "span": {
       "end": {
-        "column": 18,
-        "line": 47
+        "column": 21,
+        "line": 222
       },
       "start": {
-        "column": 17,
-        "line": 47
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace * with / in civil_from_days\n@@ -39,13 +39,13 @@\n /// be unreachable code, and unreachable code that a mutation run flags is worse than absent.\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n-    let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n+    let mp = (5 / /* ~ changed by cargo-mutants ~ */ doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:47:17: replace * with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 18,
-        "line": 47
-      },
-      "start": {
-        "column": 17,
-        "line": 47
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp + 2) / 5 - /* ~ changed by cargo-mutants ~ */ 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:39: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
-    "span": {
-      "end": {
-        "column": 40,
-        "line": 48
-      },
-      "start": {
-        "column": 39,
-        "line": 48
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp + 2) / 5 * /* ~ changed by cargo-mutants ~ */ 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:39: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 40,
-        "line": 48
-      },
-      "start": {
-        "column": 39,
-        "line": 48
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy + /* ~ changed by cargo-mutants ~ */ (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:18: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
         "column": 19,
-        "line": 48
-      },
-      "start": {
-        "column": 18,
-        "line": 48
+        "line": 222
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy / /* ~ changed by cargo-mutants ~ */ (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace -= with /= in Store::sweep\n@@ -214,17 +214,17 @@\n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n             if count <= max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n-            count -= 1;\n+            count /= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::sweep",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 225
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 202
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:18: replace - with / in civil_from_days",
+    "name": "core/src/store.rs:222:19: replace -= with /= in Store::sweep",
     "package": "tapkey-core",
-    "replacement": "/",
+    "replacement": "/=",
     "span": {
       "end": {
+        "column": 21,
+        "line": 222
+      },
+      "start": {
         "column": 19,
-        "line": 48
-      },
-      "start": {
-        "column": 18,
-        "line": 48
+        "line": 222
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace / with % in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp + 2) % /* ~ changed by cargo-mutants ~ */ 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::snapshot_dir -> PathBuf with Default::default()\n@@ -220,17 +220,17 @@\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n-        self.root.join(\"snapshot\")\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::snapshot_dir",
+      "return_type": "-> PathBuf",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 229
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 227
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:35: replace / with % in civil_from_days",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:228:9: replace Store::snapshot_dir -> PathBuf with Default::default()",
     "package": "tapkey-core",
-    "replacement": "%",
+    "replacement": "Default::default()",
     "span": {
       "end": {
-        "column": 36,
-        "line": 48
-      },
-      "start": {
         "column": 35,
-        "line": 48
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace / with * in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp + 2) * /* ~ changed by cargo-mutants ~ */ 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:35: replace / with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 36,
-        "line": 48
+        "line": 228
       },
       "start": {
-        "column": 35,
-        "line": 48
+        "column": 9,
+        "line": 228
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp - /* ~ changed by cargo-mutants ~ */ 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace Store::backups_dir -> PathBuf with Default::default()\n@@ -224,17 +224,17 @@\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n-        self.root.join(\"backups\")\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n /// spanning the store.\n fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {\n     create_dir_closed(dir)?;\n     create_dir_closed(&dir.join(\"files\"))?;\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "Store::backups_dir",
+      "return_type": "-> PathBuf",
       "span": {
         "end": {
-          "column": 2,
-          "line": 51
+          "column": 6,
+          "line": 233
         },
         "start": {
-          "column": 1,
-          "line": 33
+          "column": 5,
+          "line": 231
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:30: replace + with - in civil_from_days",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:232:9: replace Store::backups_dir -> PathBuf with Default::default()",
     "package": "tapkey-core",
-    "replacement": "-",
+    "replacement": "Default::default()",
     "span": {
       "end": {
-        "column": 31,
-        "line": 48
+        "column": 34,
+        "line": 232
       },
       "start": {
-        "column": 30,
-        "line": 48
+        "column": 9,
+        "line": 232
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 * mp * /* ~ changed by cargo-mutants ~ */ 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace write_group -> io::Result<()> with Ok(())\n@@ -231,47 +231,17 @@\n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n /// spanning the store.\n fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {\n-    create_dir_closed(dir)?;\n-    create_dir_closed(&dir.join(\"files\"))?;\n-\n-    let mut entries = Vec::new();\n-    for (n, file) in files.iter().enumerate() {\n-        let stored = match &file.content {\n-            Some(bytes) => {\n-                let name = format!(\"{:02}\", n + 1);\n-                write_atomically(&dir.join(\"files\").join(&name), bytes, FILE_MODE)?;\n-                Some(name)\n-            }\n-            None => None,\n-        };\n-        entries.push(Entry {\n-            path: file.path.clone(),\n-            tool: file.tool.clone(),\n-            size: file.content.as_ref().map(|b| b.len() as u64).unwrap_or(0),\n-            mode: file.mode,\n-            stored,\n-        });\n-    }\n-\n-    let manifest = Manifest {\n-        version: MANIFEST_VERSION,\n-        instant: format_utc(at),\n-        profile: profile.to_string(),\n-        files: entries,\n-    };\n-    let bytes = serde_json::to_vec_pretty(&manifest)\n-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     if manifest.version > MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "write_group",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 270
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 236
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:30: replace + with * in civil_from_days",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:239:5: replace write_group -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
-    "replacement": "*",
+    "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 31,
-        "line": 48
+        "column": 68,
+        "line": 269
       },
       "start": {
-        "column": 30,
-        "line": 48
+        "column": 5,
+        "line": 239
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace * with + in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 + /* ~ changed by cargo-mutants ~ */ mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace read_manifest -> io::Result<Manifest> with Ok(Default::default())\n@@ -265,30 +265,17 @@\n         files: entries,\n     };\n     let bytes = serde_json::to_vec_pretty(&manifest)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n-    let bytes = fs::read(path)?;\n-    let manifest: Manifest = serde_json::from_slice(&bytes)\n-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n-        // A version from the future is kept and marked, never reinterpreted by guesswork.\n-        return Err(io::Error::new(\n-            io::ErrorKind::InvalidData,\n-            format!(\n-                \"manifest version {} is newer than this build reads\",\n-                manifest.version\n-            ),\n-        ));\n-    }\n-    Ok(manifest)\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n     fs::create_dir_all(path)?;\n     set_dir_mode(path)\n }\n \n #[cfg(unix)]\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "read_manifest",
+      "return_type": "-> io::Result<Manifest>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 287
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 272
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:25: replace * with + in civil_from_days",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:273:5: replace read_manifest -> io::Result<Manifest> with Ok(Default::default())",
     "package": "tapkey-core",
-    "replacement": "+",
+    "replacement": "Ok(Default::default())",
     "span": {
       "end": {
-        "column": 26,
-        "line": 48
+        "column": 17,
+        "line": 286
       },
       "start": {
-        "column": 25,
-        "line": 48
+        "column": 5,
+        "line": 273
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace * with / in civil_from_days\n@@ -40,12 +40,12 @@\n fn civil_from_days(days: u64) -> (i64, u32, u32) {\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n+    let d = (doy - (153 / /* ~ changed by cargo-mutants ~ */ mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace > with == in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version == /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "read_manifest",
+      "return_type": "-> io::Result<Manifest>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 287
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 272
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:48:25: replace * with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 26,
-        "line": 48
-      },
-      "start": {
-        "column": 25,
-        "line": 48
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace < with == in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp == /* ~ changed by cargo-mutants ~ */ 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:19: replace < with == in civil_from_days",
+    "name": "core/src/store.rs:276:25: replace > with == in read_manifest",
     "package": "tapkey-core",
     "replacement": "==",
     "span": {
       "end": {
-        "column": 20,
-        "line": 49
+        "column": 26,
+        "line": 276
       },
       "start": {
-        "column": 19,
-        "line": 49
+        "column": 25,
+        "line": 276
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace < with > in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp > /* ~ changed by cargo-mutants ~ */ 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace > with < in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version < /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "read_manifest",
+      "return_type": "-> io::Result<Manifest>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 287
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 272
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:19: replace < with > in civil_from_days",
+    "name": "core/src/store.rs:276:25: replace > with < in read_manifest",
     "package": "tapkey-core",
-    "replacement": ">",
+    "replacement": "<",
     "span": {
       "end": {
-        "column": 20,
-        "line": 49
+        "column": 26,
+        "line": 276
       },
       "start": {
-        "column": 19,
-        "line": 49
+        "column": 25,
+        "line": 276
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace < with <= in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp <= /* ~ changed by cargo-mutants ~ */ 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace > with >= in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version >= /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "read_manifest",
+      "return_type": "-> io::Result<Manifest>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 287
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 272
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:19: replace < with <= in civil_from_days",
+    "name": "core/src/store.rs:276:25: replace > with >= in read_manifest",
     "package": "tapkey-core",
-    "replacement": "<=",
+    "replacement": ">=",
     "span": {
       "end": {
-        "column": 20,
-        "line": 49
+        "column": 26,
+        "line": 276
       },
       "start": {
-        "column": 19,
-        "line": 49
+        "column": 25,
+        "line": 276
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp < 10 { mp - /* ~ changed by cargo-mutants ~ */ 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace create_dir_closed -> io::Result<()> with Ok(())\n@@ -282,18 +282,17 @@\n                 manifest.version\n             ),\n         ));\n     }\n     Ok(manifest)\n }\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n-    fs::create_dir_all(path)?;\n-    set_dir_mode(path)\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(unix)]\n fn set_dir_mode(path: &Path) -> io::Result<()> {\n     use std::os::unix::fs::PermissionsExt;\n     fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))\n }\n \n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "create_dir_closed",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 292
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 289
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:290:5: replace create_dir_closed -> io::Result<()> with Ok(())",
+    "package": "tapkey-core",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 23,
+        "line": 291
+      },
+      "start": {
+        "column": 5,
+        "line": 290
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace set_dir_mode -> io::Result<()> with Ok(())\n@@ -288,18 +288,17 @@\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n     fs::create_dir_all(path)?;\n     set_dir_mode(path)\n }\n \n #[cfg(unix)]\n fn set_dir_mode(path: &Path) -> io::Result<()> {\n-    use std::os::unix::fs::PermissionsExt;\n-    fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "set_dir_mode",
+      "return_type": "-> io::Result<()>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 298
+        },
+        "start": {
+          "column": 1,
+          "line": 294
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:296:5: replace set_dir_mode -> io::Result<()> with Ok(())",
+    "package": "tapkey-core",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 68,
+        "line": 297
+      },
+      "start": {
+        "column": 5,
+        "line": 296
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace directory_size -> io::Result<u64> with Ok(0)\n@@ -299,26 +299,16 @@\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n-    let mut total = 0;\n-    for entry in fs::read_dir(dir)? {\n-        let entry = entry?;\n-        let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n-            directory_size(&entry.path())?\n-        } else {\n-            meta.len()\n-        };\n-    }\n-    Ok(total)\n+    Ok(0) /* ~ changed by cargo-mutants ~ */\n }\n \n fn file_name(path: &Path) -> String {\n     path.file_name()\n         .map(|n| n.to_string_lossy().into_owned())\n         .unwrap_or_default()\n }\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "directory_size",
+      "return_type": "-> io::Result<u64>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 318
+        },
+        "start": {
+          "column": 1,
+          "line": 306
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(0)",
+    "package": "tapkey-core",
+    "replacement": "Ok(0)",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 317
+      },
+      "start": {
+        "column": 5,
+        "line": 307
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace directory_size -> io::Result<u64> with Ok(1)\n@@ -299,26 +299,16 @@\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n-    let mut total = 0;\n-    for entry in fs::read_dir(dir)? {\n-        let entry = entry?;\n-        let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n-            directory_size(&entry.path())?\n-        } else {\n-            meta.len()\n-        };\n-    }\n-    Ok(total)\n+    Ok(1) /* ~ changed by cargo-mutants ~ */\n }\n \n fn file_name(path: &Path) -> String {\n     path.file_name()\n         .map(|n| n.to_string_lossy().into_owned())\n         .unwrap_or_default()\n }\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "directory_size",
+      "return_type": "-> io::Result<u64>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 318
+        },
+        "start": {
+          "column": 1,
+          "line": 306
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(1)",
+    "package": "tapkey-core",
+    "replacement": "Ok(1)",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 317
+      },
+      "start": {
+        "column": 5,
+        "line": 307
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace += with -= in directory_size\n@@ -303,17 +303,17 @@\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n     let mut total = 0;\n     for entry in fs::read_dir(dir)? {\n         let entry = entry?;\n         let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n+        total -= /* ~ changed by cargo-mutants ~ */ if meta.is_dir() {\n             directory_size(&entry.path())?\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "directory_size",
+      "return_type": "-> io::Result<u64>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 318
+        },
+        "start": {
+          "column": 1,
+          "line": 306
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:29: replace + with - in civil_from_days",
+    "name": "core/src/store.rs:311:15: replace += with -= in directory_size",
     "package": "tapkey-core",
-    "replacement": "-",
+    "replacement": "-=",
     "span": {
       "end": {
-        "column": 30,
-        "line": 49
+        "column": 17,
+        "line": 311
       },
       "start": {
+        "column": 15,
+        "line": 311
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace += with *= in directory_size\n@@ -303,17 +303,17 @@\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n     let mut total = 0;\n     for entry in fs::read_dir(dir)? {\n         let entry = entry?;\n         let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n+        total *= /* ~ changed by cargo-mutants ~ */ if meta.is_dir() {\n             directory_size(&entry.path())?\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "directory_size",
+      "return_type": "-> io::Result<u64>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 318
+        },
+        "start": {
+          "column": 1,
+          "line": 306
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/store.rs:311:15: replace += with *= in directory_size",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 17,
+        "line": 311
+      },
+      "start": {
+        "column": 15,
+        "line": 311
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/store.rs\n+++ replace file_name -> String with String::new()\n@@ -313,12 +313,10 @@\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n fn file_name(path: &Path) -> String {\n-    path.file_name()\n-        .map(|n| n.to_string_lossy().into_owned())\n-        .unwrap_or_default()\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "core/src/store.rs",
+    "function": {
+      "function_name": "file_name",
+      "return_type": "-> String",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 324
+        },
+        "start": {
+          "column": 1,
+          "line": 320
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/store.rs:321:5: replace file_name -> String with String::new()",
+    "package": "tapkey-core",
+    "replacement": "String::new()",
+    "span": {
+      "end": {
         "column": 29,
-        "line": 49
+        "line": 323
+      },
+      "start": {
+        "column": 5,
+        "line": 321
       }
     }
   },
   {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp < 10 { mp * /* ~ changed by cargo-mutants ~ */ 3 } else { mp - 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
+    "diff": "--- core/src/store.rs\n+++ replace file_name -> String with \"xyzzy\".into()\n@@ -313,12 +313,10 @@\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n fn file_name(path: &Path) -> String {\n-    path.file_name()\n-        .map(|n| n.to_string_lossy().into_owned())\n-        .unwrap_or_default()\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n",
+    "file": "core/src/store.rs",
     "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
+      "function_name": "file_name",
+      "return_type": "-> String",
       "span": {
         "end": {
           "column": 2,
-          "line": 51
+          "line": 324
         },
         "start": {
           "column": 1,
-          "line": 33
+          "line": 320
         }
       }
     },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:29: replace + with * in civil_from_days",
+    "genre": "FnValue",
+    "name": "core/src/store.rs:321:5: replace file_name -> String with \"xyzzy\".into()",
     "package": "tapkey-core",
-    "replacement": "*",
+    "replacement": "\"xyzzy\".into()",
     "span": {
       "end": {
-        "column": 30,
-        "line": 49
-      },
-      "start": {
         "column": 29,
-        "line": 49
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with + in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp < 10 { mp + 3 } else { mp + /* ~ changed by cargo-mutants ~ */ 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:45: replace - with + in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "+",
-    "span": {
-      "end": {
-        "column": 46,
-        "line": 49
+        "line": 323
       },
       "start": {
-        "column": 45,
-        "line": 49
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace - with / in civil_from_days\n@@ -41,11 +41,11 @@\n     let z = days + 719_468;\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n+    let m = if mp < 10 { mp + 3 } else { mp / /* ~ changed by cargo-mutants ~ */ 9 } as u32; // [1, 12]\n     (if m <= 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:49:45: replace - with / in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "/",
-    "span": {
-      "end": {
-        "column": 46,
-        "line": 49
-      },
-      "start": {
-        "column": 45,
-        "line": 49
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace <= with > in civil_from_days\n@@ -42,10 +42,10 @@\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (if m > /* ~ changed by cargo-mutants ~ */ 2 { y + 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:50:11: replace <= with > in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": ">",
-    "span": {
-      "end": {
-        "column": 13,
-        "line": 50
-      },
-      "start": {
-        "column": 11,
-        "line": 50
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with - in civil_from_days\n@@ -42,10 +42,10 @@\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (if m <= 2 { y - /* ~ changed by cargo-mutants ~ */ 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:50:20: replace + with - in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "-",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 50
-      },
-      "start": {
-        "column": 20,
-        "line": 50
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/instant.rs\n+++ replace + with * in civil_from_days\n@@ -42,10 +42,10 @@\n     let era = z / 146_097;\n     let doe = z - era * 146_097; // [0, 146096]\n     let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365; // [0, 399]\n     let y = yoe as i64 + era as i64 * 400;\n     let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]\n     let mp = (5 * doy + 2) / 153; // [0, 11], March-based\n     let d = (doy - (153 * mp + 2) / 5 + 1) as u32; // [1, 31]\n     let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32; // [1, 12]\n-    (if m <= 2 { y + 1 } else { y }, m, d)\n+    (if m <= 2 { y * /* ~ changed by cargo-mutants ~ */ 1 } else { y }, m, d)\n }\n",
-    "file": "core/src/instant.rs",
-    "function": {
-      "function_name": "civil_from_days",
-      "return_type": "-> (i64, u32, u32)",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 51
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/instant.rs:50:20: replace + with * in civil_from_days",
-    "package": "tapkey-core",
-    "replacement": "*",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 50
-      },
-      "start": {
-        "column": 20,
-        "line": 50
+        "column": 5,
+        "line": 321
       }
     }
   }

@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ delete ! in Store::backups
+@@ -141,17 +141,17 @@
+     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.
+     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {
+         let mut out = Vec::new();
+         let Ok(entries) = fs::read_dir(self.backups_dir()) else {
+             return Ok(out);
+         };
+         for entry in entries {
+             let path = entry?.path();
+-            if !path.is_dir() {
++            if  /* ~ changed by cargo-mutants ~ */path.is_dir() {
+                 continue;
+             }
+             let manifest_path = path.join("manifest.json");
+             if !manifest_path.exists() {
+                 // No manifest means the write never committed. Ours, not theirs.
+                 fs::remove_dir_all(&path)?;
+                 continue;
+             }

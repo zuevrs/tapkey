@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ delete ! in Store::backups
+@@ -145,17 +145,17 @@
+             return Ok(out);
+         };
+         for entry in entries {
+             let path = entry?.path();
+             if !path.is_dir() {
+                 continue;
+             }
+             let manifest_path = path.join("manifest.json");
+-            if !manifest_path.exists() {
++            if  /* ~ changed by cargo-mutants ~ */manifest_path.exists() {
+                 // No manifest means the write never committed. Ours, not theirs.
+                 fs::remove_dir_all(&path)?;
+                 continue;
+             }
+             let id = BackupId(file_name(&path));
+             out.push(match read_manifest(&manifest_path) {
+                 Ok(m) => BackupSummary {
+                     profile: m.profile,

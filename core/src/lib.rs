@@ -13,6 +13,7 @@ pub mod atomic;
 pub mod env;
 pub mod instant;
 pub mod json;
+pub mod store;
 pub mod wire;
 
 use env::Env;

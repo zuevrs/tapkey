@@ -1,0 +1,22 @@
+--- core/src/store.rs
++++ replace create_dir_closed -> io::Result<()> with Ok(())
+@@ -282,18 +282,17 @@
+                 manifest.version
+             ),
+         ));
+     }
+     Ok(manifest)
+ }
+ 
+ fn create_dir_closed(path: &Path) -> io::Result<()> {
+-    fs::create_dir_all(path)?;
+-    set_dir_mode(path)
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(unix)]
+ fn set_dir_mode(path: &Path) -> io::Result<()> {
+     use std::os::unix::fs::PermissionsExt;
+     fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))
+ }
+ 

@@ -1,0 +1,22 @@
+--- core/src/store.rs
++++ replace set_dir_mode -> io::Result<()> with Ok(())
+@@ -288,18 +288,17 @@
+ 
+ fn create_dir_closed(path: &Path) -> io::Result<()> {
+     fs::create_dir_all(path)?;
+     set_dir_mode(path)
+ }
+ 
+ #[cfg(unix)]
+ fn set_dir_mode(path: &Path) -> io::Result<()> {
+-    use std::os::unix::fs::PermissionsExt;
+-    fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(not(unix))]
+ fn set_dir_mode(_path: &Path) -> io::Result<()> {
+     // Windows has no equivalent; revisited with the Windows platform seam.
+     Ok(())
+ }
+ 

@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace Store::backups_dir -> PathBuf with Default::default()
+@@ -224,17 +224,17 @@
+         Ok(())
+     }
+ 
+     fn snapshot_dir(&self) -> PathBuf {
+         self.root.join("snapshot")
+     }
+ 
+     fn backups_dir(&self) -> PathBuf {
+-        self.root.join("backups")
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction
+ /// spanning the store.
+ fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {
+     create_dir_closed(dir)?;
+     create_dir_closed(&dir.join("files"))?;

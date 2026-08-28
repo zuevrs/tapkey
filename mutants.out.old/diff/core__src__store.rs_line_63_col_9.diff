@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace <impl From<&str> for BackupId>::from -> Self with Default::default()
+@@ -55,17 +55,17 @@
+ impl BackupId {
+     pub fn as_str(&self) -> &str {
+         &self.0
+     }
+ }
+ 
+ impl From<&str> for BackupId {
+     fn from(s: &str) -> Self {
+-        BackupId(s.to_string())
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ #[derive(Debug)]
+ pub struct BackupSummary {
+     pub id: BackupId,
+     pub profile: String,
+     pub instant: String,

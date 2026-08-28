@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace Store::has_snapshot -> bool with false
+@@ -111,17 +111,17 @@
+         create_dir_closed(root)?;
+         create_dir_closed(&root.join("backups"))?;
+         Ok(Store {
+             root: root.to_path_buf(),
+         })
+     }
+ 
+     pub fn has_snapshot(&self) -> bool {
+-        self.snapshot_dir().join("manifest.json").exists()
++        false /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Record the configs as they were before tapkey first changed anything.
+     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {
+         let dir = self.snapshot_dir();
+         write_group(&dir, files, at, "")?;
+         Ok(())
+     }

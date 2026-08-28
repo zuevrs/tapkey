@@ -1,0 +1,51 @@
+--- core/src/store.rs
++++ replace write_group -> io::Result<()> with Ok(())
+@@ -231,47 +231,17 @@
+     fn backups_dir(&self) -> PathBuf {
+         self.root.join("backups")
+     }
+ }
+ 
+ /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction
+ /// spanning the store.
+ fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {
+-    create_dir_closed(dir)?;
+-    create_dir_closed(&dir.join("files"))?;
+-
+-    let mut entries = Vec::new();
+-    for (n, file) in files.iter().enumerate() {
+-        let stored = match &file.content {
+-            Some(bytes) => {
+-                let name = format!("{:02}", n + 1);
+-                write_atomically(&dir.join("files").join(&name), bytes, FILE_MODE)?;
+-                Some(name)
+-            }
+-            None => None,
+-        };
+-        entries.push(Entry {
+-            path: file.path.clone(),
+-            tool: file.tool.clone(),
+-            size: file.content.as_ref().map(|b| b.len() as u64).unwrap_or(0),
+-            mode: file.mode,
+-            stored,
+-        });
+-    }
+-
+-    let manifest = Manifest {
+-        version: MANIFEST_VERSION,
+-        instant: format_utc(at),
+-        profile: profile.to_string(),
+-        files: entries,
+-    };
+-    let bytes = serde_json::to_vec_pretty(&manifest)
+-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+-    write_atomically(&dir.join("manifest.json"), &bytes, FILE_MODE)
++    Ok(()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn read_manifest(path: &Path) -> io::Result<Manifest> {
+     let bytes = fs::read(path)?;
+     let manifest: Manifest = serde_json::from_slice(&bytes)
+         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+     if manifest.version > MANIFEST_VERSION {
+         // A version from the future is kept and marked, never reinterpreted by guesswork.

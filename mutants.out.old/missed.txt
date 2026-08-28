@@ -1,1 +1,2 @@
-core/src/instant.rs:44:33: replace + with - in civil_from_days
+core/src/store.rs:119:9: replace Store::has_snapshot -> bool with true
+core/src/store.rs:276:25: replace > with < in read_manifest

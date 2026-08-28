@@ -1,0 +1,21 @@
+--- core/src/store.rs
++++ replace Store::snapshot_dir -> PathBuf with Default::default()
+@@ -220,17 +220,17 @@
+             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;
+             total = total.saturating_sub(size);
+             count -= 1;
+         }
+         Ok(())
+     }
+ 
+     fn snapshot_dir(&self) -> PathBuf {
+-        self.root.join("snapshot")
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn backups_dir(&self) -> PathBuf {
+         self.root.join("backups")
+     }
+ }
+ 
+ /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction
