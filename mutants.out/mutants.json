@@ -1,1089 +1,321 @@
 [
   {
-    "diff": "--- core/src/lib.rs\n+++ replace handle -> String with String::new()\n@@ -22,17 +22,17 @@\n use env::Env;\n use wire::{Envelope, Failure, Request, Response};\n \n /// The schema version carried by every request and response.\n pub const SCHEMA_VERSION: u32 = 1;\n \n /// The one entry point: a JSON request in, a JSON response out.\n pub fn handle(request: &str) -> String {\n-    handle_with(&Env::real(), request)\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n     let response = dispatch(env, request);\n",
-    "file": "core/src/lib.rs",
+    "diff": "--- core/src/fingerprint.rs\n+++ replace hash -> String with String::new()\n@@ -10,22 +10,17 @@\n use std::io;\n use std::path::Path;\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n-    let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n-    for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n-        h = h.wrapping_mul(0x0000_0100_0000_01b3);\n-    }\n-    format!(\"fnv1a64:{h:016x}\")\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n     pub version: u32,\n     #[serde(default)]\n     pub profile: String,\n",
+    "file": "core/src/fingerprint.rs",
     "function": {
-      "function_name": "handle",
+      "function_name": "hash",
       "return_type": "-> String",
       "span": {
         "end": {
           "column": 2,
-          "line": 31
+          "line": 24
         },
         "start": {
           "column": 1,
-          "line": 28
+          "line": 13
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/lib.rs:30:5: replace handle -> String with String::new()",
+    "name": "core/src/fingerprint.rs:18:5: replace hash -> String with String::new()",
     "package": "tapkey-core",
     "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 30
-      },
-      "start": {
-        "column": 5,
-        "line": 30
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle -> String with \"xyzzy\".into()\n@@ -22,17 +22,17 @@\n use env::Env;\n use wire::{Envelope, Failure, Request, Response};\n \n /// The schema version carried by every request and response.\n pub const SCHEMA_VERSION: u32 = 1;\n \n /// The one entry point: a JSON request in, a JSON response out.\n pub fn handle(request: &str) -> String {\n-    handle_with(&Env::real(), request)\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n     let response = dispatch(env, request);\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 31
-        },
-        "start": {
-          "column": 1,
-          "line": 28
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:30:5: replace handle -> String with \"xyzzy\".into()",
-    "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 30
-      },
-      "start": {
-        "column": 5,
-        "line": 30
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle_with -> String with String::new()\n@@ -30,25 +30,17 @@\n     handle_with(&Env::real(), request)\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n-    let response = dispatch(env, request);\n-    serde_json::to_string(&response).unwrap_or_else(|e| {\n-        // Serialising our own response cannot fail on well-formed data, but a panic here would\n-        // take the host application down, so it degrades to a refusal instead.\n-        format!(\n-            r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n-            e.to_string()\n-        )\n-    })\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n     if envelope.version != SCHEMA_VERSION {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle_with",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 47
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:38:5: replace handle_with -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 7,
-        "line": 46
-      },
-      "start": {
-        "column": 5,
-        "line": 38
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle_with -> String with \"xyzzy\".into()\n@@ -30,25 +30,17 @@\n     handle_with(&Env::real(), request)\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n-    let response = dispatch(env, request);\n-    serde_json::to_string(&response).unwrap_or_else(|e| {\n-        // Serialising our own response cannot fail on well-formed data, but a panic here would\n-        // take the host application down, so it degrades to a refusal instead.\n-        format!(\n-            r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n-            e.to_string()\n-        )\n-    })\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n     if envelope.version != SCHEMA_VERSION {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle_with",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 47
-        },
-        "start": {
-          "column": 1,
-          "line": 33
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:38:5: replace handle_with -> String with \"xyzzy\".into()",
-    "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
-    "span": {
-      "end": {
-        "column": 7,
-        "line": 46
-      },
-      "start": {
-        "column": 5,
-        "line": 38
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace dispatch -> Response with Default::default()\n@@ -42,37 +42,17 @@\n         format!(\n             r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n             e.to_string()\n         )\n     })\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n-    let envelope: Envelope = match serde_json::from_str(request) {\n-        Ok(e) => e,\n-        Err(e) => return refuse(\"malformed_request\", e.to_string()),\n-    };\n-    if envelope.version != SCHEMA_VERSION {\n-        return refuse(\n-            \"unknown_version\",\n-            format!(\"this core speaks version {SCHEMA_VERSION}\"),\n-        );\n-    }\n-    match envelope.request {\n-        Request::EffectiveState {} => match adapters::claude::effective_state(env) {\n-            Ok(tool) => Response::Ok {\n-                ok: true,\n-                outcome: None,\n-                tools: vec![tool],\n-            },\n-            Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n-        },\n-        Request::Switch { profile_id } => switch(env, &profile_id),\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n /// Apply a profile to every tool it covers, all or nothing.\n fn switch(env: &Env, profile_id: &str) -> Response {\n     let profiles = match profile::Profiles::read(&env.store().join(\"profiles.json\")) {\n         Ok(p) => p,\n         Err(e) => return refuse(\"unknown_profile\", e),\n     };\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "dispatch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 71
-        },
-        "start": {
-          "column": 1,
-          "line": 49
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:50:5: replace dispatch -> Response with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 70
-      },
-      "start": {
-        "column": 5,
-        "line": 50
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace != with == in dispatch\n@@ -46,17 +46,17 @@\n     })\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n-    if envelope.version != SCHEMA_VERSION {\n+    if envelope.version == /* ~ changed by cargo-mutants ~ */ SCHEMA_VERSION {\n         return refuse(\n             \"unknown_version\",\n             format!(\"this core speaks version {SCHEMA_VERSION}\"),\n         );\n     }\n     match envelope.request {\n         Request::EffectiveState {} => match adapters::claude::effective_state(env) {\n             Ok(tool) => Response::Ok {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "dispatch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 71
-        },
-        "start": {
-          "column": 1,
-          "line": 49
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/lib.rs:54:25: replace != with == in dispatch",
-    "package": "tapkey-core",
-    "replacement": "==",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 54
-      },
-      "start": {
-        "column": 25,
-        "line": 54
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace switch -> Response with Default::default()\n@@ -67,92 +67,17 @@\n             Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n         },\n         Request::Switch { profile_id } => switch(env, &profile_id),\n     }\n }\n \n /// Apply a profile to every tool it covers, all or nothing.\n fn switch(env: &Env, profile_id: &str) -> Response {\n-    let profiles = match profile::Profiles::read(&env.store().join(\"profiles.json\")) {\n-        Ok(p) => p,\n-        Err(e) => return refuse(\"unknown_profile\", e),\n-    };\n-    let Some(profile) = profiles.find(profile_id) else {\n-        return refuse(\n-            \"unknown_profile\",\n-            format!(\"no profile named {profile_id:?}\"),\n-        );\n-    };\n-    let Some(assignment) = profile.tools.get(\"claude\") else {\n-        return refuse(\n-            \"unknown_profile\",\n-            \"the profile covers no managed tool\".into(),\n-        );\n-    };\n-\n-    // Planned before anything is staged, so a file we cannot parse is a refusal rather than a\n-    // rollback: nothing was touched.\n-    let actions = match adapters::claude::plan_switch(env, assignment) {\n-        Ok(a) => a,\n-        Err(e) => return refuse(\"unparsable\", format!(\"{e:?}\")),\n-    };\n-\n-    let store = match store::Store::open(env.store()) {\n-        Ok(s) => s,\n-        Err(e) => return refuse(\"permission_denied\", e.to_string()),\n-    };\n-    let transaction = transaction::Transaction::new(actions);\n-    let mut disk = fs::RealFs;\n-    let captured = match transaction.capture(&disk, \"claude\") {\n-        Ok(c) => c,\n-        Err(e) => return refuse(\"permission_denied\", e.to_string()),\n-    };\n-\n-    // The floor under every restore goes down before the first change, over every managed\n-    // file rather than only the touched ones: full restoration is its job.\n-    if !store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {\n-        return refuse(\n-            \"permission_denied\",\n-            \"could not record the first-run snapshot\".into(),\n-        );\n-    }\n-    if store\n-        .take_backup(&captured, &profile.name, env.now())\n-        .is_err()\n-    {\n-        return refuse(\"permission_denied\", \"could not record a backup\".into());\n-    }\n-\n-    if let Err(rolled_back) = transaction.apply(&mut disk) {\n-        return Response::Failed {\n-            ok: false,\n-            outcome: \"rolled back\",\n-            failure: Failure {\n-                kind: \"write_failed\",\n-                detail: format!(\n-                    \"{}: {} — {} file(s) restored\",\n-                    rolled_back.failed_at.display(),\n-                    rolled_back.reason,\n-                    rolled_back.restored\n-                ),\n-            },\n-        };\n-    }\n-\n-    // Read back rather than reporting what was written: the invariant forbids reporting intent,\n-    // and reading back is the only way a project config or a shell export that beat us shows up.\n-    match adapters::claude::effective_state(env) {\n-        Ok(tool) => Response::Ok {\n-            ok: true,\n-            outcome: Some(\"applied\"),\n-            tools: vec![tool],\n-        },\n-        Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn refuse(kind: &'static str, detail: String) -> Response {\n     Response::Refused {\n         ok: false,\n         failure: Failure { kind, detail },\n     }\n }\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "switch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 151
-        },
-        "start": {
-          "column": 1,
-          "line": 73
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:75:5: replace switch -> Response with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 150
-      },
-      "start": {
-        "column": 5,
-        "line": 75
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace && with || in switch\n@@ -104,17 +104,17 @@\n     let mut disk = fs::RealFs;\n     let captured = match transaction.capture(&disk, \"claude\") {\n         Ok(c) => c,\n         Err(e) => return refuse(\"permission_denied\", e.to_string()),\n     };\n \n     // The floor under every restore goes down before the first change, over every managed\n     // file rather than only the touched ones: full restoration is its job.\n-    if !store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {\n+    if !store.has_snapshot() || /* ~ changed by cargo-mutants ~ */ store.take_snapshot(&captured, env.now()).is_err() {\n         return refuse(\n             \"permission_denied\",\n             \"could not record the first-run snapshot\".into(),\n         );\n     }\n     if store\n         .take_backup(&captured, &profile.name, env.now())\n         .is_err()\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "switch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 151
-        },
-        "start": {
-          "column": 1,
-          "line": 73
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/lib.rs:112:30: replace && with || in switch",
-    "package": "tapkey-core",
-    "replacement": "||",
     "span": {
       "end": {
         "column": 32,
-        "line": 112
-      },
-      "start": {
-        "column": 30,
-        "line": 112
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ delete ! in switch\n@@ -104,17 +104,17 @@\n     let mut disk = fs::RealFs;\n     let captured = match transaction.capture(&disk, \"claude\") {\n         Ok(c) => c,\n         Err(e) => return refuse(\"permission_denied\", e.to_string()),\n     };\n \n     // The floor under every restore goes down before the first change, over every managed\n     // file rather than only the touched ones: full restoration is its job.\n-    if !store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {\n+    if  /* ~ changed by cargo-mutants ~ */store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {\n         return refuse(\n             \"permission_denied\",\n             \"could not record the first-run snapshot\".into(),\n         );\n     }\n     if store\n         .take_backup(&captured, &profile.name, env.now())\n         .is_err()\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "switch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 151
-        },
-        "start": {
-          "column": 1,
-          "line": 73
-        }
-      }
-    },
-    "genre": "UnaryOperator",
-    "name": "core/src/lib.rs:112:8: delete ! in switch",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 9,
-        "line": 112
-      },
-      "start": {
-        "column": 8,
-        "line": 112
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace refuse -> Response with Default::default()\n@@ -146,20 +146,17 @@\n             outcome: Some(\"applied\"),\n             tools: vec![tool],\n         },\n         Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n     }\n }\n \n fn refuse(kind: &'static str, detail: String) -> Response {\n-    Response::Refused {\n-        ok: false,\n-        failure: Failure { kind, detail },\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     /// The public wrapper is what three consumers actually call, so it needs a test of its\n     /// own — and one that refuses before touching the filesystem, or it would read whatever\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "refuse",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 158
-        },
-        "start": {
-          "column": 1,
-          "line": 153
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:154:5: replace refuse -> Response with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 157
+        "line": 23
       },
       "start": {
         "column": 5,
-        "line": 154
+        "line": 18
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())\n@@ -112,33 +112,17 @@\n ];\n \n pub const ENDPOINT_VAR: &str = \"ANTHROPIC_BASE_URL\";\n \n const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var(ENDPOINT_VAR)];\n \n /// Read what Claude Code will actually use, resolved across the scopes it consults.\n pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {\n-    let files = read_all(env)?;\n-\n-    let endpoint = resolve(env, &files, ENDPOINT);\n-    let slots = SLOTS\n-        .iter()\n-        .map(|spec| SlotState {\n-            slot: spec.name,\n-            owned: spec.owned,\n-            resolved: resolve(env, &files, spec.sources),\n-        })\n-        .collect();\n-\n-    Ok(ToolState {\n-        tool: \"claude\",\n-        endpoint,\n-        slots,\n-    })\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Every settings file that exists, in precedence order, parsed once.\n struct Files(Vec<(&'static str, PathBuf, Document)>);\n \n fn read_all(env: &Env) -> Result<Files, crate::json::Error> {\n     let mut out = Vec::new();\n     for scope in FILES {\n",
-    "file": "core/src/adapters/claude.rs",
+    "diff": "--- core/src/fingerprint.rs\n+++ replace hash -> String with \"xyzzy\".into()\n@@ -10,22 +10,17 @@\n use std::io;\n use std::path::Path;\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n-    let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n-    for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n-        h = h.wrapping_mul(0x0000_0100_0000_01b3);\n-    }\n-    format!(\"fnv1a64:{h:016x}\")\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n     pub version: u32,\n     #[serde(default)]\n     pub profile: String,\n",
+    "file": "core/src/fingerprint.rs",
     "function": {
-      "function_name": "effective_state",
-      "return_type": "-> Result<ToolState, crate::json::Error>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 137
-        },
-        "start": {
-          "column": 1,
-          "line": 118
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:120:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
-    "package": "tapkey-core",
-    "replacement": "Ok(Default::default())",
-    "span": {
-      "end": {
-        "column": 7,
-        "line": 136
-      },
-      "start": {
-        "column": 5,
-        "line": 120
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())\n@@ -135,28 +135,17 @@\n         slots,\n     })\n }\n \n /// Every settings file that exists, in precedence order, parsed once.\n struct Files(Vec<(&'static str, PathBuf, Document)>);\n \n fn read_all(env: &Env) -> Result<Files, crate::json::Error> {\n-    let mut out = Vec::new();\n-    for scope in FILES {\n-        let Some(path) = scope_path(env, scope) else {\n-            continue;\n-        };\n-        // A file that is not there is not an error: installing Claude Code creates none.\n-        let Ok(bytes) = std::fs::read(&path) else {\n-            continue;\n-        };\n-        out.push((scope, path, Document::parse(&bytes)?));\n-    }\n-    Ok(Files(out))\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {\n     let mut chain = Vec::new();\n     for source in sources {\n         match *source {\n             Source::Unseen { scope, why } => chain.push(unseen(scope, why, \"\")),\n             Source::Key(path) => {\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "read_all",
-      "return_type": "-> Result<Files, crate::json::Error>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 155
-        },
-        "start": {
-          "column": 1,
-          "line": 142
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:143:5: replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())",
-    "package": "tapkey-core",
-    "replacement": "Ok(Default::default())",
-    "span": {
-      "end": {
-        "column": 19,
-        "line": 154
-      },
-      "start": {
-        "column": 5,
-        "line": 143
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace resolve -> Resolved with Default::default()\n@@ -150,67 +150,17 @@\n             continue;\n         };\n         out.push((scope, path, Document::parse(&bytes)?));\n     }\n     Ok(Files(out))\n }\n \n fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {\n-    let mut chain = Vec::new();\n-    for source in sources {\n-        match *source {\n-            Source::Unseen { scope, why } => chain.push(unseen(scope, why, \"\")),\n-            Source::Key(path) => {\n-                for (scope, file, doc) in &files.0 {\n-                    chain.push(Link {\n-                        source: display_path(file, env),\n-                        scope,\n-                        key: path.join(\".\"),\n-                        value: doc.get_string(path).map(str::to_owned),\n-                        observable: true,\n-                        wins: false,\n-                    });\n-                }\n-            }\n-            Source::Var(name) => {\n-                for (scope, file, doc) in &files.0 {\n-                    chain.push(Link {\n-                        source: display_path(file, env),\n-                        scope,\n-                        key: name.to_string(),\n-                        value: doc.get_string(&[\"env\", name]).map(str::to_owned),\n-                        observable: true,\n-                        wins: false,\n-                    });\n-                }\n-                chain.push(Link {\n-                    source: \"login shell\".to_string(),\n-                    scope: \"shell\",\n-                    key: name.to_string(),\n-                    // A withheld credential and an unset variable both read as no value. The\n-                    // difference is a credential concern, reported as an attention rather than\n-                    // by pretending to know a value we deliberately did not read.\n-                    value: match env.shell_var(name) {\n-                        Some(ShellVar::Value(v)) => Some(v.clone()),\n-                        Some(ShellVar::SetButWithheld) | None => None,\n-                    },\n-                    observable: true,\n-                    wins: false,\n-                });\n-            }\n-        }\n-    }\n-    chain.push(unseen_from(CLOUD));\n-\n-    settle(&mut chain);\n-    Resolved {\n-        effective: winning_value(&chain),\n-        chain,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn unseen(scope: &'static str, why: &str, key: &str) -> Link {\n     Link {\n         source: why.to_string(),\n         scope,\n         key: key.to_string(),\n         value: None,\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "resolve",
-      "return_type": "-> Resolved",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 209
-        },
-        "start": {
-          "column": 1,
-          "line": 157
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:158:5: replace resolve -> Resolved with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 208
-      },
-      "start": {
-        "column": 5,
-        "line": 158
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace unseen -> Link with Default::default()\n@@ -204,24 +204,17 @@\n     settle(&mut chain);\n     Resolved {\n         effective: winning_value(&chain),\n         chain,\n     }\n }\n \n fn unseen(scope: &'static str, why: &str, key: &str) -> Link {\n-    Link {\n-        source: why.to_string(),\n-        scope,\n-        key: key.to_string(),\n-        value: None,\n-        observable: false,\n-        wins: false,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "unseen",
-      "return_type": "-> Link",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 220
-        },
-        "start": {
-          "column": 1,
-          "line": 211
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:212:5: replace unseen -> Link with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 219
-      },
-      "start": {
-        "column": 5,
-        "line": 212
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace unseen_from -> Link with Default::default()\n@@ -215,20 +215,17 @@\n         key: key.to_string(),\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn unseen_from(source: Source) -> Link {\n-    match source {\n-        Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n-        _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "unseen_from",
-      "return_type": "-> Link",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 227
-        },
-        "start": {
-          "column": 1,
-          "line": 222
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:223:5: replace unseen_from -> Link with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 226
-      },
-      "start": {
-        "column": 5,
-        "line": 223
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm Source::Unseen{scope, why} in unseen_from\n@@ -216,17 +216,17 @@\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn unseen_from(source: Source) -> Link {\n     match source {\n-        Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n+         /* ~ changed by cargo-mutants ~ */\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "unseen_from",
-      "return_type": "-> Link",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 227
-        },
-        "start": {
-          "column": 1,
-          "line": 222
-        }
-      }
-    },
-    "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:224:9: delete match arm Source::Unseen{scope, why} in unseen_from",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 65,
-        "line": 224
-      },
-      "start": {
-        "column": 9,
-        "line": 224
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with None\n@@ -222,23 +222,17 @@\n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with None",
-    "package": "tapkey-core",
-    "replacement": "None",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 236
-      },
-      "start": {
-        "column": 5,
-        "line": 230
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with Some(Default::default())\n@@ -222,23 +222,17 @@\n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
-    "package": "tapkey-core",
-    "replacement": "Some(Default::default())",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 236
-      },
-      "start": {
-        "column": 5,
-        "line": 230
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"managed\" in scope_path\n@@ -223,17 +223,17 @@\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:231:9: delete match arm \"managed\" in scope_path",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 56,
-        "line": 231
-      },
-      "start": {
-        "column": 9,
-        "line": 231
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project local\" in scope_path\n@@ -224,17 +224,17 @@\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:232:9: delete match arm \"project local\" in scope_path",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 93,
-        "line": 232
-      },
-      "start": {
-        "column": 9,
-        "line": 232
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project\" in scope_path\n@@ -225,17 +225,17 @@\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:233:9: delete match arm \"project\" in scope_path",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 81,
-        "line": 233
-      },
-      "start": {
-        "column": 9,
-        "line": 233
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"user\" in scope_path\n@@ -226,17 +226,17 @@\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "scope_path",
-      "return_type": "-> Option<PathBuf>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 237
-        },
-        "start": {
-          "column": 1,
-          "line": 229
-        }
-      }
-    },
-    "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:234:9: delete match arm \"user\" in scope_path",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 74,
-        "line": 234
-      },
-      "start": {
-        "column": 9,
-        "line": 234
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with String::new()\n@@ -233,20 +233,17 @@\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "display_path",
+      "function_name": "hash",
       "return_type": "-> String",
       "span": {
         "end": {
           "column": 2,
-          "line": 245
+          "line": 24
         },
         "start": {
           "column": 1,
-          "line": 239
+          "line": 13
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:241:5: replace display_path -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 244
-      },
-      "start": {
-        "column": 5,
-        "line": 241
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with \"xyzzy\".into()\n@@ -233,20 +233,17 @@\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "display_path",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 245
-        },
-        "start": {
-          "column": 1,
-          "line": 239
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:241:5: replace display_path -> String with \"xyzzy\".into()",
+    "name": "core/src/fingerprint.rs:18:5: replace hash -> String with \"xyzzy\".into()",
     "package": "tapkey-core",
     "replacement": "\"xyzzy\".into()",
     "span": {
       "end": {
-        "column": 6,
-        "line": 244
+        "column": 32,
+        "line": 23
       },
       "start": {
         "column": 5,
-        "line": 241
+        "line": 18
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace settle with ()\n@@ -243,19 +243,17 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n-        link.wins = true;\n-    }\n+    () /* ~ changed by cargo-mutants ~ */\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n \n // -------------------------------------------------------------------------------------------\n // Writing\n",
-    "file": "core/src/adapters/claude.rs",
+    "diff": "--- core/src/fingerprint.rs\n+++ replace ^= with |= in hash\n@@ -12,17 +12,17 @@\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n     let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n     for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n+        h |= /* ~ changed by cargo-mutants ~ */ *byte as u64;\n         h = h.wrapping_mul(0x0000_0100_0000_01b3);\n     }\n     format!(\"fnv1a64:{h:016x}\")\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n",
+    "file": "core/src/fingerprint.rs",
     "function": {
-      "function_name": "settle",
-      "return_type": "",
+      "function_name": "hash",
+      "return_type": "-> String",
       "span": {
         "end": {
           "column": 2,
-          "line": 254
+          "line": 24
         },
         "start": {
           "column": 1,
-          "line": 247
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:251:5: replace settle with ()",
-    "package": "tapkey-core",
-    "replacement": "()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 253
-      },
-      "start": {
-        "column": 5,
-        "line": 251
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace && with || in settle\n@@ -243,17 +243,17 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n+    if let Some(link) = chain.iter_mut().find(|l| l.observable || /* ~ changed by cargo-mutants ~ */ l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n \n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "settle",
-      "return_type": "",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 254
-        },
-        "start": {
-          "column": 1,
-          "line": 247
+          "line": 13
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/adapters/claude.rs:251:64: replace && with || in settle",
+    "name": "core/src/fingerprint.rs:20:11: replace ^= with |= in hash",
     "package": "tapkey-core",
-    "replacement": "||",
+    "replacement": "|=",
     "span": {
       "end": {
-        "column": 66,
-        "line": 251
+        "column": 13,
+        "line": 20
       },
       "start": {
-        "column": 64,
-        "line": 251
+        "column": 11,
+        "line": 20
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with None\n@@ -249,17 +249,17 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n // -------------------------------------------------------------------------------------------\n // Writing\n // -------------------------------------------------------------------------------------------\n \n use crate::json::Error as JsonError;\n use crate::profile::ToolAssignment;\n",
-    "file": "core/src/adapters/claude.rs",
+    "diff": "--- core/src/fingerprint.rs\n+++ replace ^= with &= in hash\n@@ -12,17 +12,17 @@\n \n /// FNV-1a, 64-bit. Not a cryptographic hash and not asked to be one: the question is whether a\n /// value changed, the comparison is against a value we wrote ourselves, and there is no\n /// adversary choosing inputs. It is deterministic across builds and platforms, which\n /// `DefaultHasher` does not promise, and that matters for something written to disk.\n pub fn hash(value: &str) -> String {\n     let mut h: u64 = 0xcbf2_9ce4_8422_2325;\n     for byte in value.as_bytes() {\n-        h ^= *byte as u64;\n+        h &= /* ~ changed by cargo-mutants ~ */ *byte as u64;\n         h = h.wrapping_mul(0x0000_0100_0000_01b3);\n     }\n     format!(\"fnv1a64:{h:016x}\")\n }\n \n /// What tapkey owns right now, and what it put there.\n #[derive(Debug, Default, Serialize, Deserialize)]\n pub struct State {\n",
+    "file": "core/src/fingerprint.rs",
     "function": {
-      "function_name": "winning_value",
-      "return_type": "-> Option<String>",
+      "function_name": "hash",
+      "return_type": "-> String",
       "span": {
         "end": {
           "column": 2,
-          "line": 258
+          "line": 24
         },
         "start": {
           "column": 1,
-          "line": 256
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with None",
-    "package": "tapkey-core",
-    "replacement": "None",
-    "span": {
-      "end": {
-        "column": 64,
-        "line": 257
-      },
-      "start": {
-        "column": 5,
-        "line": 257
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(String::new())\n@@ -249,17 +249,17 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(String::new()) /* ~ changed by cargo-mutants ~ */\n }\n \n // -------------------------------------------------------------------------------------------\n // Writing\n // -------------------------------------------------------------------------------------------\n \n use crate::json::Error as JsonError;\n use crate::profile::ToolAssignment;\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "winning_value",
-      "return_type": "-> Option<String>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 258
-        },
-        "start": {
-          "column": 1,
-          "line": 256
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some(String::new())",
-    "package": "tapkey-core",
-    "replacement": "Some(String::new())",
-    "span": {
-      "end": {
-        "column": 64,
-        "line": 257
-      },
-      "start": {
-        "column": 5,
-        "line": 257
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(\"xyzzy\".into())\n@@ -249,17 +249,17 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n }\n \n // -------------------------------------------------------------------------------------------\n // Writing\n // -------------------------------------------------------------------------------------------\n \n use crate::json::Error as JsonError;\n use crate::profile::ToolAssignment;\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "winning_value",
-      "return_type": "-> Option<String>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 258
-        },
-        "start": {
-          "column": 1,
-          "line": 256
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
-    "package": "tapkey-core",
-    "replacement": "Some(\"xyzzy\".into())",
-    "span": {
-      "end": {
-        "column": 64,
-        "line": 257
-      },
-      "start": {
-        "column": 5,
-        "line": 257
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![])\n@@ -281,53 +281,17 @@\n /// created: an unconditional write would leave tapkey's fingerprints where nobody asked.\n const DEPRECATED_UTILITY: &str = \"ANTHROPIC_SMALL_FAST_MODEL\";\n \n /// Turn one tool's assignment into the single write that applies it.\n ///\n /// Nothing is written here; the transaction owns that, so the all-or-nothing guarantee lives\n /// in one place.\n pub fn plan_switch(env: &Env, assignment: &ToolAssignment) -> Result<Vec<Action>, JsonError> {\n-    let path = env.home().join(\".claude\").join(\"settings.json\");\n-    let existing = std::fs::read(&path).unwrap_or_else(|_| b\"{}\".to_vec());\n-    let mut doc = Document::parse(&existing)?;\n-\n-    match &assignment.endpoint {\n-        Some(url) => doc.set_string(&[\"env\", ENDPOINT_VAR], url)?,\n-        None => clear(&mut doc, env, ENDPOINT_VAR)?,\n-    }\n-\n-    for (slot, var, has_companion) in OWNED {\n-        match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {\n-            Some(model) => {\n-                doc.set_string(&[\"env\", var], model)?;\n-                if *has_companion {\n-                    // Without it the tool's own picker keeps announcing Opus 5 over somebody\n-                    // else's model, which is making another interface lie.\n-                    doc.set_string(&[\"env\", &format!(\"{var}_NAME\")], model)?;\n-                }\n-                if *slot == \"utility\" && doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n-                    doc.set_string(&[\"env\", DEPRECATED_UTILITY], model)?;\n-                }\n-            }\n-            None => {\n-                clear(&mut doc, env, var)?;\n-                if *has_companion {\n-                    clear(&mut doc, env, &format!(\"{var}_NAME\"))?;\n-                }\n-            }\n-        }\n-    }\n-\n-    Ok(vec![Action::Write {\n-        path,\n-        bytes: doc.to_bytes(),\n-        // A file that already exists keeps its mode; this is only for one tapkey creates.\n-        mode: 0o600,\n-    }])\n+    Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Remove what tapkey wrote, and neutralise an inherited export if there is one.\n ///\n /// A settings file can set a variable and cannot unset one, so an export is overridden with an\n /// empty value — measured to work, and only when an export exists: writing `\"\"` unconditionally\n /// would leave tapkey's fingerprints in a file it claims to have cleaned.\n fn clear(doc: &mut Document, env: &Env, var: &str) -> Result<(), JsonError> {\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "plan_switch",
-      "return_type": "-> Result<Vec<Action>, JsonError>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 326
-        },
-        "start": {
-          "column": 1,
-          "line": 284
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:289:5: replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![])",
-    "span": {
-      "end": {
-        "column": 8,
-        "line": 325
-      },
-      "start": {
-        "column": 5,
-        "line": 289
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![Default::default()])\n@@ -281,53 +281,17 @@\n /// created: an unconditional write would leave tapkey's fingerprints where nobody asked.\n const DEPRECATED_UTILITY: &str = \"ANTHROPIC_SMALL_FAST_MODEL\";\n \n /// Turn one tool's assignment into the single write that applies it.\n ///\n /// Nothing is written here; the transaction owns that, so the all-or-nothing guarantee lives\n /// in one place.\n pub fn plan_switch(env: &Env, assignment: &ToolAssignment) -> Result<Vec<Action>, JsonError> {\n-    let path = env.home().join(\".claude\").join(\"settings.json\");\n-    let existing = std::fs::read(&path).unwrap_or_else(|_| b\"{}\".to_vec());\n-    let mut doc = Document::parse(&existing)?;\n-\n-    match &assignment.endpoint {\n-        Some(url) => doc.set_string(&[\"env\", ENDPOINT_VAR], url)?,\n-        None => clear(&mut doc, env, ENDPOINT_VAR)?,\n-    }\n-\n-    for (slot, var, has_companion) in OWNED {\n-        match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {\n-            Some(model) => {\n-                doc.set_string(&[\"env\", var], model)?;\n-                if *has_companion {\n-                    // Without it the tool's own picker keeps announcing Opus 5 over somebody\n-                    // else's model, which is making another interface lie.\n-                    doc.set_string(&[\"env\", &format!(\"{var}_NAME\")], model)?;\n-                }\n-                if *slot == \"utility\" && doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n-                    doc.set_string(&[\"env\", DEPRECATED_UTILITY], model)?;\n-                }\n-            }\n-            None => {\n-                clear(&mut doc, env, var)?;\n-                if *has_companion {\n-                    clear(&mut doc, env, &format!(\"{var}_NAME\"))?;\n-                }\n-            }\n-        }\n-    }\n-\n-    Ok(vec![Action::Write {\n-        path,\n-        bytes: doc.to_bytes(),\n-        // A file that already exists keeps its mode; this is only for one tapkey creates.\n-        mode: 0o600,\n-    }])\n+    Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Remove what tapkey wrote, and neutralise an inherited export if there is one.\n ///\n /// A settings file can set a variable and cannot unset one, so an export is overridden with an\n /// empty value — measured to work, and only when an export exists: writing `\"\"` unconditionally\n /// would leave tapkey's fingerprints in a file it claims to have cleaned.\n fn clear(doc: &mut Document, env: &Env, var: &str) -> Result<(), JsonError> {\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "plan_switch",
-      "return_type": "-> Result<Vec<Action>, JsonError>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 326
-        },
-        "start": {
-          "column": 1,
-          "line": 284
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:289:5: replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![Default::default()])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![Default::default()])",
-    "span": {
-      "end": {
-        "column": 8,
-        "line": 325
-      },
-      "start": {
-        "column": 5,
-        "line": 289
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace && with || in plan_switch\n@@ -299,17 +299,17 @@\n         match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {\n             Some(model) => {\n                 doc.set_string(&[\"env\", var], model)?;\n                 if *has_companion {\n                     // Without it the tool's own picker keeps announcing Opus 5 over somebody\n                     // else's model, which is making another interface lie.\n                     doc.set_string(&[\"env\", &format!(\"{var}_NAME\")], model)?;\n                 }\n-                if *slot == \"utility\" && doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n+                if *slot == \"utility\" || /* ~ changed by cargo-mutants ~ */ doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n                     doc.set_string(&[\"env\", DEPRECATED_UTILITY], model)?;\n                 }\n             }\n             None => {\n                 clear(&mut doc, env, var)?;\n                 if *has_companion {\n                     clear(&mut doc, env, &format!(\"{var}_NAME\"))?;\n                 }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "plan_switch",
-      "return_type": "-> Result<Vec<Action>, JsonError>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 326
-        },
-        "start": {
-          "column": 1,
-          "line": 284
+          "line": 13
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/adapters/claude.rs:307:39: replace && with || in plan_switch",
+    "name": "core/src/fingerprint.rs:20:11: replace ^= with &= in hash",
     "package": "tapkey-core",
-    "replacement": "||",
+    "replacement": "&=",
     "span": {
       "end": {
-        "column": 41,
-        "line": 307
+        "column": 13,
+        "line": 20
       },
       "start": {
-        "column": 39,
-        "line": 307
+        "column": 11,
+        "line": 20
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace == with != in plan_switch\n@@ -299,17 +299,17 @@\n         match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {\n             Some(model) => {\n                 doc.set_string(&[\"env\", var], model)?;\n                 if *has_companion {\n                     // Without it the tool's own picker keeps announcing Opus 5 over somebody\n                     // else's model, which is making another interface lie.\n                     doc.set_string(&[\"env\", &format!(\"{var}_NAME\")], model)?;\n                 }\n-                if *slot == \"utility\" && doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n+                if *slot != /* ~ changed by cargo-mutants ~ */ \"utility\" && doc.get_string(&[\"env\", DEPRECATED_UTILITY]).is_some() {\n                     doc.set_string(&[\"env\", DEPRECATED_UTILITY], model)?;\n                 }\n             }\n             None => {\n                 clear(&mut doc, env, var)?;\n                 if *has_companion {\n                     clear(&mut doc, env, &format!(\"{var}_NAME\"))?;\n                 }\n",
-    "file": "core/src/adapters/claude.rs",
+    "diff": "--- core/src/fingerprint.rs\n+++ replace State::read -> State with Default::default()\n@@ -36,21 +36,17 @@\n }\n \n const VERSION: u32 = 1;\n \n impl State {\n     pub fn read(path: &Path) -> State {\n         // A state file that is missing or unreadable means tapkey owns nothing it can prove,\n         // which is the safe reading: it reports no drift rather than inventing some.\n-        std::fs::read(path)\n-            .ok()\n-            .and_then(|b| serde_json::from_slice::<State>(&b).ok())\n-            .filter(|s| s.version <= VERSION)\n-            .unwrap_or_default()\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n         let state = State {\n",
+    "file": "core/src/fingerprint.rs",
     "function": {
-      "function_name": "plan_switch",
-      "return_type": "-> Result<Vec<Action>, JsonError>",
+      "function_name": "State::read",
+      "return_type": "-> State",
       "span": {
         "end": {
-          "column": 2,
-          "line": 326
+          "column": 6,
+          "line": 49
         },
         "start": {
-          "column": 1,
-          "line": 284
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/adapters/claude.rs:307:26: replace == with != in plan_switch",
-    "package": "tapkey-core",
-    "replacement": "!=",
-    "span": {
-      "end": {
-        "column": 28,
-        "line": 307
-      },
-      "start": {
-        "column": 26,
-        "line": 307
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace clear -> Result<(), JsonError> with Ok(())\n@@ -326,14 +326,10 @@\n }\n \n /// Remove what tapkey wrote, and neutralise an inherited export if there is one.\n ///\n /// A settings file can set a variable and cannot unset one, so an export is overridden with an\n /// empty value — measured to work, and only when an export exists: writing `\"\"` unconditionally\n /// would leave tapkey's fingerprints in a file it claims to have cleaned.\n fn clear(doc: &mut Document, env: &Env, var: &str) -> Result<(), JsonError> {\n-    doc.remove(&[\"env\", var])?;\n-    if env.shell_var(var).is_some() {\n-        doc.set_string(&[\"env\", var], \"\")?;\n-    }\n-    Ok(())\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "clear",
-      "return_type": "-> Result<(), JsonError>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 339
-        },
-        "start": {
-          "column": 1,
-          "line": 328
+          "column": 5,
+          "line": 41
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:334:5: replace clear -> Result<(), JsonError> with Ok(())",
+    "name": "core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()",
+    "package": "tapkey-core",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 48
+      },
+      "start": {
+        "column": 9,
+        "line": 44
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fingerprint.rs\n+++ replace <= with > in State::read\n@@ -39,17 +39,17 @@\n \n impl State {\n     pub fn read(path: &Path) -> State {\n         // A state file that is missing or unreadable means tapkey owns nothing it can prove,\n         // which is the safe reading: it reports no drift rather than inventing some.\n         std::fs::read(path)\n             .ok()\n             .and_then(|b| serde_json::from_slice::<State>(&b).ok())\n-            .filter(|s| s.version <= VERSION)\n+            .filter(|s| s.version > /* ~ changed by cargo-mutants ~ */ VERSION)\n             .unwrap_or_default()\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n",
+    "file": "core/src/fingerprint.rs",
+    "function": {
+      "function_name": "State::read",
+      "return_type": "-> State",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 49
+        },
+        "start": {
+          "column": 5,
+          "line": 41
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fingerprint.rs:47:35: replace <= with > in State::read",
+    "package": "tapkey-core",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 37,
+        "line": 47
+      },
+      "start": {
+        "column": 35,
+        "line": 47
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fingerprint.rs\n+++ replace State::write -> io::Result<()> with Ok(())\n@@ -48,24 +48,17 @@\n             .unwrap_or_default()\n     }\n \n     pub fn write(\n         path: &Path,\n         profile: &str,\n         owned: BTreeMap<String, BTreeMap<String, String>>,\n     ) -> io::Result<()> {\n-        let state = State {\n-            version: VERSION,\n-            profile: profile.to_string(),\n-            owned,\n-        };\n-        let bytes = serde_json::to_vec_pretty(&state)\n-            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-        crate::atomic::write_atomically(path, &bytes, 0o600)\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n         match self.owned.get(tool).and_then(|s| s.get(slot)) {\n             Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n",
+    "file": "core/src/fingerprint.rs",
+    "function": {
+      "function_name": "State::write",
+      "return_type": "-> io::Result<()>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 64
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fingerprint.rs:56:9: replace State::write -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
     "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 11,
-        "line": 338
+        "column": 61,
+        "line": 63
       },
       "start": {
-        "column": 5,
-        "line": 334
+        "column": 9,
+        "line": 56
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fingerprint.rs\n+++ replace State::drifted -> bool with true\n@@ -62,14 +62,11 @@\n             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n-        match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n-            None => false,\n-        }\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/fingerprint.rs",
+    "function": {
+      "function_name": "State::drifted",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 74
+        },
+        "start": {
+          "column": 5,
+          "line": 66
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with true",
+    "package": "tapkey-core",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 73
+      },
+      "start": {
+        "column": 9,
+        "line": 70
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fingerprint.rs\n+++ replace State::drifted -> bool with false\n@@ -62,14 +62,11 @@\n             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n-        match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n-            None => false,\n-        }\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/fingerprint.rs",
+    "function": {
+      "function_name": "State::drifted",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 74
+        },
+        "start": {
+          "column": 5,
+          "line": 66
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fingerprint.rs:70:9: replace State::drifted -> bool with false",
+    "package": "tapkey-core",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 73
+      },
+      "start": {
+        "column": 9,
+        "line": 70
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fingerprint.rs\n+++ replace != with == in State::drifted\n@@ -63,13 +63,13 @@\n         crate::atomic::write_atomically(path, &bytes, 0o600)\n     }\n \n     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:\n     /// reporting drift against something we never owned would make the signal meaningless on\n     /// a machine where nothing has been switched yet.\n     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {\n         match self.owned.get(tool).and_then(|s| s.get(slot)) {\n-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),\n+            Some(recorded) => value.map(hash).as_deref() == /* ~ changed by cargo-mutants ~ */ Some(recorded.as_str()),\n             None => false,\n         }\n     }\n }\n",
+    "file": "core/src/fingerprint.rs",
+    "function": {
+      "function_name": "State::drifted",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 74
+        },
+        "start": {
+          "column": 5,
+          "line": 66
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fingerprint.rs:71:58: replace != with == in State::drifted",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 60,
+        "line": 71
+      },
+      "start": {
+        "column": 58,
+        "line": 71
       }
     }
   }

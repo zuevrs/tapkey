@@ -1,20 +1,8 @@
-core/src/adapters/claude.rs:224:9: delete match arm Source::Unseen{scope, why} in unseen_from
-core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with None
-core/src/adapters/claude.rs:230:5: replace scope_path -> Option<PathBuf> with Some(Default::default())
-core/src/adapters/claude.rs:231:9: delete match arm "managed" in scope_path
-core/src/adapters/claude.rs:232:9: delete match arm "project local" in scope_path
-core/src/adapters/claude.rs:234:9: delete match arm "user" in scope_path
-core/src/adapters/claude.rs:233:9: delete match arm "project" in scope_path
-core/src/profile.rs:41:44: replace == with != in Profiles::find
-core/src/profile.rs:41:9: replace Profiles::find -> Option<&Profile> with None
-core/src/adapters/claude.rs:241:5: replace display_path -> String with String::new()
-core/src/adapters/claude.rs:241:5: replace display_path -> String with "xyzzy".into()
-core/src/adapters/claude.rs:251:5: replace settle with ()
-core/src/adapters/claude.rs:251:64: replace && with || in settle
-core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with None
-core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some(String::new())
-core/src/adapters/claude.rs:257:5: replace winning_value -> Option<String> with Some("xyzzy".into())
-core/src/adapters/claude.rs:289:5: replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![])
-core/src/adapters/claude.rs:307:39: replace && with || in plan_switch
-core/src/adapters/claude.rs:307:26: replace == with != in plan_switch
-core/src/adapters/claude.rs:334:5: replace clear -> Result<(), JsonError> with Ok(())
+core/src/fingerprint.rs:18:5: replace hash -> String with String::new()
+core/src/fingerprint.rs:18:5: replace hash -> String with "xyzzy".into()
+core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()
+core/src/fingerprint.rs:47:35: replace <= with > in State::read
+core/src/fingerprint.rs:70:9: replace State::drifted -> bool with true
+core/src/fingerprint.rs:56:9: replace State::write -> io::Result<()> with Ok(())
+core/src/fingerprint.rs:70:9: replace State::drifted -> bool with false
+core/src/fingerprint.rs:71:58: replace != with == in State::drifted

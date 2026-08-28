@@ -1,0 +1,17 @@
+--- core/src/fingerprint.rs
++++ replace != with == in State::drifted
+@@ -63,13 +63,13 @@
+         crate::atomic::write_atomically(path, &bytes, 0o600)
+     }
+ 
+     /// Whether `value` differs from what tapkey recorded writing. Unknown slots never drift:
+     /// reporting drift against something we never owned would make the signal meaningless on
+     /// a machine where nothing has been switched yet.
+     pub fn drifted(&self, tool: &str, slot: &str, value: Option<&str>) -> bool {
+         match self.owned.get(tool).and_then(|s| s.get(slot)) {
+-            Some(recorded) => value.map(hash).as_deref() != Some(recorded.as_str()),
++            Some(recorded) => value.map(hash).as_deref() == /* ~ changed by cargo-mutants ~ */ Some(recorded.as_str()),
+             None => false,
+         }
+     }
+ }

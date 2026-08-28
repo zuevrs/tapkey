@@ -118,14 +118,20 @@ const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var(ENDPOINT_VAR)];
 /// Read what Claude Code will actually use, resolved across the scopes it consults.
 pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {
     let files = read_all(env)?;
+    let state = crate::fingerprint::State::read(&env.store().join("state.json"));
 
     let endpoint = resolve(env, &files, ENDPOINT);
     let slots = SLOTS
         .iter()
-        .map(|spec| SlotState {
-            slot: spec.name,
-            owned: spec.owned,
-            resolved: resolve(env, &files, spec.sources),
+        .map(|spec| {
+            let resolved = resolve(env, &files, spec.sources);
+            SlotState {
+                slot: spec.name,
+                owned: spec.owned,
+                drifted: spec.owned
+                    && state.drifted("claude", spec.name, resolved.effective.as_deref()),
+                resolved,
+            }
         })
         .collect();
 
@@ -280,6 +286,17 @@ const OWNED: &[(&str, &str, bool)] = &[
 /// The variable that still wins the background path though it lost its name. Mirrored, never
 /// created: an unconditional write would leave tapkey's fingerprints where nobody asked.
 const DEPRECATED_UTILITY: &str = "ANTHROPIC_SMALL_FAST_MODEL";
+
+/// What tapkey has just written, ready to be recorded so drift has something to compare to.
+pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<String, String> {
+    let mut out = std::collections::BTreeMap::new();
+    for (slot, _, _) in OWNED {
+        if let Some(model) = assignment.slots.get(*slot).and_then(|v| v.as_ref()) {
+            out.insert((*slot).to_string(), crate::fingerprint::hash(model));
+        }
+    }
+    out
+}
 
 /// Turn one tool's assignment into the single write that applies it.
 ///

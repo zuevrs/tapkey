@@ -133,9 +133,25 @@ impl Store {
         profile: &str,
         at: SystemTime,
     ) -> io::Result<BackupId> {
-        let id = BackupId(format_utc(at));
+        let id = self.free_name(format_utc(at));
         write_group(&self.backups_dir().join(&id.0), files, at, profile)?;
         Ok(id)
+    }
+
+    /// Two changes inside the same millisecond would otherwise share a directory, and the
+    /// second would silently overwrite the first. An ugly name is a much smaller price than a
+    /// lost way back, and a suffix keeps the ordering the name is chosen for.
+    fn free_name(&self, base: String) -> BackupId {
+        if !self.backups_dir().join(&base).exists() {
+            return BackupId(base);
+        }
+        for n in 2.. {
+            let candidate = format!("{base}-{n}");
+            if !self.backups_dir().join(&candidate).exists() {
+                return BackupId(candidate);
+            }
+        }
+        unreachable!("the range is unbounded")
     }
 
     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.

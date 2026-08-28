@@ -19,6 +19,20 @@ pub enum Request {
     EffectiveState {},
     /// Apply a profile to every tool it covers, all or nothing.
     Switch { profile_id: String },
+    /// Go back to a stored state. The target is tagged rather than inferred from the shape of
+    /// an id: "snapshot cannot look like a timestamp" is a guard that lasts exactly until the
+    /// format changes.
+    Restore {
+        #[serde(flatten)]
+        target: RestoreTarget,
+    },
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "target", rename_all = "snake_case")]
+pub enum RestoreTarget {
+    Snapshot,
+    Backup { id: String },
 }
 
 #[derive(Debug, Serialize)]
@@ -64,6 +78,10 @@ pub struct SlotState {
     pub slot: &'static str,
     /// Owned means tapkey writes it; observed means tapkey reports it and never writes it.
     pub owned: bool,
+    /// Changed by something other than tapkey since tapkey last wrote it. Defined on the slot
+    /// and not on the file: the tool re-serialises its whole settings file constantly, so a
+    /// file-level signal would fire after any action it took and stop being read.
+    pub drifted: bool,
     #[serde(flatten)]
     pub resolved: Resolved,
 }

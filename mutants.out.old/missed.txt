@@ -1,2 +1,2 @@
-core/src/adapters/claude.rs:343:5: replace files_touched -> Vec<PathBuf> with vec![]
-core/src/adapters/claude.rs:343:5: replace files_touched -> Vec<PathBuf> with vec![Default::default()]
+core/src/fingerprint.rs:20:11: replace ^= with |= in hash
+core/src/fingerprint.rs:20:11: replace ^= with &= in hash

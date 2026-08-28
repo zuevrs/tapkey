@@ -11,6 +11,7 @@
 pub mod adapters;
 pub mod atomic;
 pub mod env;
+pub mod fingerprint;
 pub mod fs;
 pub mod instant;
 pub mod json;
@@ -67,6 +68,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
             Err(e) => refuse("unparsable", format!("{e:?}")),
         },
         Request::Switch { profile_id } => switch(env, &profile_id),
+        Request::Restore { target } => restore(env, target),
     }
 }
 
@@ -141,8 +143,91 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     // The read-back below goes to the real filesystem, so the borrow ends here.
     drop(disk);
 
+    // Drift needs something to compare against, and it is written only after the change stuck.
+    let mut owned = std::collections::BTreeMap::new();
+    owned.insert(
+        "claude".to_string(),
+        adapters::claude::fingerprint(assignment),
+    );
+    let _ = fingerprint::State::write(&env.store().join("state.json"), &profile.name, owned);
+
     // Read back rather than reporting what was written: the invariant forbids reporting intent,
     // and reading back is the only way a project config or a shell export that beat us shows up.
+    match adapters::claude::effective_state(env) {
+        Ok(tool) => Response::Ok {
+            ok: true,
+            outcome: Some("applied"),
+            tools: vec![tool],
+        },
+        Err(e) => refuse("unparsable", format!("{e:?}")),
+    }
+}
+
+/// Go back to a stored state, transactionally and taking a backup of its own first.
+fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
+    let store = match store::Store::open(env.store()) {
+        Ok(s) => s,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    let which = match &target {
+        wire::RestoreTarget::Snapshot => store::Target::Snapshot,
+        wire::RestoreTarget::Backup { id } => store::Target::Backup(id.as_str().into()),
+    };
+    let plan = match store.restore_plan(which) {
+        Ok(p) => p,
+        // Kept and marked rather than deleted, so the refusal names it rather than hiding it.
+        Err(e) => return refuse("backup_unreadable", e.to_string()),
+    };
+
+    let actions = plan
+        .into_iter()
+        .map(|action| match action {
+            store::RestoreAction::Write { path, bytes, mode } => transaction::Action::Write {
+                path,
+                bytes,
+                mode: mode.unwrap_or(0o600),
+            },
+            store::RestoreAction::Delete { path } => transaction::Action::Delete { path },
+        })
+        .collect();
+
+    let transaction = transaction::Transaction::new(actions);
+    let mut disk = env.filesystem();
+    let captured = match transaction.capture(&**disk, "claude") {
+        Ok(c) => c,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    // Restoring changes the user's files like any other change, so it is backed up like one —
+    // otherwise the single action with no way back is the way back itself.
+    if store.take_backup(&captured, "restore", env.now()).is_err() {
+        return refuse("permission_denied", "could not record a backup".into());
+    }
+    if let Err(rolled_back) = transaction.apply(&mut **disk) {
+        return Response::Failed {
+            ok: false,
+            outcome: "rolled back",
+            failure: Failure {
+                kind: "write_failed",
+                detail: format!(
+                    "{}: {}",
+                    rolled_back.failed_at.display(),
+                    rolled_back.reason
+                ),
+            },
+        };
+    }
+    drop(disk);
+
+    // Going back to the snapshot hands the tool to its own login, so tapkey owns nothing after
+    // it — or drift would fire on values that are no longer ours.
+    if matches!(target, wire::RestoreTarget::Snapshot) {
+        let _ = fingerprint::State::write(
+            &env.store().join("state.json"),
+            "",
+            std::collections::BTreeMap::new(),
+        );
+    }
+
     match adapters::claude::effective_state(env) {
         Ok(tool) => Response::Ok {
             ok: true,

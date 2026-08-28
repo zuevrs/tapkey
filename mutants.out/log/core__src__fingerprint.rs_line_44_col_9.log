@@ -1,0 +1,253 @@
+
+*** core/src/fingerprint.rs:44:9: replace State::read -> State with Default::default()
+
+*** mutation diff:
+--- core/src/fingerprint.rs
++++ replace State::read -> State with Default::default()
+@@ -36,21 +36,17 @@
+ }
+ 
+ const VERSION: u32 = 1;
+ 
+ impl State {
+     pub fn read(path: &Path) -> State {
+         // A state file that is missing or unreadable means tapkey owns nothing it can prove,
+         // which is the safe reading: it reports no drift rather than inventing some.
+-        std::fs::read(path)
+-            .ok()
+-            .and_then(|b| serde_json::from_slice::<State>(&b).ok())
+-            .filter(|s| s.version <= VERSION)
+-            .unwrap_or_default()
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     pub fn write(
+         path: &Path,
+         profile: &str,
+         owned: BTreeMap<String, BTreeMap<String, String>>,
+     ) -> io::Result<()> {
+         let state = State {
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh unicode-ident v1.0.24
+       Fresh memchr v2.8.3
+       Fresh proc-macro2 v1.0.107
+       Fresh itoa v1.0.18
+       Fresh quote v1.0.47
+       Fresh serde_core v1.0.229
+       Fresh zmij v1.0.23
+       Fresh libc v0.2.189
+       Fresh syn v3.0.4
+       Fresh serde_json v1.0.151
+       Fresh serde_derive v1.0.229
+       Fresh serde v1.0.229
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/core): the file `core/src/fingerprint.rs` has changed (1787938690.987985273s, 6s after last build at 1787938684.720972877s)
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=95e4743f2b1a6115 -C extra-filename=-94543ea788c9c71e --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c06ea15570984b51 -C extra-filename=-5078980da336e94b --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rmeta --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rmeta`
+warning: unused variable: `path`
+  --> core/src/fingerprint.rs:41:17
+   |
+41 |     pub fn read(path: &Path) -> State {
+   |                 ^^^^ help: if this is intentional, prefix it with an underscore: `_path`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tapkey-core` (lib) generated 1 warning (run `cargo fix --lib -p tapkey-core` to apply 1 suggestion)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name atomic_write --edition=2024 core/tests/atomic_write.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=5feb7cc35822ba92 -C extra-filename=-ff704e3bde6af277 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name instants --edition=2024 core/tests/instants.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=37babf1dcb1939e3 -C extra-filename=-af814afc88578359 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name json_document --edition=2024 core/tests/json_document.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=4726bb25288aeb77 -C extra-filename=-c967480908e1c103 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name effective_slots --edition=2024 core/tests/effective_slots.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=df4e0085bdb2fe4e -C extra-filename=-93131a4859ccc764 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name store --edition=2024 core/tests/store.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=e0da197f5c105211 -C extra-filename=-24554b53cedfd582 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name transaction --edition=2024 core/tests/transaction.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=363bc568bee28974 -C extra-filename=-af58f2e8534fa5d1 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name effective_state --edition=2024 core/tests/effective_state.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=225eddd1e001036e -C extra-filename=-bbbaf6288769a1ef --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name switching --edition=2024 core/tests/switching.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=a18d10dd9a1df10e -C extra-filename=-140e884783badb3f --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+warning: `tapkey-core` (lib test) generated 1 warning (1 duplicate)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name fingerprints --edition=2024 core/tests/fingerprints.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c990292b1452081a -C extra-filename=-8e645ab8cc829d9f --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name restore_and_drift --edition=2024 core/tests/restore_and_drift.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=6b1fd7f4e54bba2d -C extra-filename=-9a427787148ef8c6 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern serde=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde-c05f824182859ef6.rlib --extern serde_json=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libserde_json-3da50c024bae21cc.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/libtapkey_core-5078980da336e94b.rlib`
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.15s
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/tapkey_core-94543ea788c9c71e`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/atomic_write-ff704e3bde6af277`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/effective_slots-93131a4859ccc764`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/effective_state-bbbaf6288769a1ef`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/fingerprints-8e645ab8cc829d9f`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/instants-af814afc88578359`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/json_document-c967480908e1c103`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/restore_and_drift-9a427787148ef8c6`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/store-24554b53cedfd582`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/switching-140e884783badb3f`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/transaction-af58f2e8534fa5d1`
+
+*** result: Success
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --verbose --package=tapkey-core@0.0.0
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.107
+       Fresh quote v1.0.47
+       Fresh syn v3.0.4
+       Fresh serde_core v1.0.229
+       Fresh serde_derive v1.0.229
+       Fresh zmij v1.0.23
+       Fresh memchr v2.8.3
+       Fresh itoa v1.0.18
+       Fresh serde_json v1.0.151
+       Fresh serde v1.0.229
+       Fresh libc v0.2.189
+warning: unused variable: `path`
+  --> core/src/fingerprint.rs:41:17
+   |
+41 |     pub fn read(path: &Path) -> State {
+   |                 ^^^^ help: if this is intentional, prefix it with an underscore: `_path`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tapkey-core` (lib) generated 1 warning (run `cargo fix --lib -p tapkey-core` to apply 1 suggestion)
+       Fresh tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/core)
+warning: `tapkey-core` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/tapkey_core-94543ea788c9c71e`
+
+running 3 tests
+test atomic::tests::the_temp_file_is_a_sibling_of_the_target ... ok
+test tests::the_public_entry_point_answers_with_json_even_when_the_request_is_nonsense ... ok
+test tests::an_unknown_schema_version_is_refused_rather_than_guessed_at ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/atomic_write-ff704e3bde6af277`
+
+running 8 tests
+test writes_the_bytes_to_a_new_file ... ok
+test leaves_no_debris_when_the_write_fails_after_the_temp_file_exists ... ok
+test a_new_file_is_created_at_the_requested_mode ... ok
+test replaces_the_contents_of_an_existing_file ... ok
+test refuses_when_the_destination_directory_cannot_be_written_even_if_the_file_can ... ok
+test an_existing_file_keeps_the_mode_it_had ... ok
+test follows_a_symlink_instead_of_replacing_it ... ok
+test resolves_a_relative_symlink_against_the_directory_holding_it ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/effective_slots-93131a4859ccc764`
+
+running 10 tests
+test the_utility_slot_falls_to_the_current_variable_when_the_deprecated_one_is_absent ... ok
+test the_main_slots_unobservable_scopes_are_in_the_right_order ... ok
+test advisor_fallback_and_model_overrides_are_observed_not_owned ... ok
+test anthropic_default_model_is_the_last_word_not_the_first ... ok
+test the_subagent_and_pin_slots_are_read ... ok
+test a_link_names_the_key_it_read_not_only_the_file ... ok
+test the_main_model_comes_from_the_environment_variable ... ok
+test the_deprecated_small_fast_variable_still_wins_the_utility_slot ... ok
+test anthropic_model_outranks_the_model_key_even_in_managed_settings ... ok
+test the_model_key_decides_when_no_variable_is_set ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/effective_state-bbbaf6288769a1ef`
+
+running 12 tests
+test a_shell_export_wins_when_no_file_has_an_opinion ... ok
+test a_link_names_the_file_the_way_a_person_would_write_it ... ok
+test a_settings_file_beats_a_shell_export ... ok
+test scopes_that_cannot_be_observed_are_named_rather_than_omitted ... ok
+test reports_the_endpoint_a_user_settings_file_sets ... ok
+test a_duplicate_key_refuses_the_whole_read ... ok
+test project_local_outranks_the_shared_project_file ... ok
+test a_file_that_exists_but_is_silent_does_not_win ... ok
+test the_shell_link_says_how_it_was_obtained ... ok
+test a_project_config_outranks_the_user_file_and_the_chain_names_both ... ok
+test the_chain_is_ordered_by_precedence_even_when_scopes_are_absent ... ok
+test managed_settings_outrank_everything_on_disk ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/fingerprints-8e645ab8cc829d9f`
+
+running 4 tests
+test an_unknown_slot_never_drifts ... ok
+test hashes_match_the_published_vectors ... ok
+test a_state_file_that_is_not_there_reports_no_drift ... ok
+test near_identical_values_hash_differently ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/instants-af814afc88578359`
+
+running 4 tests
+test a_name_carries_no_character_windows_forbids ... ok
+test formats_known_instants_compactly_and_in_utc ... ok
+test names_sort_in_the_order_the_instants_happened ... ok
+test the_epoch_itself_is_the_first_possible_name ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/json_document-c967480908e1c103`
+
+running 32 tests
+test a_duplicate_key_is_refused ... ok
+test a_key_and_value_separated_by_a_space_gets_a_sibling_with_one_too ... ok
+test a_control_character_in_a_written_value_is_escaped ... ok
+test a_minified_file_stays_minified ... ok
+test a_four_space_file_gets_four_space_insertions ... ok
+test a_missing_trailing_newline_is_not_added ... ok
+test a_minified_object_stays_on_one_line_when_a_key_is_added ... ok
+test a_nested_object_created_in_a_minified_file_stays_inline ... ok
+test a_missing_intermediate_object_is_created_in_the_files_own_style ... ok
+test a_byte_order_mark_survives ... ok
+test a_new_key_joins_its_siblings_in_their_own_style_and_goes_last ... ok
+test a_tab_indented_file_gets_tab_indented_insertions ... ok
+test adding_then_removing_a_key_leaves_the_file_byte_identical ... ok
+test an_array_missing_its_separator_is_a_syntax_error ... ok
+test an_empty_object_receives_its_first_key ... ok
+test an_unterminated_array_is_a_syntax_error ... ok
+test braces_and_commas_inside_a_string_are_not_structure ... ok
+test arrays_are_preserved_including_nested_ones ... ok
+test carriage_returns_survive ... ok
+test every_truncated_array_refuses ... ok
+test non_ascii_passes_through_as_utf8_rather_than_being_escaped ... ok
+test removing_something_that_is_not_there_is_not_an_error ... ok
+test removing_the_first_of_several_keys_takes_its_trailing_comma ... ok
+test removing_the_only_key_leaves_an_empty_object ... ok
+test replaces_a_top_level_string_and_changes_nothing_else ... ok
+test replaces_a_nested_value_and_leaves_every_other_byte_alone ... ok
+test setting_a_key_whose_parent_is_not_an_object_is_refused ... ok
+test setting_one_key_twice_keeps_only_the_last_value ... ok
+test strict_json_refuses_a_comment ... ok
+test setting_the_same_value_twice_is_byte_identical ... ok
+test strings_holding_escapes_survive_untouched ... ok
+test the_original_bytes_and_a_members_extent_are_available_for_comparison ... ok
+
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-K5Rg8G.tmp/target/debug/deps/restore_and_drift-9a427787148ef8c6`
+
+running 7 tests
+test an_unknown_restore_target_is_refused ... ok
+test without_a_switch_there_is_nothing_to_drift_from ... ok
+test a_file_reformatted_by_the_tool_is_not_drift ... ok
+test a_value_changed_outside_tapkey_is_reported_as_drift ... FAILED
+test restoring_takes_a_backup_before_it_acts ... ok
+test restoring_the_snapshot_returns_the_file_as_it_was_before_tapkey ... ok
+test restoring_the_snapshot_records_owning_nothing ... ok
+
+failures:
+
+---- a_value_changed_outside_tapkey_is_reported_as_drift stdout ----
+
+thread 'a_value_changed_outside_tapkey_is_reported_as_drift' (17622721) panicked at core/tests/restore_and_drift.rs:117:5:
+assertion `left == right` failed: {"ok":true,"tools":[{"endpoint":{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_BASE_URL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":"https://api.z.ai/api/anthropic","wins":true},{"key":"ANTHROPIC_BASE_URL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"effective":"https://api.z.ai/api/anthropic"},"slots":[{"chain":[{"key":"","observable":false,"scope":"session","source":"/model during a session","value":null,"wins":false},{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":"somebody-elses-model","wins":true},{"key":"ANTHROPIC_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"model","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":"somebody-elses-model","owned":true,"slot":"main"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_SMALL_FAST_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_SMALL_FAST_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_HAIKU_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_HAIKU_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":true,"slot":"utility"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"CLAUDE_CODE_SUBAGENT_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"CLAUDE_CODE_SUBAGENT_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":true,"slot":"subagent"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_OPUS_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_OPUS_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":true,"slot":"opus"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_SONNET_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_SONNET_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":true,"slot":"sonnet"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_FABLE_MODEL","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"ANTHROPIC_DEFAULT_FABLE_MODEL","observable":true,"scope":"shell","source":"login shell","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":true,"slot":"fable"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"advisorModel","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":false,"slot":"advisor"},{"chain":[{"key":"","observable":false,"scope":"command line","source":"--settings or a per-key flag","value":null,"wins":false},{"key":"fallbackModel","observable":true,"scope":"user","source":"~/.claude/settings.json","value":null,"wins":false},{"key":"","observable":false,"scope":"cloud session","source":"reads neither user settings nor the shell","value":null,"wins":false}],"drifted":false,"effective":null,"owned":false,"slot":"fallback"}],"tool":"claude"}]}
+  left: Bool(false)
+ right: Bool(true)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_value_changed_outside_tapkey_is_reported_as_drift
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+error: test failed, to rerun pass `-p tapkey-core --test restore_and_drift`
+
+*** result: Failure(101)

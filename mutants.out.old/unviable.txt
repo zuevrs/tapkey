@@ -1,8 +1,0 @@
-core/src/profile.rs:36:9: replace Profiles::read -> Result<Profiles, String> with Ok(Default::default())
-core/src/adapters/claude.rs:120:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())
-core/src/adapters/claude.rs:143:5: replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())
-core/src/adapters/claude.rs:158:5: replace resolve -> Resolved with Default::default()
-core/src/adapters/claude.rs:212:5: replace unseen -> Link with Default::default()
-core/src/adapters/claude.rs:223:5: replace unseen_from -> Link with Default::default()
-core/src/profile.rs:41:9: replace Profiles::find -> Option<&Profile> with Some(Box::leak(Box::new(Default::default())))
-core/src/adapters/claude.rs:289:5: replace plan_switch -> Result<Vec<Action>, JsonError> with Ok(vec![Default::default()])

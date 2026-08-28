@@ -322,3 +322,29 @@ fn a_manifest_from_the_future_is_unrestorable_rather_than_guessed_at() {
         "kept, because we do not delete what we cannot read"
     );
 }
+
+/// Two changes inside the same millisecond must not share a directory. The clock is fixed
+/// under test, which makes the collision certain rather than rare — and it is exactly what a
+/// pair of quick switches would produce on a real machine.
+#[test]
+fn two_backups_at_the_same_instant_do_not_overwrite_each_other() {
+    let dir = TempDir::new("store-collide");
+    let store = Store::open(&dir.path().join("tapkey")).expect("open");
+    let target = dir.path().join("settings.json");
+
+    let first = store
+        .take_backup(&[captured(&target, "first")], "p1", at(1))
+        .expect("first");
+    let second = store
+        .take_backup(&[captured(&target, "second")], "p2", at(1))
+        .expect("second");
+
+    assert_ne!(first, second);
+    let listed = store.backups().expect("list");
+    assert_eq!(listed.len(), 2, "neither was lost");
+    let profiles: Vec<&str> = listed.iter().map(|b| b.profile.as_str()).collect();
+    assert!(
+        profiles.contains(&"p1") && profiles.contains(&"p2"),
+        "{profiles:?}"
+    );
+}
