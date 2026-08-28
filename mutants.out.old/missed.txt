@@ -1,5 +1,0 @@
-core/src/lib.rs:25:5: replace handle -> String with String::new()
-core/src/lib.rs:25:5: replace handle -> String with "xyzzy".into()
-core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()
-core/src/adapters/claude.rs:145:5: replace display_path -> String with "xyzzy".into()
-core/src/adapters/claude.rs:155:64: replace && with || in settle

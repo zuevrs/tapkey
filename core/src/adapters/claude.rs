@@ -2,123 +2,225 @@
 //!
 //! A profile reaches this tool through an `env` block in `~/.claude/settings.json` and nowhere
 //! else: there is no settings key for the base URL, and the model slots tapkey owns exist only
-//! as environment variables. Reading it back means resolving the scopes it consults, in the
-//! order it consults them.
+//! as environment variables. Reading it back means resolving, per slot, the places the tool
+//! consults — which are not the same places in the same order for every slot.
 
 use crate::env::{Env, ShellVar};
 use crate::json::Document;
 use crate::wire::{Link, Resolved, SlotState, ToolState};
 use std::path::{Path, PathBuf};
 
-pub const ENDPOINT_VAR: &str = "ANTHROPIC_BASE_URL";
-
-/// Every place Claude Code takes a value from, highest precedence first.
-///
-/// Environment variables are not a level in this stack. A settings-file `env` block replaces
-/// what the shell exported — measured, and true for credentials as well as models — so the
-/// shell sits below every file rather than beside them. The order is a list rather than
-/// control flow, because control flow is how a scope ends up in the wrong place when the one
-/// above it happens to be absent.
-const PRECEDENCE: [Scope; 6] = [
-    Scope::File { name: "managed" },
-    Scope::Unobservable {
-        name: "command line",
-        why: "--settings or a per-key flag",
+/// One place a value can come from, in the order a slot consults them.
+#[derive(Clone, Copy)]
+enum Source {
+    /// An environment variable: every settings file's `env` block, then the login shell. A
+    /// settings-file `env` block replaces what the shell exported, measured, so the shell sits
+    /// below every file rather than beside them.
+    Var(&'static str),
+    /// A key in the settings files themselves.
+    Key(&'static [&'static str]),
+    /// Somewhere tapkey cannot look.
+    Unseen {
+        scope: &'static str,
+        why: &'static str,
     },
-    Scope::File {
-        name: "project local",
-    },
-    Scope::File { name: "project" },
-    Scope::File { name: "user" },
-    Scope::Shell,
-    // Cloud sessions read only shared project settings and server-managed settings; a user
-    // file never reaches them. Saying nothing here would read as "switched everywhere".
-];
+}
 
-/// Named separately because it belongs below the shell and the array above is fixed-length.
-const CLOUD: Scope = Scope::Unobservable {
-    name: "cloud session",
+/// The files, highest precedence first. Command line sits between managed and the project
+/// files and cannot be observed, so it is a source of its own rather than a file.
+const FILES: [&str; 4] = ["managed", "project local", "project", "user"];
+
+const CLOUD: Source = Source::Unseen {
+    scope: "cloud session",
     why: "reads neither user settings nor the shell",
 };
 
-#[derive(Clone, Copy)]
-enum Scope {
-    File {
-        name: &'static str,
-    },
-    Unobservable {
-        name: &'static str,
-        why: &'static str,
-    },
-    Shell,
+/// A command line tapkey did not run can carry `--settings` or a per-key flag. It is declared
+/// per slot rather than inserted afterwards, because inserting is how a scope lands in the
+/// wrong place the moment the one above it is absent.
+const COMMAND_LINE: Source = Source::Unseen {
+    scope: "command line",
+    why: "--settings or a per-key flag",
+};
+
+/// `/model` during a session outranks even the command line, and only for the main model.
+const SESSION: Source = Source::Unseen {
+    scope: "session",
+    why: "/model during a session",
+};
+
+struct SlotSpec {
+    name: &'static str,
+    owned: bool,
+    sources: &'static [Source],
 }
+
+/// Each slot's own precedence. `ANTHROPIC_MODEL` outranks the `model` key while
+/// `ANTHROPIC_DEFAULT_MODEL` sits below it; the deprecated small/fast variable still wins the
+/// background path though it lost its name. None of that generalises, which is the point.
+const SLOTS: &[SlotSpec] = &[
+    SlotSpec {
+        name: "main",
+        owned: true,
+        sources: &[
+            SESSION,
+            COMMAND_LINE,
+            Source::Var("ANTHROPIC_MODEL"),
+            Source::Key(&["model"]),
+            Source::Var("ANTHROPIC_DEFAULT_MODEL"),
+        ],
+    },
+    SlotSpec {
+        name: "utility",
+        owned: true,
+        sources: &[
+            COMMAND_LINE,
+            Source::Var("ANTHROPIC_SMALL_FAST_MODEL"),
+            Source::Var("ANTHROPIC_DEFAULT_HAIKU_MODEL"),
+        ],
+    },
+    SlotSpec {
+        name: "subagent",
+        owned: true,
+        sources: &[COMMAND_LINE, Source::Var("CLAUDE_CODE_SUBAGENT_MODEL")],
+    },
+    SlotSpec {
+        name: "opus",
+        owned: true,
+        sources: &[COMMAND_LINE, Source::Var("ANTHROPIC_DEFAULT_OPUS_MODEL")],
+    },
+    SlotSpec {
+        name: "sonnet",
+        owned: true,
+        sources: &[COMMAND_LINE, Source::Var("ANTHROPIC_DEFAULT_SONNET_MODEL")],
+    },
+    SlotSpec {
+        name: "fable",
+        owned: true,
+        sources: &[COMMAND_LINE, Source::Var("ANTHROPIC_DEFAULT_FABLE_MODEL")],
+    },
+    SlotSpec {
+        name: "advisor",
+        owned: false,
+        sources: &[COMMAND_LINE, Source::Key(&["advisorModel"])],
+    },
+    SlotSpec {
+        name: "fallback",
+        owned: false,
+        sources: &[COMMAND_LINE, Source::Key(&["fallbackModel"])],
+    },
+];
+
+const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var("ANTHROPIC_BASE_URL")];
 
 /// Read what Claude Code will actually use, resolved across the scopes it consults.
 pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {
-    let chain = resolve_env_var(env, ENDPOINT_VAR)?;
+    let files = read_all(env)?;
+
+    let endpoint = resolve(env, &files, ENDPOINT);
+    let slots = SLOTS
+        .iter()
+        .map(|spec| SlotState {
+            slot: spec.name,
+            owned: spec.owned,
+            resolved: resolve(env, &files, spec.sources),
+        })
+        .collect();
 
     Ok(ToolState {
         tool: "claude",
-        endpoint: Resolved {
-            effective: winning_value(&chain),
-            chain,
-        },
-        slots: Vec::<SlotState>::new(),
+        endpoint,
+        slots,
     })
 }
 
-/// Build the precedence chain for one environment variable.
-///
-/// Every scope consulted appears, including the ones that had no opinion: "this file was read
-/// and said nothing" is part of the answer to *which file decided this*. A file that does not
-/// exist is left out, because it was never consulted.
-fn resolve_env_var(env: &Env, name: &str) -> Result<Vec<Link>, crate::json::Error> {
+/// Every settings file that exists, in precedence order, parsed once.
+struct Files(Vec<(&'static str, PathBuf, Document)>);
+
+fn read_all(env: &Env) -> Result<Files, crate::json::Error> {
+    let mut out = Vec::new();
+    for scope in FILES {
+        let Some(path) = scope_path(env, scope) else {
+            continue;
+        };
+        // A file that is not there is not an error: installing Claude Code creates none.
+        let Ok(bytes) = std::fs::read(&path) else {
+            continue;
+        };
+        out.push((scope, path, Document::parse(&bytes)?));
+    }
+    Ok(Files(out))
+}
+
+fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
     let mut chain = Vec::new();
-    for scope in PRECEDENCE.iter().chain(std::iter::once(&CLOUD)) {
-        match *scope {
-            Scope::File { name: scope_name } => {
-                let Some(path) = scope_path(env, scope_name) else {
-                    continue;
-                };
-                let Some(doc) = read_settings(&path)? else {
-                    continue;
-                };
+    for source in sources {
+        match *source {
+            Source::Unseen { scope, why } => chain.push(unseen(scope, why, "")),
+            Source::Key(path) => {
+                for (scope, file, doc) in &files.0 {
+                    chain.push(Link {
+                        source: display_path(file, env),
+                        scope,
+                        key: path.join("."),
+                        value: doc.get_string(path).map(str::to_owned),
+                        observable: true,
+                        wins: false,
+                    });
+                }
+            }
+            Source::Var(name) => {
+                for (scope, file, doc) in &files.0 {
+                    chain.push(Link {
+                        source: display_path(file, env),
+                        scope,
+                        key: name.to_string(),
+                        value: doc.get_string(&["env", name]).map(str::to_owned),
+                        observable: true,
+                        wins: false,
+                    });
+                }
                 chain.push(Link {
-                    source: display_path(&path, env),
-                    scope: scope_name,
-                    value: doc.get_string(&["env", name]).map(str::to_owned),
+                    source: "login shell".to_string(),
+                    scope: "shell",
+                    key: name.to_string(),
+                    // A withheld credential and an unset variable both read as no value. The
+                    // difference is a credential concern, reported as an attention rather than
+                    // by pretending to know a value we deliberately did not read.
+                    value: match env.shell_var(name) {
+                        Some(ShellVar::Value(v)) => Some(v.clone()),
+                        Some(ShellVar::SetButWithheld) | None => None,
+                    },
                     observable: true,
                     wins: false,
                 });
             }
-            Scope::Unobservable { name: n, why } => chain.push(unobservable(n, why)),
-            Scope::Shell => chain.push(Link {
-                source: "login shell".to_string(),
-                scope: "shell",
-                // A withheld credential and an unset variable both read as no value here. The
-                // difference is a credential concern, reported as an attention rather than by
-                // pretending to know a value we deliberately did not read.
-                value: match env.shell_var(name) {
-                    Some(ShellVar::Value(v)) => Some(v.clone()),
-                    Some(ShellVar::SetButWithheld) | None => None,
-                },
-                observable: true,
-                wins: false,
-            }),
         }
     }
+    chain.push(unseen_from(CLOUD));
 
     settle(&mut chain);
-    Ok(chain)
+    Resolved {
+        effective: winning_value(&chain),
+        chain,
+    }
 }
 
-fn unobservable(scope: &'static str, source: &str) -> Link {
+fn unseen(scope: &'static str, why: &str, key: &str) -> Link {
     Link {
-        source: source.to_string(),
+        source: why.to_string(),
         scope,
+        key: key.to_string(),
         value: None,
         observable: false,
         wins: false,
+    }
+}
+
+fn unseen_from(source: Source) -> Link {
+    match source {
+        Source::Unseen { scope, why } => unseen(scope, why, ""),
+        _ => unreachable!("only an Unseen source becomes an unseen link"),
     }
 }
 
@@ -132,14 +234,6 @@ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
     }
 }
 
-fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {
-    match std::fs::read(path) {
-        Ok(bytes) => Document::parse(&bytes).map(Some),
-        // A file that is not there is not an error: installing Claude Code creates none.
-        Err(_) => Ok(None),
-    }
-}
-
 /// Paths are reported as the person would type them, so a chain reads like their filesystem.
 fn display_path(path: &Path, env: &Env) -> String {
     match path.strip_prefix(env.home()) {
@@ -148,9 +242,9 @@ fn display_path(path: &Path, env: &Env) -> String {
     }
 }
 
-/// The highest-precedence entry that actually carries a value wins. An unobservable scope can
-/// never be said to win: we do not know what is there, and claiming otherwise would be intent
-/// dressed as observation.
+/// The highest-precedence entry that actually carries a value wins. Being consulted is not the
+/// same condition as having an opinion, and an unobservable scope can never be said to win: we
+/// do not know what is there, and claiming otherwise would be intent dressed as observation.
 fn settle(chain: &mut [Link]) {
     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {
         link.wins = true;

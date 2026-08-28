@@ -1,0 +1,21 @@
+--- core/src/adapters/claude.rs
++++ delete match arm "project local" in scope_path
+@@ -222,17 +222,17 @@
+         Source::Unseen { scope, why } => unseen(scope, why, ""),
+         _ => unreachable!("only an Unseen source becomes an unseen link"),
+     }
+ }
+ 
+ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
+     match scope {
+         "managed" => Some(env.managed().to_path_buf()),
+-        "project local" => Some(env.project()?.join(".claude").join("settings.local.json")),
++         /* ~ changed by cargo-mutants ~ */
+         "project" => Some(env.project()?.join(".claude").join("settings.json")),
+         "user" => Some(env.home().join(".claude").join("settings.json")),
+         _ => None,
+     }
+ }
+ 
+ /// Paths are reported as the person would type them, so a chain reads like their filesystem.
+ fn display_path(path: &Path, env: &Env) -> String {

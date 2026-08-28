@@ -20,5 +20,5 @@
  mod tests {
      use super::*;
  
-     #[test]
-     fn an_unknown_schema_version_is_refused_rather_than_guessed_at() {
+     /// The public wrapper is what three consumers actually call, so it needs a test of its
+     /// own — and one that refuses before touching the filesystem, or it would read whatever

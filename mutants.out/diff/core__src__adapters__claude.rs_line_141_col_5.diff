@@ -1,0 +1,32 @@
+--- core/src/adapters/claude.rs
++++ replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())
+@@ -133,28 +133,17 @@
+         slots,
+     })
+ }
+ 
+ /// Every settings file that exists, in precedence order, parsed once.
+ struct Files(Vec<(&'static str, PathBuf, Document)>);
+ 
+ fn read_all(env: &Env) -> Result<Files, crate::json::Error> {
+-    let mut out = Vec::new();
+-    for scope in FILES {
+-        let Some(path) = scope_path(env, scope) else {
+-            continue;
+-        };
+-        // A file that is not there is not an error: installing Claude Code creates none.
+-        let Ok(bytes) = std::fs::read(&path) else {
+-            continue;
+-        };
+-        out.push((scope, path, Document::parse(&bytes)?));
+-    }
+-    Ok(Files(out))
++    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
+     let mut chain = Vec::new();
+     for source in sources {
+         match *source {
+             Source::Unseen { scope, why } => chain.push(unseen(scope, why, "")),
+             Source::Key(path) => {

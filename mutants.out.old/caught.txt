@@ -1,9 +1,9 @@
-core/src/lib.rs:33:5: replace handle_with -> String with String::new()
-core/src/lib.rs:33:5: replace handle_with -> String with "xyzzy".into()
+core/src/lib.rs:25:5: replace handle -> String with String::new()
 core/src/lib.rs:49:25: replace != with == in dispatch
-core/src/env.rs:97:9: replace Env::project -> Option<&Path> with None
-core/src/env.rs:106:9: replace Env::shell_var -> Option<&ShellVar> with None
+core/src/lib.rs:25:5: replace handle -> String with "xyzzy".into()
+core/src/lib.rs:33:5: replace handle_with -> String with "xyzzy".into()
 core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])
+core/src/lib.rs:33:5: replace handle_with -> String with String::new()
 core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with None
 core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with Some(Default::default())
 core/src/adapters/claude.rs:127:9: delete match arm "managed" in scope_path
@@ -11,7 +11,10 @@ core/src/adapters/claude.rs:128:9: delete match arm "project local" in scope_pat
 core/src/adapters/claude.rs:129:9: delete match arm "project" in scope_path
 core/src/adapters/claude.rs:130:9: delete match arm "user" in scope_path
 core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)
+core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()
+core/src/adapters/claude.rs:145:5: replace display_path -> String with "xyzzy".into()
 core/src/adapters/claude.rs:155:5: replace settle with ()
+core/src/adapters/claude.rs:155:64: replace && with || in settle
 core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with None
 core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(String::new())
 core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some("xyzzy".into())

@@ -8,7 +8,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 4.280162458,
+          "duration": 3.756437292,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -20,7 +20,7 @@
         },
         {
           "phase": "Test",
-          "duration": 1.433600375,
+          "duration": 1.734554042,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -34,245 +34,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:25:5: replace handle -> String with String::new()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 23,
-                "column": 1
-              },
-              "end": {
-                "line": 26,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 25,
-              "column": 5
-            },
-            "end": {
-              "line": 25,
-              "column": 39
-            }
-          },
-          "replacement": "String::new()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_25_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_25_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.705713209,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 1.933448208,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:45:5: replace dispatch -> Response with Default::default()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "dispatch",
-            "return_type": "-> Response",
-            "span": {
-              "start": {
-                "line": 44,
-                "column": 1
-              },
-              "end": {
-                "line": 64,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 45,
-              "column": 5
-            },
-            "end": {
-              "line": 63,
-              "column": 6
-            }
-          },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__lib.rs_line_45_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_45_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.160223208,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:49:25: replace != with == in dispatch",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "dispatch",
-            "return_type": "-> Response",
-            "span": {
-              "start": {
-                "line": 44,
-                "column": 1
-              },
-              "end": {
-                "line": 64,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 49,
-              "column": 25
-            },
-            "end": {
-              "line": 49,
-              "column": 27
-            }
-          },
-          "replacement": "==",
-          "genre": "BinaryOperator"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_49_col_25.log",
-      "diff_path": "diff/core__src__lib.rs_line_49_col_25.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.809426666,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.813009792,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:67:5: replace refuse -> Response with Default::default()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "refuse",
-            "return_type": "-> Response",
-            "span": {
-              "start": {
-                "line": 66,
-                "column": 1
-              },
-              "end": {
-                "line": 71,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 67,
-              "column": 5
-            },
-            "end": {
-              "line": 70,
-              "column": 6
-            }
-          },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__lib.rs_line_67_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_67_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.165625167,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:58:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
+          "name": "core/src/adapters/claude.rs:118:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -280,22 +42,22 @@
             "return_type": "-> Result<ToolState, crate::json::Error>",
             "span": {
               "start": {
-                "line": 56,
+                "line": 116,
                 "column": 1
               },
               "end": {
-                "line": 68,
+                "line": 135,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 58,
+              "line": 118,
               "column": 5
             },
             "end": {
-              "line": 67,
+              "line": 134,
               "column": 7
             }
           },
@@ -304,12 +66,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_58_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_58_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_118_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_118_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.159297125,
+          "duration": 0.212357875,
           "process_status": {
             "Failure": 101
           },
@@ -326,149 +88,30 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:25:5: replace handle -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 23,
-                "column": 1
-              },
-              "end": {
-                "line": 26,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 25,
-              "column": 5
-            },
-            "end": {
-              "line": 25,
-              "column": 39
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_25_col_5_001.log",
-      "diff_path": "diff/core__src__lib.rs_line_25_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 5.798398875,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.699836291,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![Default::default()])",
+          "name": "core/src/adapters/claude.rs:221:5: replace unseen_from -> Link with Default::default()",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
-            "function_name": "resolve_env_var",
-            "return_type": "-> Result<Vec<Link>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 70,
-                "column": 1
-              },
-              "end": {
-                "line": 113,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 76,
-              "column": 5
-            },
-            "end": {
-              "line": 112,
-              "column": 14
-            }
-          },
-          "replacement": "Ok(vec![Default::default()])",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_76_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_76_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.107272583,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:116:5: replace unobservable -> Link with Default::default()",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "unobservable",
+            "function_name": "unseen_from",
             "return_type": "-> Link",
             "span": {
               "start": {
-                "line": 115,
+                "line": 220,
                 "column": 1
               },
               "end": {
-                "line": 123,
+                "line": 225,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 116,
+              "line": 221,
               "column": 5
             },
             "end": {
-              "line": 122,
+              "line": 224,
               "column": 6
             }
           },
@@ -477,12 +120,12 @@
         }
       },
       "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_116_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_116_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_221_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_221_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.107802709,
+          "duration": 0.216796209,
           "process_status": {
             "Failure": 101
           },
@@ -499,239 +142,98 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:33:5: replace handle_with -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle_with",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 28,
-                "column": 1
-              },
-              "end": {
-                "line": 42,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 33,
-              "column": 5
-            },
-            "end": {
-              "line": 41,
-              "column": 7
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_33_col_5_001.log",
-      "diff_path": "diff/core__src__lib.rs_line_33_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 6.097349958,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.643430208,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])",
+          "name": "core/src/adapters/claude.rs:156:5: replace resolve -> Resolved with Default::default()",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
-            "function_name": "resolve_env_var",
-            "return_type": "-> Result<Vec<Link>, crate::json::Error>",
+            "function_name": "resolve",
+            "return_type": "-> Resolved",
             "span": {
               "start": {
-                "line": 70,
+                "line": 155,
                 "column": 1
               },
               "end": {
-                "line": 113,
+                "line": 207,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 76,
+              "line": 156,
               "column": 5
             },
             "end": {
-              "line": 112,
-              "column": 14
-            }
-          },
-          "replacement": "Ok(vec![])",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_76_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_76_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.590250208,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 1.827548292,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:33:5: replace handle_with -> String with String::new()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle_with",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 28,
-                "column": 1
-              },
-              "end": {
-                "line": 42,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 33,
-              "column": 5
-            },
-            "end": {
-              "line": 41,
-              "column": 7
-            }
-          },
-          "replacement": "String::new()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_33_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_33_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 6.35561975,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 1.074862958,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with None",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 126,
-              "column": 5
-            },
-            "end": {
-              "line": 132,
+              "line": 206,
               "column": 6
             }
           },
-          "replacement": "None",
+          "replacement": "Default::default()",
           "genre": "FnValue"
         }
       },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_126_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_126_col_5.diff",
+      "summary": "Unviable",
+      "log_path": "log/core__src__adapters__claude.rs_line_156_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_156_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.432530667,
+          "duration": 5.159006084,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/adapters/claude.rs:222:9: delete match arm Source::Unseen{scope, why} in unseen_from",
+          "package": "tapkey-core",
+          "file": "core/src/adapters/claude.rs",
+          "function": {
+            "function_name": "unseen_from",
+            "return_type": "-> Link",
+            "span": {
+              "start": {
+                "line": 220,
+                "column": 1
+              },
+              "end": {
+                "line": 225,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 222,
+              "column": 9
+            },
+            "end": {
+              "line": 222,
+              "column": 65
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__adapters__claude.rs_line_222_col_9.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_222_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.64038725,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -743,7 +245,7 @@
         },
         {
           "phase": "Test",
-          "duration": 2.562942875,
+          "duration": 4.415477834,
           "process_status": {
             "Failure": 101
           },
@@ -759,7 +261,115 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
+          "name": "core/src/adapters/claude.rs:210:5: replace unseen -> Link with Default::default()",
+          "package": "tapkey-core",
+          "file": "core/src/adapters/claude.rs",
+          "function": {
+            "function_name": "unseen",
+            "return_type": "-> Link",
+            "span": {
+              "start": {
+                "line": 209,
+                "column": 1
+              },
+              "end": {
+                "line": 218,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 210,
+              "column": 5
+            },
+            "end": {
+              "line": 217,
+              "column": 6
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__adapters__claude.rs_line_210_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_210_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 5.528795583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/adapters/claude.rs:141:5: replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())",
+          "package": "tapkey-core",
+          "file": "core/src/adapters/claude.rs",
+          "function": {
+            "function_name": "read_all",
+            "return_type": "-> Result<Files, crate::json::Error>",
+            "span": {
+              "start": {
+                "line": 140,
+                "column": 1
+              },
+              "end": {
+                "line": 153,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 141,
+              "column": 5
+            },
+            "end": {
+              "line": 152,
+              "column": 19
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__adapters__claude.rs_line_141_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_141_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 6.54968425,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/adapters/claude.rs:228:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -767,22 +377,22 @@
             "return_type": "-> Option<PathBuf>",
             "span": {
               "start": {
-                "line": 125,
+                "line": 227,
                 "column": 1
               },
               "end": {
-                "line": 133,
+                "line": 235,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 126,
+              "line": 228,
               "column": 5
             },
             "end": {
-              "line": 132,
+              "line": 234,
               "column": 6
             }
           },
@@ -791,12 +401,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_126_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_126_col_5_001.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_228_col_5_001.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_228_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.602064334,
+          "duration": 0.705521041,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -808,7 +418,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.159962375,
+          "duration": 2.844727,
           "process_status": {
             "Failure": 101
           },
@@ -824,7 +434,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:127:9: delete match arm \"managed\" in scope_path",
+          "name": "core/src/adapters/claude.rs:228:5: replace scope_path -> Option<PathBuf> with None",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -832,22 +442,87 @@
             "return_type": "-> Option<PathBuf>",
             "span": {
               "start": {
-                "line": 125,
+                "line": 227,
                 "column": 1
               },
               "end": {
-                "line": 133,
+                "line": 235,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 127,
+              "line": 228,
+              "column": 5
+            },
+            "end": {
+              "line": 234,
+              "column": 6
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__adapters__claude.rs_line_228_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_228_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.084230667,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.099873459,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/adapters/claude.rs:229:9: delete match arm \"managed\" in scope_path",
+          "package": "tapkey-core",
+          "file": "core/src/adapters/claude.rs",
+          "function": {
+            "function_name": "scope_path",
+            "return_type": "-> Option<PathBuf>",
+            "span": {
+              "start": {
+                "line": 227,
+                "column": 1
+              },
+              "end": {
+                "line": 235,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 229,
               "column": 9
             },
             "end": {
-              "line": 127,
+              "line": 229,
               "column": 56
             }
           },
@@ -856,12 +531,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_127_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_127_col_9.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_229_col_9.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_229_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.595444125,
+          "duration": 1.116881541,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -873,7 +548,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.734116,
+          "duration": 4.590152334,
           "process_status": {
             "Failure": 101
           },
@@ -889,7 +564,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:128:9: delete match arm \"project local\" in scope_path",
+          "name": "core/src/adapters/claude.rs:230:9: delete match arm \"project local\" in scope_path",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -897,22 +572,22 @@
             "return_type": "-> Option<PathBuf>",
             "span": {
               "start": {
-                "line": 125,
+                "line": 227,
                 "column": 1
               },
               "end": {
-                "line": 133,
+                "line": 235,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 128,
+              "line": 230,
               "column": 9
             },
             "end": {
-              "line": 128,
+              "line": 230,
               "column": 93
             }
           },
@@ -921,12 +596,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_128_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_128_col_9.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_230_col_9.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_230_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.595193667,
+          "duration": 0.703014583,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -938,7 +613,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.75174825,
+          "duration": 4.560436625,
           "process_status": {
             "Failure": 101
           },
@@ -954,61 +629,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(Some(Default::default()))",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "read_settings",
-            "return_type": "-> Result<Option<Document>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 135,
-                "column": 1
-              },
-              "end": {
-                "line": 141,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 136,
-              "column": 5
-            },
-            "end": {
-              "line": 140,
-              "column": 6
-            }
-          },
-          "replacement": "Ok(Some(Default::default()))",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_136_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_136_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.164014209,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:129:9: delete match arm \"project\" in scope_path",
+          "name": "core/src/adapters/claude.rs:232:9: delete match arm \"user\" in scope_path",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1016,87 +637,22 @@
             "return_type": "-> Option<PathBuf>",
             "span": {
               "start": {
-                "line": 125,
+                "line": 227,
                 "column": 1
               },
               "end": {
-                "line": 133,
+                "line": 235,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 129,
+              "line": 232,
               "column": 9
             },
             "end": {
-              "line": 129,
-              "column": 81
-            }
-          },
-          "replacement": "",
-          "genre": "MatchArm"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_129_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_129_col_9.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.382904375,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.5419748330000003,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:130:9: delete match arm \"user\" in scope_path",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 130,
-              "column": 9
-            },
-            "end": {
-              "line": 130,
+              "line": 232,
               "column": 74
             }
           },
@@ -1105,12 +661,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_130_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_130_col_9.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_232_col_9.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_232_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.430683625,
+          "duration": 0.481230333,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1122,7 +678,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.334615375,
+          "duration": 3.253636042,
           "process_status": {
             "Failure": 101
           },
@@ -1138,44 +694,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)",
+          "name": "core/src/adapters/claude.rs:231:9: delete match arm \"project\" in scope_path",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
-            "function_name": "read_settings",
-            "return_type": "-> Result<Option<Document>, crate::json::Error>",
+            "function_name": "scope_path",
+            "return_type": "-> Option<PathBuf>",
             "span": {
               "start": {
-                "line": 135,
+                "line": 227,
                 "column": 1
               },
               "end": {
-                "line": 141,
+                "line": 235,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 136,
-              "column": 5
+              "line": 231,
+              "column": 9
             },
             "end": {
-              "line": 140,
-              "column": 6
+              "line": 231,
+              "column": 81
             }
           },
-          "replacement": "Ok(None)",
-          "genre": "FnValue"
+          "replacement": "",
+          "genre": "MatchArm"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_136_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_136_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_231_col_9.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_231_col_9.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.3683135,
+          "duration": 0.431847791,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1187,7 +743,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.059124417,
+          "duration": 4.277720834,
           "process_status": {
             "Failure": 101
           },
@@ -1203,7 +759,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()",
+          "name": "core/src/adapters/claude.rs:239:5: replace display_path -> String with String::new()",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1211,22 +767,22 @@
             "return_type": "-> String",
             "span": {
               "start": {
-                "line": 143,
+                "line": 237,
                 "column": 1
               },
               "end": {
-                "line": 149,
+                "line": 243,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 145,
+              "line": 239,
               "column": 5
             },
             "end": {
-              "line": 148,
+              "line": 242,
               "column": 6
             }
           },
@@ -1235,12 +791,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_145_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_145_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_239_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_239_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.327893417,
+          "duration": 0.475322375,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1252,7 +808,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.178984083,
+          "duration": 4.5334635,
           "process_status": {
             "Failure": 101
           },
@@ -1268,7 +824,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with \"xyzzy\".into()",
+          "name": "core/src/adapters/claude.rs:239:5: replace display_path -> String with \"xyzzy\".into()",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1276,22 +832,22 @@
             "return_type": "-> String",
             "span": {
               "start": {
-                "line": 143,
+                "line": 237,
                 "column": 1
               },
               "end": {
-                "line": 149,
+                "line": 243,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 145,
+              "line": 239,
               "column": 5
             },
             "end": {
-              "line": 148,
+              "line": 242,
               "column": 6
             }
           },
@@ -1300,12 +856,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_145_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_145_col_5_001.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_239_col_5_001.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_239_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.429995625,
+          "duration": 0.427562375,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1317,7 +873,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.327852542,
+          "duration": 4.631312167,
           "process_status": {
             "Failure": 101
           },
@@ -1333,7 +889,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:155:5: replace settle with ()",
+          "name": "core/src/adapters/claude.rs:249:5: replace settle with ()",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1341,22 +897,22 @@
             "return_type": "",
             "span": {
               "start": {
-                "line": 151,
+                "line": 245,
                 "column": 1
               },
               "end": {
-                "line": 158,
+                "line": 252,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 155,
+              "line": 249,
               "column": 5
             },
             "end": {
-              "line": 157,
+              "line": 251,
               "column": 6
             }
           },
@@ -1365,12 +921,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_155_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_155_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_249_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_249_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.429013375,
+          "duration": 0.431727125,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1382,7 +938,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.365567709,
+          "duration": 3.69592575,
           "process_status": {
             "Failure": 101
           },
@@ -1398,7 +954,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:155:64: replace && with || in settle",
+          "name": "core/src/adapters/claude.rs:249:64: replace && with || in settle",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1406,22 +962,22 @@
             "return_type": "",
             "span": {
               "start": {
-                "line": 151,
+                "line": 245,
                 "column": 1
               },
               "end": {
-                "line": 158,
+                "line": 252,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 155,
+              "line": 249,
               "column": 64
             },
             "end": {
-              "line": 155,
+              "line": 249,
               "column": 66
             }
           },
@@ -1430,12 +986,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_155_col_64.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_155_col_64.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_249_col_64.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_249_col_64.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.382394334,
+          "duration": 0.430025,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1447,7 +1003,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.313030625,
+          "duration": 3.360195458,
           "process_status": {
             "Failure": 101
           },
@@ -1463,7 +1019,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with None",
+          "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with None",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1471,22 +1027,22 @@
             "return_type": "-> Option<String>",
             "span": {
               "start": {
-                "line": 160,
+                "line": 254,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 256,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
+              "line": 255,
               "column": 5
             },
             "end": {
-              "line": 161,
+              "line": 255,
               "column": 64
             }
           },
@@ -1495,12 +1051,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_255_col_5.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_255_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.379317542,
+          "duration": 0.59342825,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1512,7 +1068,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.31677475,
+          "duration": 2.833462167,
           "process_status": {
             "Failure": 101
           },
@@ -1528,7 +1084,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(String::new())",
+          "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with Some(String::new())",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1536,22 +1092,22 @@
             "return_type": "-> Option<String>",
             "span": {
               "start": {
-                "line": 160,
+                "line": 254,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 256,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
+              "line": 255,
               "column": 5
             },
             "end": {
-              "line": 161,
+              "line": 255,
               "column": 64
             }
           },
@@ -1560,12 +1116,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5_001.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_255_col_5_001.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_255_col_5_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.480371792,
+          "duration": 0.430169667,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1577,7 +1133,7 @@
         },
         {
           "phase": "Test",
-          "duration": 2.5952105420000002,
+          "duration": 2.727194958,
           "process_status": {
             "Failure": 101
           },
@@ -1593,7 +1149,7 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
+          "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
           "package": "tapkey-core",
           "file": "core/src/adapters/claude.rs",
           "function": {
@@ -1601,22 +1157,22 @@
             "return_type": "-> Option<String>",
             "span": {
               "start": {
-                "line": 160,
+                "line": 254,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 256,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
+              "line": 255,
               "column": 5
             },
             "end": {
-              "line": 161,
+              "line": 255,
               "column": 64
             }
           },
@@ -1625,12 +1181,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5_002.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5_002.diff",
+      "log_path": "log/core__src__adapters__claude.rs_line_255_col_5_002.log",
+      "diff_path": "diff/core__src__adapters__claude.rs_line_255_col_5_002.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.431273792,
+          "duration": 0.426138833,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1642,7 +1198,7 @@
         },
         {
           "phase": "Test",
-          "duration": 2.23687325,
+          "duration": 2.741514083,
           "process_status": {
             "Failure": 101
           },
@@ -1656,13 +1212,13 @@
       ]
     }
   ],
-  "total_mutants": 26,
+  "total_mutants": 19,
   "missed": 0,
-  "caught": 20,
+  "caught": 14,
   "timeout": 0,
-  "unviable": 6,
+  "unviable": 5,
   "success": 0,
-  "start_time": "2026-08-28T16:21:00.097597Z",
-  "end_time": "2026-08-28T16:21:26.706013Z",
+  "start_time": "2026-08-28T16:25:14.62408Z",
+  "end_time": "2026-08-28T16:25:40.677921Z",
   "cargo_mutants_version": "27.1.0"
 }

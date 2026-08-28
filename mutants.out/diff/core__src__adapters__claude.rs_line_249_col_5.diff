@@ -1,0 +1,20 @@
+--- core/src/adapters/claude.rs
++++ replace settle with ()
+@@ -241,16 +241,14 @@
+         Err(_) => path.display().to_string(),
+     }
+ }
+ 
+ /// The highest-precedence entry that actually carries a value wins. Being consulted is not the
+ /// same condition as having an opinion, and an unobservable scope can never be said to win: we
+ /// do not know what is there, and claiming otherwise would be intent dressed as observation.
+ fn settle(chain: &mut [Link]) {
+-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {
+-        link.wins = true;
+-    }
++    () /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn winning_value(chain: &[Link]) -> Option<String> {
+     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())
+ }

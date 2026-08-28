@@ -1,230 +1,6 @@
 [
   {
-    "diff": "--- core/src/lib.rs\n+++ replace handle -> String with String::new()\n@@ -17,17 +17,17 @@\n use env::Env;\n use wire::{Envelope, Failure, Request, Response};\n \n /// The schema version carried by every request and response.\n pub const SCHEMA_VERSION: u32 = 1;\n \n /// The one entry point: a JSON request in, a JSON response out.\n pub fn handle(request: &str) -> String {\n-    handle_with(&Env::real(), request)\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n     let response = dispatch(env, request);\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 26
-        },
-        "start": {
-          "column": 1,
-          "line": 23
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:25:5: replace handle -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 25
-      },
-      "start": {
-        "column": 5,
-        "line": 25
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle -> String with \"xyzzy\".into()\n@@ -17,17 +17,17 @@\n use env::Env;\n use wire::{Envelope, Failure, Request, Response};\n \n /// The schema version carried by every request and response.\n pub const SCHEMA_VERSION: u32 = 1;\n \n /// The one entry point: a JSON request in, a JSON response out.\n pub fn handle(request: &str) -> String {\n-    handle_with(&Env::real(), request)\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n     let response = dispatch(env, request);\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 26
-        },
-        "start": {
-          "column": 1,
-          "line": 23
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:25:5: replace handle -> String with \"xyzzy\".into()",
-    "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 25
-      },
-      "start": {
-        "column": 5,
-        "line": 25
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle_with -> String with String::new()\n@@ -25,25 +25,17 @@\n     handle_with(&Env::real(), request)\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n-    let response = dispatch(env, request);\n-    serde_json::to_string(&response).unwrap_or_else(|e| {\n-        // Serialising our own response cannot fail on well-formed data, but a panic here would\n-        // take the host application down, so it degrades to a refusal instead.\n-        format!(\n-            r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n-            e.to_string()\n-        )\n-    })\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n     if envelope.version != SCHEMA_VERSION {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle_with",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 42
-        },
-        "start": {
-          "column": 1,
-          "line": 28
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:33:5: replace handle_with -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
-    "span": {
-      "end": {
-        "column": 7,
-        "line": 41
-      },
-      "start": {
-        "column": 5,
-        "line": 33
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace handle_with -> String with \"xyzzy\".into()\n@@ -25,25 +25,17 @@\n     handle_with(&Env::real(), request)\n }\n \n /// The same call, told what world it is acting in rather than going and finding one.\n ///\n /// This is the seam the tests and the fixture harness use. See ADR-0016: the public surface is\n /// still one string in and one string out.\n pub fn handle_with(env: &Env, request: &str) -> String {\n-    let response = dispatch(env, request);\n-    serde_json::to_string(&response).unwrap_or_else(|e| {\n-        // Serialising our own response cannot fail on well-formed data, but a panic here would\n-        // take the host application down, so it degrades to a refusal instead.\n-        format!(\n-            r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n-            e.to_string()\n-        )\n-    })\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n     if envelope.version != SCHEMA_VERSION {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "handle_with",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 42
-        },
-        "start": {
-          "column": 1,
-          "line": 28
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:33:5: replace handle_with -> String with \"xyzzy\".into()",
-    "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
-    "span": {
-      "end": {
-        "column": 7,
-        "line": 41
-      },
-      "start": {
-        "column": 5,
-        "line": 33
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace dispatch -> Response with Default::default()\n@@ -37,35 +37,17 @@\n         format!(\n             r#\"{{\"ok\":false,\"failure\":{{\"kind\":\"internal\",\"detail\":{:?}}}}}\"#,\n             e.to_string()\n         )\n     })\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n-    let envelope: Envelope = match serde_json::from_str(request) {\n-        Ok(e) => e,\n-        Err(e) => return refuse(\"malformed_request\", e.to_string()),\n-    };\n-    if envelope.version != SCHEMA_VERSION {\n-        return refuse(\n-            \"unknown_version\",\n-            format!(\"this core speaks version {SCHEMA_VERSION}\"),\n-        );\n-    }\n-    match envelope.request {\n-        Request::EffectiveState {} => match adapters::claude::effective_state(env) {\n-            Ok(tool) => Response::Ok {\n-                ok: true,\n-                tools: vec![tool],\n-            },\n-            Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n-        },\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn refuse(kind: &'static str, detail: String) -> Response {\n     Response::Refused {\n         ok: false,\n         failure: Failure { kind, detail },\n     }\n }\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "dispatch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 64
-        },
-        "start": {
-          "column": 1,
-          "line": 44
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:45:5: replace dispatch -> Response with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 63
-      },
-      "start": {
-        "column": 5,
-        "line": 45
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace != with == in dispatch\n@@ -41,17 +41,17 @@\n     })\n }\n \n fn dispatch(env: &Env, request: &str) -> Response {\n     let envelope: Envelope = match serde_json::from_str(request) {\n         Ok(e) => e,\n         Err(e) => return refuse(\"malformed_request\", e.to_string()),\n     };\n-    if envelope.version != SCHEMA_VERSION {\n+    if envelope.version == /* ~ changed by cargo-mutants ~ */ SCHEMA_VERSION {\n         return refuse(\n             \"unknown_version\",\n             format!(\"this core speaks version {SCHEMA_VERSION}\"),\n         );\n     }\n     match envelope.request {\n         Request::EffectiveState {} => match adapters::claude::effective_state(env) {\n             Ok(tool) => Response::Ok {\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "dispatch",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 64
-        },
-        "start": {
-          "column": 1,
-          "line": 44
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/lib.rs:49:25: replace != with == in dispatch",
-    "package": "tapkey-core",
-    "replacement": "==",
-    "span": {
-      "end": {
-        "column": 27,
-        "line": 49
-      },
-      "start": {
-        "column": 25,
-        "line": 49
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/lib.rs\n+++ replace refuse -> Response with Default::default()\n@@ -59,20 +59,17 @@\n                 tools: vec![tool],\n             },\n             Err(e) => refuse(\"unparsable\", format!(\"{e:?}\")),\n         },\n     }\n }\n \n fn refuse(kind: &'static str, detail: String) -> Response {\n-    Response::Refused {\n-        ok: false,\n-        failure: Failure { kind, detail },\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(test)]\n mod tests {\n     use super::*;\n \n     /// The public wrapper is what three consumers actually call, so it needs a test of its\n     /// own — and one that refuses before touching the filesystem, or it would read whatever\n",
-    "file": "core/src/lib.rs",
-    "function": {
-      "function_name": "refuse",
-      "return_type": "-> Response",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 71
-        },
-        "start": {
-          "column": 1,
-          "line": 66
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/lib.rs:67:5: replace refuse -> Response with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 70
-      },
-      "start": {
-        "column": 5,
-        "line": 67
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())\n@@ -50,26 +50,17 @@\n         name: &'static str,\n         why: &'static str,\n     },\n     Shell,\n }\n \n /// Read what Claude Code will actually use, resolved across the scopes it consults.\n pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {\n-    let chain = resolve_env_var(env, ENDPOINT_VAR)?;\n-\n-    Ok(ToolState {\n-        tool: \"claude\",\n-        endpoint: Resolved {\n-            effective: winning_value(&chain),\n-            chain,\n-        },\n-        slots: Vec::<SlotState>::new(),\n-    })\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Build the precedence chain for one environment variable.\n ///\n /// Every scope consulted appears, including the ones that had no opinion: \"this file was read\n /// and said nothing\" is part of the answer to *which file decided this*. A file that does not\n /// exist is left out, because it was never consulted.\n fn resolve_env_var(env: &Env, name: &str) -> Result<Vec<Link>, crate::json::Error> {\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())\n@@ -110,33 +110,17 @@\n         sources: &[COMMAND_LINE, Source::Key(&[\"fallbackModel\"])],\n     },\n ];\n \n const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var(\"ANTHROPIC_BASE_URL\")];\n \n /// Read what Claude Code will actually use, resolved across the scopes it consults.\n pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {\n-    let files = read_all(env)?;\n-\n-    let endpoint = resolve(env, &files, ENDPOINT);\n-    let slots = SLOTS\n-        .iter()\n-        .map(|spec| SlotState {\n-            slot: spec.name,\n-            owned: spec.owned,\n-            resolved: resolve(env, &files, spec.sources),\n-        })\n-        .collect();\n-\n-    Ok(ToolState {\n-        tool: \"claude\",\n-        endpoint,\n-        slots,\n-    })\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Every settings file that exists, in precedence order, parsed once.\n struct Files(Vec<(&'static str, PathBuf, Document)>);\n \n fn read_all(env: &Env) -> Result<Files, crate::json::Error> {\n     let mut out = Vec::new();\n     for scope in FILES {\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "effective_state",
@@ -232,127 +8,191 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 68
+          "line": 135
         },
         "start": {
           "column": 1,
-          "line": 56
+          "line": 116
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:58:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
+    "name": "core/src/adapters/claude.rs:118:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
     "package": "tapkey-core",
     "replacement": "Ok(Default::default())",
     "span": {
       "end": {
         "column": 7,
-        "line": 67
+        "line": 134
       },
       "start": {
         "column": 5,
-        "line": 58
+        "line": 118
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])\n@@ -68,53 +68,17 @@\n }\n \n /// Build the precedence chain for one environment variable.\n ///\n /// Every scope consulted appears, including the ones that had no opinion: \"this file was read\n /// and said nothing\" is part of the answer to *which file decided this*. A file that does not\n /// exist is left out, because it was never consulted.\n fn resolve_env_var(env: &Env, name: &str) -> Result<Vec<Link>, crate::json::Error> {\n-    let mut chain = Vec::new();\n-    for scope in PRECEDENCE.iter().chain(std::iter::once(&CLOUD)) {\n-        match *scope {\n-            Scope::File { name: scope_name } => {\n-                let Some(path) = scope_path(env, scope_name) else {\n-                    continue;\n-                };\n-                let Some(doc) = read_settings(&path)? else {\n-                    continue;\n-                };\n-                chain.push(Link {\n-                    source: display_path(&path, env),\n-                    scope: scope_name,\n-                    value: doc.get_string(&[\"env\", name]).map(str::to_owned),\n-                    observable: true,\n-                    wins: false,\n-                });\n-            }\n-            Scope::Unobservable { name: n, why } => chain.push(unobservable(n, why)),\n-            Scope::Shell => chain.push(Link {\n-                source: \"login shell\".to_string(),\n-                scope: \"shell\",\n-                // A withheld credential and an unset variable both read as no value here. The\n-                // difference is a credential concern, reported as an attention rather than by\n-                // pretending to know a value we deliberately did not read.\n-                value: match env.shell_var(name) {\n-                    Some(ShellVar::Value(v)) => Some(v.clone()),\n-                    Some(ShellVar::SetButWithheld) | None => None,\n-                },\n-                observable: true,\n-                wins: false,\n-            }),\n-        }\n-    }\n-\n-    settle(&mut chain);\n-    Ok(chain)\n+    Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n }\n \n fn unobservable(scope: &'static str, source: &str) -> Link {\n     Link {\n         source: source.to_string(),\n         scope,\n         value: None,\n         observable: false,\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())\n@@ -133,28 +133,17 @@\n         slots,\n     })\n }\n \n /// Every settings file that exists, in precedence order, parsed once.\n struct Files(Vec<(&'static str, PathBuf, Document)>);\n \n fn read_all(env: &Env) -> Result<Files, crate::json::Error> {\n-    let mut out = Vec::new();\n-    for scope in FILES {\n-        let Some(path) = scope_path(env, scope) else {\n-            continue;\n-        };\n-        // A file that is not there is not an error: installing Claude Code creates none.\n-        let Ok(bytes) = std::fs::read(&path) else {\n-            continue;\n-        };\n-        out.push((scope, path, Document::parse(&bytes)?));\n-    }\n-    Ok(Files(out))\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {\n     let mut chain = Vec::new();\n     for source in sources {\n         match *source {\n             Source::Unseen { scope, why } => chain.push(unseen(scope, why, \"\")),\n             Source::Key(path) => {\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
-      "function_name": "resolve_env_var",
-      "return_type": "-> Result<Vec<Link>, crate::json::Error>",
+      "function_name": "read_all",
+      "return_type": "-> Result<Files, crate::json::Error>",
       "span": {
         "end": {
           "column": 2,
-          "line": 113
+          "line": 153
         },
         "start": {
           "column": 1,
-          "line": 70
+          "line": 140
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])",
+    "name": "core/src/adapters/claude.rs:141:5: replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())",
     "package": "tapkey-core",
-    "replacement": "Ok(vec![])",
+    "replacement": "Ok(Default::default())",
     "span": {
       "end": {
-        "column": 14,
-        "line": 112
+        "column": 19,
+        "line": 152
       },
       "start": {
         "column": 5,
-        "line": 76
+        "line": 141
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![Default::default()])\n@@ -68,53 +68,17 @@\n }\n \n /// Build the precedence chain for one environment variable.\n ///\n /// Every scope consulted appears, including the ones that had no opinion: \"this file was read\n /// and said nothing\" is part of the answer to *which file decided this*. A file that does not\n /// exist is left out, because it was never consulted.\n fn resolve_env_var(env: &Env, name: &str) -> Result<Vec<Link>, crate::json::Error> {\n-    let mut chain = Vec::new();\n-    for scope in PRECEDENCE.iter().chain(std::iter::once(&CLOUD)) {\n-        match *scope {\n-            Scope::File { name: scope_name } => {\n-                let Some(path) = scope_path(env, scope_name) else {\n-                    continue;\n-                };\n-                let Some(doc) = read_settings(&path)? else {\n-                    continue;\n-                };\n-                chain.push(Link {\n-                    source: display_path(&path, env),\n-                    scope: scope_name,\n-                    value: doc.get_string(&[\"env\", name]).map(str::to_owned),\n-                    observable: true,\n-                    wins: false,\n-                });\n-            }\n-            Scope::Unobservable { name: n, why } => chain.push(unobservable(n, why)),\n-            Scope::Shell => chain.push(Link {\n-                source: \"login shell\".to_string(),\n-                scope: \"shell\",\n-                // A withheld credential and an unset variable both read as no value here. The\n-                // difference is a credential concern, reported as an attention rather than by\n-                // pretending to know a value we deliberately did not read.\n-                value: match env.shell_var(name) {\n-                    Some(ShellVar::Value(v)) => Some(v.clone()),\n-                    Some(ShellVar::SetButWithheld) | None => None,\n-                },\n-                observable: true,\n-                wins: false,\n-            }),\n-        }\n-    }\n-\n-    settle(&mut chain);\n-    Ok(chain)\n+    Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n }\n \n fn unobservable(scope: &'static str, source: &str) -> Link {\n     Link {\n         source: source.to_string(),\n         scope,\n         value: None,\n         observable: false,\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace resolve -> Resolved with Default::default()\n@@ -148,67 +148,17 @@\n             continue;\n         };\n         out.push((scope, path, Document::parse(&bytes)?));\n     }\n     Ok(Files(out))\n }\n \n fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {\n-    let mut chain = Vec::new();\n-    for source in sources {\n-        match *source {\n-            Source::Unseen { scope, why } => chain.push(unseen(scope, why, \"\")),\n-            Source::Key(path) => {\n-                for (scope, file, doc) in &files.0 {\n-                    chain.push(Link {\n-                        source: display_path(file, env),\n-                        scope,\n-                        key: path.join(\".\"),\n-                        value: doc.get_string(path).map(str::to_owned),\n-                        observable: true,\n-                        wins: false,\n-                    });\n-                }\n-            }\n-            Source::Var(name) => {\n-                for (scope, file, doc) in &files.0 {\n-                    chain.push(Link {\n-                        source: display_path(file, env),\n-                        scope,\n-                        key: name.to_string(),\n-                        value: doc.get_string(&[\"env\", name]).map(str::to_owned),\n-                        observable: true,\n-                        wins: false,\n-                    });\n-                }\n-                chain.push(Link {\n-                    source: \"login shell\".to_string(),\n-                    scope: \"shell\",\n-                    key: name.to_string(),\n-                    // A withheld credential and an unset variable both read as no value. The\n-                    // difference is a credential concern, reported as an attention rather than\n-                    // by pretending to know a value we deliberately did not read.\n-                    value: match env.shell_var(name) {\n-                        Some(ShellVar::Value(v)) => Some(v.clone()),\n-                        Some(ShellVar::SetButWithheld) | None => None,\n-                    },\n-                    observable: true,\n-                    wins: false,\n-                });\n-            }\n-        }\n-    }\n-    chain.push(unseen_from(CLOUD));\n-\n-    settle(&mut chain);\n-    Resolved {\n-        effective: winning_value(&chain),\n-        chain,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn unseen(scope: &'static str, why: &str, key: &str) -> Link {\n     Link {\n         source: why.to_string(),\n         scope,\n         key: key.to_string(),\n         value: None,\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
-      "function_name": "resolve_env_var",
-      "return_type": "-> Result<Vec<Link>, crate::json::Error>",
+      "function_name": "resolve",
+      "return_type": "-> Resolved",
       "span": {
         "end": {
           "column": 2,
-          "line": 113
+          "line": 207
         },
         "start": {
           "column": 1,
-          "line": 70
+          "line": 155
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![Default::default()])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![Default::default()])",
-    "span": {
-      "end": {
-        "column": 14,
-        "line": 112
-      },
-      "start": {
-        "column": 5,
-        "line": 76
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace unobservable -> Link with Default::default()\n@@ -108,23 +108,17 @@\n         }\n     }\n \n     settle(&mut chain);\n     Ok(chain)\n }\n \n fn unobservable(scope: &'static str, source: &str) -> Link {\n-    Link {\n-        source: source.to_string(),\n-        scope,\n-        value: None,\n-        observable: false,\n-        wins: false,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "unobservable",
-      "return_type": "-> Link",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 123
-        },
-        "start": {
-          "column": 1,
-          "line": 115
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:116:5: replace unobservable -> Link with Default::default()",
+    "name": "core/src/adapters/claude.rs:156:5: replace resolve -> Resolved with Default::default()",
     "package": "tapkey-core",
     "replacement": "Default::default()",
     "span": {
       "end": {
         "column": 6,
-        "line": 122
+        "line": 206
       },
       "start": {
         "column": 5,
-        "line": 116
+        "line": 156
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with None\n@@ -118,23 +118,17 @@\n         scope,\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n     match std::fs::read(path) {\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n         // A file that is not there is not an error: installing Claude Code creates none.\n         Err(_) => Ok(None),\n     }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace unseen -> Link with Default::default()\n@@ -202,24 +202,17 @@\n     settle(&mut chain);\n     Resolved {\n         effective: winning_value(&chain),\n         chain,\n     }\n }\n \n fn unseen(scope: &'static str, why: &str, key: &str) -> Link {\n-    Link {\n-        source: why.to_string(),\n-        scope,\n-        key: key.to_string(),\n-        value: None,\n-        observable: false,\n-        wins: false,\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n",
+    "file": "core/src/adapters/claude.rs",
+    "function": {
+      "function_name": "unseen",
+      "return_type": "-> Link",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 218
+        },
+        "start": {
+          "column": 1,
+          "line": 209
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/adapters/claude.rs:210:5: replace unseen -> Link with Default::default()",
+    "package": "tapkey-core",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 217
+      },
+      "start": {
+        "column": 5,
+        "line": 210
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace unseen_from -> Link with Default::default()\n@@ -213,20 +213,17 @@\n         key: key.to_string(),\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn unseen_from(source: Source) -> Link {\n-    match source {\n-        Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n-        _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n-    }\n+    Default::default() /* ~ changed by cargo-mutants ~ */\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n",
+    "file": "core/src/adapters/claude.rs",
+    "function": {
+      "function_name": "unseen_from",
+      "return_type": "-> Link",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 225
+        },
+        "start": {
+          "column": 1,
+          "line": 220
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/adapters/claude.rs:221:5: replace unseen_from -> Link with Default::default()",
+    "package": "tapkey-core",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 6,
+        "line": 224
+      },
+      "start": {
+        "column": 5,
+        "line": 221
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm Source::Unseen{scope, why} in unseen_from\n@@ -214,17 +214,17 @@\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn unseen_from(source: Source) -> Link {\n     match source {\n-        Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n+         /* ~ changed by cargo-mutants ~ */\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n",
+    "file": "core/src/adapters/claude.rs",
+    "function": {
+      "function_name": "unseen_from",
+      "return_type": "-> Link",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 225
+        },
+        "start": {
+          "column": 1,
+          "line": 220
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/adapters/claude.rs:222:9: delete match arm Source::Unseen{scope, why} in unseen_from",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 65,
+        "line": 222
+      },
+      "start": {
+        "column": 9,
+        "line": 222
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with None\n@@ -220,23 +220,17 @@\n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -360,31 +200,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with None",
+    "name": "core/src/adapters/claude.rs:228:5: replace scope_path -> Option<PathBuf> with None",
     "package": "tapkey-core",
     "replacement": "None",
     "span": {
       "end": {
         "column": 6,
-        "line": 132
+        "line": 234
       },
       "start": {
         "column": 5,
-        "line": 126
+        "line": 228
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with Some(Default::default())\n@@ -118,23 +118,17 @@\n         scope,\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n     match std::fs::read(path) {\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n         // A file that is not there is not an error: installing Claude Code creates none.\n         Err(_) => Ok(None),\n     }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace scope_path -> Option<PathBuf> with Some(Default::default())\n@@ -220,23 +220,17 @@\n fn unseen_from(source: Source) -> Link {\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n-    match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n-        _ => None,\n-    }\n+    Some(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -392,31 +232,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
+    "name": "core/src/adapters/claude.rs:228:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
     "package": "tapkey-core",
     "replacement": "Some(Default::default())",
     "span": {
       "end": {
         "column": 6,
-        "line": 132
+        "line": 234
       },
       "start": {
         "column": 5,
-        "line": 126
+        "line": 228
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"managed\" in scope_path\n@@ -119,17 +119,17 @@\n         value: None,\n         observable: false,\n         wins: false,\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"managed\" in scope_path\n@@ -221,17 +221,17 @@\n     match source {\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n-        \"managed\" => Some(env.managed().to_path_buf()),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -424,31 +264,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:127:9: delete match arm \"managed\" in scope_path",
+    "name": "core/src/adapters/claude.rs:229:9: delete match arm \"managed\" in scope_path",
     "package": "tapkey-core",
     "replacement": "",
     "span": {
       "end": {
         "column": 56,
-        "line": 127
+        "line": 229
       },
       "start": {
         "column": 9,
-        "line": 127
+        "line": 229
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project local\" in scope_path\n@@ -120,17 +120,17 @@\n         observable: false,\n         wins: false,\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n     match std::fs::read(path) {\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project local\" in scope_path\n@@ -222,17 +222,17 @@\n         Source::Unseen { scope, why } => unseen(scope, why, \"\"),\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n-        \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -456,31 +296,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:128:9: delete match arm \"project local\" in scope_path",
+    "name": "core/src/adapters/claude.rs:230:9: delete match arm \"project local\" in scope_path",
     "package": "tapkey-core",
     "replacement": "",
     "span": {
       "end": {
         "column": 93,
-        "line": 128
+        "line": 230
       },
       "start": {
         "column": 9,
-        "line": 128
+        "line": 230
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project\" in scope_path\n@@ -121,17 +121,17 @@\n         wins: false,\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n     match std::fs::read(path) {\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"project\" in scope_path\n@@ -223,17 +223,17 @@\n         _ => unreachable!(\"only an Unseen source becomes an unseen link\"),\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n-        \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -488,31 +328,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:129:9: delete match arm \"project\" in scope_path",
+    "name": "core/src/adapters/claude.rs:231:9: delete match arm \"project\" in scope_path",
     "package": "tapkey-core",
     "replacement": "",
     "span": {
       "end": {
         "column": 81,
-        "line": 129
+        "line": 231
       },
       "start": {
         "column": 9,
-        "line": 129
+        "line": 231
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"user\" in scope_path\n@@ -122,17 +122,17 @@\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n     match std::fs::read(path) {\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n         // A file that is not there is not an error: installing Claude Code creates none.\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ delete match arm \"user\" in scope_path\n@@ -224,17 +224,17 @@\n     }\n }\n \n fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {\n     match scope {\n         \"managed\" => Some(env.managed().to_path_buf()),\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n-        \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n+         /* ~ changed by cargo-mutants ~ */\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "scope_path",
@@ -520,95 +360,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 133
+          "line": 235
         },
         "start": {
           "column": 1,
-          "line": 125
+          "line": 227
         }
       }
     },
     "genre": "MatchArm",
-    "name": "core/src/adapters/claude.rs:130:9: delete match arm \"user\" in scope_path",
+    "name": "core/src/adapters/claude.rs:232:9: delete match arm \"user\" in scope_path",
     "package": "tapkey-core",
     "replacement": "",
     "span": {
       "end": {
         "column": 74,
-        "line": 130
+        "line": 232
       },
       "start": {
         "column": 9,
-        "line": 130
+        "line": 232
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)\n@@ -128,21 +128,17 @@\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n-    match std::fs::read(path) {\n-        Ok(bytes) => Document::parse(&bytes).map(Some),\n-        // A file that is not there is not an error: installing Claude Code creates none.\n-        Err(_) => Ok(None),\n-    }\n+    Ok(None) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "read_settings",
-      "return_type": "-> Result<Option<Document>, crate::json::Error>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 141
-        },
-        "start": {
-          "column": 1,
-          "line": 135
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)",
-    "package": "tapkey-core",
-    "replacement": "Ok(None)",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 140
-      },
-      "start": {
-        "column": 5,
-        "line": 136
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(Some(Default::default()))\n@@ -128,21 +128,17 @@\n         \"project local\" => Some(env.project()?.join(\".claude\").join(\"settings.local.json\")),\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n fn read_settings(path: &Path) -> Result<Option<Document>, crate::json::Error> {\n-    match std::fs::read(path) {\n-        Ok(bytes) => Document::parse(&bytes).map(Some),\n-        // A file that is not there is not an error: installing Claude Code creates none.\n-        Err(_) => Ok(None),\n-    }\n+    Ok(Some(Default::default())) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n     match path.strip_prefix(env.home()) {\n         Ok(rest) => format!(\"~/{}\", rest.display()),\n         Err(_) => path.display().to_string(),\n     }\n",
-    "file": "core/src/adapters/claude.rs",
-    "function": {
-      "function_name": "read_settings",
-      "return_type": "-> Result<Option<Document>, crate::json::Error>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 141
-        },
-        "start": {
-          "column": 1,
-          "line": 135
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(Some(Default::default()))",
-    "package": "tapkey-core",
-    "replacement": "Ok(Some(Default::default()))",
-    "span": {
-      "end": {
-        "column": 6,
-        "line": 140
-      },
-      "start": {
-        "column": 5,
-        "line": 136
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with String::new()\n@@ -137,20 +137,17 @@\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n         // A file that is not there is not an error: installing Claude Code creates none.\n         Err(_) => Ok(None),\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. An unobservable scope can\n /// never be said to win: we do not know what is there, and claiming otherwise would be intent\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with String::new()\n@@ -231,20 +231,17 @@\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "display_path",
@@ -616,31 +392,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 149
+          "line": 243
         },
         "start": {
           "column": 1,
-          "line": 143
+          "line": 237
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()",
+    "name": "core/src/adapters/claude.rs:239:5: replace display_path -> String with String::new()",
     "package": "tapkey-core",
     "replacement": "String::new()",
     "span": {
       "end": {
         "column": 6,
-        "line": 148
+        "line": 242
       },
       "start": {
         "column": 5,
-        "line": 145
+        "line": 239
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with \"xyzzy\".into()\n@@ -137,20 +137,17 @@\n         Ok(bytes) => Document::parse(&bytes).map(Some),\n         // A file that is not there is not an error: installing Claude Code creates none.\n         Err(_) => Ok(None),\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. An unobservable scope can\n /// never be said to win: we do not know what is there, and claiming otherwise would be intent\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace display_path -> String with \"xyzzy\".into()\n@@ -231,20 +231,17 @@\n         \"project\" => Some(env.project()?.join(\".claude\").join(\"settings.json\")),\n         \"user\" => Some(env.home().join(\".claude\").join(\"settings.json\")),\n         _ => None,\n     }\n }\n \n /// Paths are reported as the person would type them, so a chain reads like their filesystem.\n fn display_path(path: &Path, env: &Env) -> String {\n-    match path.strip_prefix(env.home()) {\n-        Ok(rest) => format!(\"~/{}\", rest.display()),\n-        Err(_) => path.display().to_string(),\n-    }\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "display_path",
@@ -648,31 +424,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 149
+          "line": 243
         },
         "start": {
           "column": 1,
-          "line": 143
+          "line": 237
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with \"xyzzy\".into()",
+    "name": "core/src/adapters/claude.rs:239:5: replace display_path -> String with \"xyzzy\".into()",
     "package": "tapkey-core",
     "replacement": "\"xyzzy\".into()",
     "span": {
       "end": {
         "column": 6,
-        "line": 148
+        "line": 242
       },
       "start": {
         "column": 5,
-        "line": 145
+        "line": 239
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace settle with ()\n@@ -147,16 +147,14 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. An unobservable scope can\n /// never be said to win: we do not know what is there, and claiming otherwise would be intent\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n-        link.wins = true;\n-    }\n+    () /* ~ changed by cargo-mutants ~ */\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace settle with ()\n@@ -241,16 +241,14 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n-        link.wins = true;\n-    }\n+    () /* ~ changed by cargo-mutants ~ */\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "settle",
@@ -680,31 +456,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 158
+          "line": 252
         },
         "start": {
           "column": 1,
-          "line": 151
+          "line": 245
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:155:5: replace settle with ()",
+    "name": "core/src/adapters/claude.rs:249:5: replace settle with ()",
     "package": "tapkey-core",
     "replacement": "()",
     "span": {
       "end": {
         "column": 6,
-        "line": 157
+        "line": 251
       },
       "start": {
         "column": 5,
-        "line": 155
+        "line": 249
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace && with || in settle\n@@ -147,16 +147,16 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. An unobservable scope can\n /// never be said to win: we do not know what is there, and claiming otherwise would be intent\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n+    if let Some(link) = chain.iter_mut().find(|l| l.observable || /* ~ changed by cargo-mutants ~ */ l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace && with || in settle\n@@ -241,16 +241,16 @@\n         Err(_) => path.display().to_string(),\n     }\n }\n \n /// The highest-precedence entry that actually carries a value wins. Being consulted is not the\n /// same condition as having an opinion, and an unobservable scope can never be said to win: we\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n-    if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n+    if let Some(link) = chain.iter_mut().find(|l| l.observable || /* ~ changed by cargo-mutants ~ */ l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n     chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "settle",
@@ -712,31 +488,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 158
+          "line": 252
         },
         "start": {
           "column": 1,
-          "line": 151
+          "line": 245
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/adapters/claude.rs:155:64: replace && with || in settle",
+    "name": "core/src/adapters/claude.rs:249:64: replace && with || in settle",
     "package": "tapkey-core",
     "replacement": "||",
     "span": {
       "end": {
         "column": 66,
-        "line": 155
+        "line": 249
       },
       "start": {
         "column": 64,
-        "line": 155
+        "line": 249
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with None\n@@ -153,10 +153,10 @@\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    None /* ~ changed by cargo-mutants ~ */\n }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with None\n@@ -247,10 +247,10 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    None /* ~ changed by cargo-mutants ~ */\n }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "winning_value",
@@ -744,31 +520,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 162
+          "line": 256
         },
         "start": {
           "column": 1,
-          "line": 160
+          "line": 254
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with None",
+    "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with None",
     "package": "tapkey-core",
     "replacement": "None",
     "span": {
       "end": {
         "column": 64,
-        "line": 161
+        "line": 255
       },
       "start": {
         "column": 5,
-        "line": 161
+        "line": 255
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(String::new())\n@@ -153,10 +153,10 @@\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(String::new()) /* ~ changed by cargo-mutants ~ */\n }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(String::new())\n@@ -247,10 +247,10 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(String::new()) /* ~ changed by cargo-mutants ~ */\n }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "winning_value",
@@ -776,31 +552,31 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 162
+          "line": 256
         },
         "start": {
           "column": 1,
-          "line": 160
+          "line": 254
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(String::new())",
+    "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with Some(String::new())",
     "package": "tapkey-core",
     "replacement": "Some(String::new())",
     "span": {
       "end": {
         "column": 64,
-        "line": 161
+        "line": 255
       },
       "start": {
         "column": 5,
-        "line": 161
+        "line": 255
       }
     }
   },
   {
-    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(\"xyzzy\".into())\n@@ -153,10 +153,10 @@\n /// dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n }\n",
+    "diff": "--- core/src/adapters/claude.rs\n+++ replace winning_value -> Option<String> with Some(\"xyzzy\".into())\n@@ -247,10 +247,10 @@\n /// do not know what is there, and claiming otherwise would be intent dressed as observation.\n fn settle(chain: &mut [Link]) {\n     if let Some(link) = chain.iter_mut().find(|l| l.observable && l.value.is_some()) {\n         link.wins = true;\n     }\n }\n \n fn winning_value(chain: &[Link]) -> Option<String> {\n-    chain.iter().find(|l| l.wins).and_then(|l| l.value.clone())\n+    Some(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n }\n",
     "file": "core/src/adapters/claude.rs",
     "function": {
       "function_name": "winning_value",
@@ -808,26 +584,26 @@
       "span": {
         "end": {
           "column": 2,
-          "line": 162
+          "line": 256
         },
         "start": {
           "column": 1,
-          "line": 160
+          "line": 254
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
+    "name": "core/src/adapters/claude.rs:255:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
     "package": "tapkey-core",
     "replacement": "Some(\"xyzzy\".into())",
     "span": {
       "end": {
         "column": 64,
-        "line": 161
+        "line": 255
       },
       "start": {
         "column": 5,
-        "line": 161
+        "line": 255
       }
     }
   }

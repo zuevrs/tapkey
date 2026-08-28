@@ -1,0 +1,37 @@
+--- core/src/adapters/claude.rs
++++ replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())
+@@ -110,33 +110,17 @@
+         sources: &[COMMAND_LINE, Source::Key(&["fallbackModel"])],
+     },
+ ];
+ 
+ const ENDPOINT: &[Source] = &[COMMAND_LINE, Source::Var("ANTHROPIC_BASE_URL")];
+ 
+ /// Read what Claude Code will actually use, resolved across the scopes it consults.
+ pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {
+-    let files = read_all(env)?;
+-
+-    let endpoint = resolve(env, &files, ENDPOINT);
+-    let slots = SLOTS
+-        .iter()
+-        .map(|spec| SlotState {
+-            slot: spec.name,
+-            owned: spec.owned,
+-            resolved: resolve(env, &files, spec.sources),
+-        })
+-        .collect();
+-
+-    Ok(ToolState {
+-        tool: "claude",
+-        endpoint,
+-        slots,
+-    })
++    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Every settings file that exists, in precedence order, parsed once.
+ struct Files(Vec<(&'static str, PathBuf, Document)>);
+ 
+ fn read_all(env: &Env) -> Result<Files, crate::json::Error> {
+     let mut out = Vec::new();
+     for scope in FILES {

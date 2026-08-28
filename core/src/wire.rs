@@ -62,6 +62,10 @@ pub struct Link {
     /// Where this opinion came from, in terms a person can act on: a path, or `shell`.
     pub source: String,
     pub scope: &'static str,
+    /// The variable or settings key this link read. Two links can name the same file and mean
+    /// different things — the main model has both an ANTHROPIC_MODEL and a `model` opinion —
+    /// so which file decided this is only half the question.
+    pub key: String,
     pub value: Option<String>,
     /// False where tapkey cannot see what is there — a command line it did not run, a cloud
     /// session it has no access to. Such a scope is named rather than omitted, and can never

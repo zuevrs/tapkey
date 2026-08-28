@@ -1,0 +1,28 @@
+--- core/src/adapters/claude.rs
++++ replace unseen -> Link with Default::default()
+@@ -202,24 +202,17 @@
+     settle(&mut chain);
+     Resolved {
+         effective: winning_value(&chain),
+         chain,
+     }
+ }
+ 
+ fn unseen(scope: &'static str, why: &str, key: &str) -> Link {
+-    Link {
+-        source: why.to_string(),
+-        scope,
+-        key: key.to_string(),
+-        value: None,
+-        observable: false,
+-        wins: false,
+-    }
++    Default::default() /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn unseen_from(source: Source) -> Link {
+     match source {
+         Source::Unseen { scope, why } => unseen(scope, why, ""),
+         _ => unreachable!("only an Unseen source becomes an unseen link"),
+     }
+ }
