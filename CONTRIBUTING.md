@@ -69,6 +69,16 @@ Where a tool's documented behaviour decides what tapkey writes, measure it again
 than reading it. Documentation states intent; the shipped binary states the resolution order, and we
 have found them to disagree more than once.
 
+## Proving a test can fail
+
+A test that has never been red is not known to work. Before trusting one, break the thing it
+guards and check that *that* test is the one which fails. This is not ceremony: writing the atomic
+write seam, three of five deliberately injected defects went undetected on the first attempt — a
+test staged the wrong claim, another never reached the code path it named, and a third asserted
+something no implementation could get wrong.
+
+`cargo mutants` automates the same idea and is worth running over a module you have just written.
+
 ## Pull requests
 
 Small and single-purpose is easier to review than complete. Please include tests, describe what you

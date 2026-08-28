@@ -11,3 +11,8 @@ rust-version.workspace = true
 name = "tapkey_core"
 
 [dependencies]
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Only for `fcntl(fd, F_FULLFSYNC)`: Darwin's plain `fsync` returns once the data reaches the
+# drive's cache rather than the platter, and the standard library offers no way to ask for more.
+libc = "0.2"

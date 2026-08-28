@@ -8,6 +8,8 @@
 //! The shape it grows into is fixed: one function, a JSON request in and a JSON response
 //! out, behind a versioned schema, with three consumers sharing it.
 
+pub mod atomic;
+
 /// The schema version carried by every request and response.
 ///
 /// Zero until the schema exists. It is here so that the first request cannot be written
