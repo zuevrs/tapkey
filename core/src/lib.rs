@@ -11,6 +11,7 @@
 pub mod adapters;
 pub mod atomic;
 pub mod env;
+pub mod instant;
 pub mod json;
 pub mod wire;
 

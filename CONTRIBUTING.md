@@ -20,6 +20,9 @@ cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
+There is a pre-commit hook that runs the format check, since a formatting failure in CI tells
+you nothing about your change. Enable it with `git config core.hooksPath .githooks`.
+
 CI runs all three on Ubuntu and macOS, plus the doc tests. Linux is built from the first commit even
 though macOS ships first: portability that is not compiled has already rotted by the time anyone
 checks. A pull request is expected to be green on both.

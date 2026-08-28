@@ -1,20 +1,81 @@
-core/src/lib.rs:25:5: replace handle -> String with String::new()
-core/src/lib.rs:49:25: replace != with == in dispatch
-core/src/lib.rs:25:5: replace handle -> String with "xyzzy".into()
-core/src/lib.rs:33:5: replace handle_with -> String with "xyzzy".into()
-core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])
-core/src/lib.rs:33:5: replace handle_with -> String with String::new()
-core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with None
-core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with Some(Default::default())
-core/src/adapters/claude.rs:127:9: delete match arm "managed" in scope_path
-core/src/adapters/claude.rs:128:9: delete match arm "project local" in scope_path
-core/src/adapters/claude.rs:129:9: delete match arm "project" in scope_path
-core/src/adapters/claude.rs:130:9: delete match arm "user" in scope_path
-core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)
-core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()
-core/src/adapters/claude.rs:145:5: replace display_path -> String with "xyzzy".into()
-core/src/adapters/claude.rs:155:5: replace settle with ()
-core/src/adapters/claude.rs:155:64: replace && with || in settle
-core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with None
-core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(String::new())
-core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some("xyzzy".into())
+core/src/instant.rs:13:5: replace format_utc -> String with String::new()
+core/src/instant.rs:13:5: replace format_utc -> String with "xyzzy".into()
+core/src/instant.rs:17:29: replace / with * in format_utc
+core/src/instant.rs:17:29: replace / with % in format_utc
+core/src/instant.rs:18:22: replace % with / in format_utc
+core/src/instant.rs:18:22: replace % with + in format_utc
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 1)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 1)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 1)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 1)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 1)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 0)
+core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 1)
+core/src/instant.rs:41:18: replace + with - in civil_from_days
+core/src/instant.rs:41:18: replace + with * in civil_from_days
+core/src/instant.rs:42:17: replace / with % in civil_from_days
+core/src/instant.rs:42:17: replace / with * in civil_from_days
+core/src/instant.rs:43:17: replace - with + in civil_from_days
+core/src/instant.rs:43:17: replace - with / in civil_from_days
+core/src/instant.rs:43:23: replace * with + in civil_from_days
+core/src/instant.rs:43:23: replace * with / in civil_from_days
+core/src/instant.rs:44:65: replace / with % in civil_from_days
+core/src/instant.rs:44:65: replace / with * in civil_from_days
+core/src/instant.rs:44:48: replace - with + in civil_from_days
+core/src/instant.rs:44:48: replace - with / in civil_from_days
+core/src/instant.rs:44:33: replace + with * in civil_from_days
+core/src/instant.rs:44:20: replace - with + in civil_from_days
+core/src/instant.rs:44:20: replace - with / in civil_from_days
+core/src/instant.rs:44:26: replace / with % in civil_from_days
+core/src/instant.rs:44:26: replace / with * in civil_from_days
+core/src/instant.rs:44:39: replace / with % in civil_from_days
+core/src/instant.rs:44:39: replace / with * in civil_from_days
+core/src/instant.rs:44:54: replace / with % in civil_from_days
+core/src/instant.rs:44:54: replace / with * in civil_from_days
+core/src/instant.rs:45:24: replace + with - in civil_from_days
+core/src/instant.rs:45:24: replace + with * in civil_from_days
+core/src/instant.rs:45:37: replace * with + in civil_from_days
+core/src/instant.rs:45:37: replace * with / in civil_from_days
+core/src/instant.rs:46:19: replace - with + in civil_from_days
+core/src/instant.rs:46:19: replace - with / in civil_from_days
+core/src/instant.rs:46:42: replace - with + in civil_from_days
+core/src/instant.rs:46:42: replace - with / in civil_from_days
+core/src/instant.rs:46:32: replace + with - in civil_from_days
+core/src/instant.rs:46:32: replace + with * in civil_from_days
+core/src/instant.rs:46:26: replace * with + in civil_from_days
+core/src/instant.rs:46:26: replace * with / in civil_from_days
+core/src/instant.rs:46:38: replace / with % in civil_from_days
+core/src/instant.rs:46:38: replace / with * in civil_from_days
+core/src/instant.rs:46:48: replace / with % in civil_from_days
+core/src/instant.rs:46:48: replace / with * in civil_from_days
+core/src/instant.rs:47:28: replace / with % in civil_from_days
+core/src/instant.rs:47:28: replace / with * in civil_from_days
+core/src/instant.rs:47:23: replace + with - in civil_from_days
+core/src/instant.rs:47:23: replace + with * in civil_from_days
+core/src/instant.rs:47:17: replace * with + in civil_from_days
+core/src/instant.rs:47:17: replace * with / in civil_from_days
+core/src/instant.rs:48:39: replace + with - in civil_from_days
+core/src/instant.rs:48:39: replace + with * in civil_from_days
+core/src/instant.rs:48:18: replace - with + in civil_from_days
+core/src/instant.rs:48:18: replace - with / in civil_from_days
+core/src/instant.rs:48:35: replace / with % in civil_from_days
+core/src/instant.rs:48:35: replace / with * in civil_from_days
+core/src/instant.rs:48:30: replace + with - in civil_from_days
+core/src/instant.rs:48:30: replace + with * in civil_from_days
+core/src/instant.rs:48:25: replace * with + in civil_from_days
+core/src/instant.rs:48:25: replace * with / in civil_from_days
+core/src/instant.rs:49:19: replace < with == in civil_from_days
+core/src/instant.rs:49:19: replace < with > in civil_from_days
+core/src/instant.rs:49:19: replace < with <= in civil_from_days
+core/src/instant.rs:49:29: replace + with - in civil_from_days
+core/src/instant.rs:49:29: replace + with * in civil_from_days
+core/src/instant.rs:49:45: replace - with + in civil_from_days
+core/src/instant.rs:49:45: replace - with / in civil_from_days
+core/src/instant.rs:50:11: replace <= with > in civil_from_days
+core/src/instant.rs:50:20: replace + with - in civil_from_days
+core/src/instant.rs:50:20: replace + with * in civil_from_days

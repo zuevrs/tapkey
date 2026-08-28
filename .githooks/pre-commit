@@ -1,0 +1,9 @@
+#!/bin/sh
+# Formatting is the one CI failure that tells you nothing about your change, so it is worth
+# catching here. Enable with: git config core.hooksPath .githooks
+set -e
+if ! cargo fmt --all --check >/dev/null 2>&1; then
+    echo "cargo fmt --all --check failed. Run 'cargo fmt --all' and stage the result." >&2
+    cargo fmt --all --check >&2 || true
+    exit 1
+fi

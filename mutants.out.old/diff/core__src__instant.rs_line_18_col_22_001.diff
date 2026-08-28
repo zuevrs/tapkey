@@ -1,0 +1,21 @@
+--- core/src/instant.rs
++++ replace % with + in format_utc
+@@ -10,17 +10,17 @@
+ 
+ /// `YYYYMMDDTHHMMSS.mmmZ`, always UTC.
+ pub fn format_utc(t: SystemTime) -> String {
+     let ms = t
+         .duration_since(UNIX_EPOCH)
+         .map(|d| d.as_millis())
+         .unwrap_or(0);
+     let total_seconds = (ms / 1000) as i64;
+-    let millis = (ms % 1000) as u32;
++    let millis = (ms + /* ~ changed by cargo-mutants ~ */ 1000) as u32;
+ 
+     // Clamped above, so the calendar never sees a day before the epoch.
+     let days = (total_seconds.div_euclid(86_400)) as u64;
+     let secs_of_day = total_seconds.rem_euclid(86_400);
+     let (year, month, day) = civil_from_days(days);
+ 
+     format!(
+         "{year:04}{month:02}{day:02}T{:02}{:02}{:02}.{millis:03}Z",

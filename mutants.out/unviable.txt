@@ -1,5 +1,0 @@
-core/src/adapters/claude.rs:118:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())
-core/src/adapters/claude.rs:221:5: replace unseen_from -> Link with Default::default()
-core/src/adapters/claude.rs:156:5: replace resolve -> Resolved with Default::default()
-core/src/adapters/claude.rs:210:5: replace unseen -> Link with Default::default()
-core/src/adapters/claude.rs:141:5: replace read_all -> Result<Files, crate::json::Error> with Ok(Default::default())

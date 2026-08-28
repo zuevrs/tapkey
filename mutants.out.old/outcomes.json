@@ -8,7 +8,7 @@
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 4.280162458,
+          "duration": 3.544327125,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -20,7 +20,7 @@
         },
         {
           "phase": "Test",
-          "duration": 1.433600375,
+          "duration": 2.030933959,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -34,31 +34,31 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:25:5: replace handle -> String with String::new()",
+          "name": "core/src/instant.rs:13:5: replace format_utc -> String with String::new()",
           "package": "tapkey-core",
-          "file": "core/src/lib.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "handle",
+            "function_name": "format_utc",
             "return_type": "-> String",
             "span": {
               "start": {
-                "line": 23,
+                "line": 11,
                 "column": 1
               },
               "end": {
-                "line": 26,
+                "line": 31,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 25,
+              "line": 13,
               "column": 5
             },
             "end": {
-              "line": 25,
-              "column": 39
+              "line": 30,
+              "column": 6
             }
           },
           "replacement": "String::new()",
@@ -66,12 +66,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_25_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_25_col_5.diff",
+      "log_path": "log/core__src__instant.rs_line_13_col_5.log",
+      "diff_path": "diff/core__src__instant.rs_line_13_col_5.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.705713209,
+          "duration": 0.852277792,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -83,7 +83,7 @@
         },
         {
           "phase": "Test",
-          "duration": 1.933448208,
+          "duration": 5.968323583,
           "process_status": {
             "Failure": 101
           },
@@ -99,19 +99,2552 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:45:5: replace dispatch -> Response with Default::default()",
+          "name": "core/src/instant.rs:13:5: replace format_utc -> String with \"xyzzy\".into()",
           "package": "tapkey-core",
-          "file": "core/src/lib.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "dispatch",
-            "return_type": "-> Response",
+            "function_name": "format_utc",
+            "return_type": "-> String",
             "span": {
               "start": {
-                "line": 44,
+                "line": 11,
                 "column": 1
               },
               "end": {
-                "line": 64,
+                "line": 31,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 13,
+              "column": 5
+            },
+            "end": {
+              "line": 30,
+              "column": 6
+            }
+          },
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_13_col_5_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_13_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 5.3988315,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.292742417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:17:29: replace / with * in format_utc",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "format_utc",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 11,
+                "column": 1
+              },
+              "end": {
+                "line": 31,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 17,
+              "column": 29
+            },
+            "end": {
+              "line": 17,
+              "column": 30
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_17_col_29_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_17_col_29_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 5.866715125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.36243,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:17:29: replace / with % in format_utc",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "format_utc",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 11,
+                "column": 1
+              },
+              "end": {
+                "line": 31,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 17,
+              "column": 29
+            },
+            "end": {
+              "line": 17,
+              "column": 30
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_17_col_29.log",
+      "diff_path": "diff/core__src__instant.rs_line_17_col_29.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 6.481000625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.027083709,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:18:22: replace % with / in format_utc",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "format_utc",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 11,
+                "column": 1
+              },
+              "end": {
+                "line": 31,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 18,
+              "column": 22
+            },
+            "end": {
+              "line": 18,
+              "column": 23
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_18_col_22.log",
+      "diff_path": "diff/core__src__instant.rs_line_18_col_22.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.539194625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.7531282919999995,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:18:22: replace % with + in format_utc",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "format_utc",
+            "return_type": "-> String",
+            "span": {
+              "start": {
+                "line": 11,
+                "column": 1
+              },
+              "end": {
+                "line": 31,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 18,
+              "column": 22
+            },
+            "end": {
+              "line": 18,
+              "column": 23
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_18_col_22_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_18_col_22_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.478108333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.870165709,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(0, 0, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.376665625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.05148325,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 0, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(0, 0, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.430402833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.124776709,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(0, 1, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_002.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.527099167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.014809875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (0, 1, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(0, 1, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_003.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_003.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.428103541,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.929148459,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(1, 0, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_004.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_004.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.436385291,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.925898041,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 0, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(1, 0, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_005.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_005.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.431263875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.8346445,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(1, 1, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_006.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_006.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.537777167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.831147416,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (1, 1, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(1, 1, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_007.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_007.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.432381833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.0504305,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(-1, 0, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_008.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_008.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.429396791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.145656042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 0, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(-1, 0, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_009.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_009.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.433539208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.064397334,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 0)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(-1, 1, 0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_010.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_010.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.485532,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.938072791,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:5: replace civil_from_days -> (i64, u32, u32) with (-1, 1, 1)",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 5
+            },
+            "end": {
+              "line": 50,
+              "column": 43
+            }
+          },
+          "replacement": "(-1, 1, 1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_5_011.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_5_011.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.428474583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.226086958,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:18: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 18
+            },
+            "end": {
+              "line": 41,
+              "column": 19
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_18.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_18.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.43092175,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.172525708,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:41:18: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 41,
+              "column": 18
+            },
+            "end": {
+              "line": 41,
+              "column": 19
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_41_col_18_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_41_col_18_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.477371167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.125592833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:42:17: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 42,
+              "column": 17
+            },
+            "end": {
+              "line": 42,
+              "column": 18
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_42_col_17.log",
+      "diff_path": "diff/core__src__instant.rs_line_42_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.482237542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.119764833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:42:17: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 42,
+              "column": 17
+            },
+            "end": {
+              "line": 42,
+              "column": 18
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_42_col_17_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_42_col_17_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.435939625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.898485959,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:43:17: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 43,
+              "column": 17
+            },
+            "end": {
+              "line": 43,
+              "column": 18
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_43_col_17.log",
+      "diff_path": "diff/core__src__instant.rs_line_43_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.434178292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.537310375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:43:17: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 43,
+              "column": 17
+            },
+            "end": {
+              "line": 43,
+              "column": 18
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_43_col_17_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_43_col_17_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.427949209,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.599232666,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:43:23: replace * with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 43,
+              "column": 23
+            },
+            "end": {
+              "line": 43,
+              "column": 24
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_43_col_23.log",
+      "diff_path": "diff/core__src__instant.rs_line_43_col_23.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.436714583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.588344,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:43:23: replace * with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 43,
+              "column": 23
+            },
+            "end": {
+              "line": 43,
+              "column": 24
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_43_col_23_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_43_col_23_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.471959917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.71681575,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:65: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 65
+            },
+            "end": {
+              "line": 44,
+              "column": 66
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_65.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_65.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.477906166,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.700089625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:65: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 65
+            },
+            "end": {
+              "line": 44,
+              "column": 66
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_65_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_65_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.429756125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.486776292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:48: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 48
+            },
+            "end": {
+              "line": 44,
+              "column": 49
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_48.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_48.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.541097291,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.358573458,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:48: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 48
+            },
+            "end": {
+              "line": 44,
+              "column": 49
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_48_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_48_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.488503042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.888530291,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:33: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 33
+            },
+            "end": {
+              "line": 44,
+              "column": 34
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_33.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_33.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.432561542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 7.6265072499999995,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:33: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 33
+            },
+            "end": {
+              "line": 44,
+              "column": 34
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_33_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_33_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.493327292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.173253708,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:20: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 20
+            },
+            "end": {
+              "line": 44,
+              "column": 21
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_20.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.484972125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.257115,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:20: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 20
+            },
+            "end": {
+              "line": 44,
+              "column": 21
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_20_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_20_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.42521,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.235411625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:26: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 26
+            },
+            "end": {
+              "line": 44,
+              "column": 27
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_26.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_26.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.429338833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.360331583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:26: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 26
+            },
+            "end": {
+              "line": 44,
+              "column": 27
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_26_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_26_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.53665725,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.142608292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:39: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 39
+            },
+            "end": {
+              "line": 44,
+              "column": 40
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_39.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_39.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.431835917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.254579625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:39: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 39
+            },
+            "end": {
+              "line": 44,
+              "column": 40
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_39_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_39_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.432395417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.113928209,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:54: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 54
+            },
+            "end": {
+              "line": 44,
+              "column": 55
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_54.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_54.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.434830125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.005442667,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:44:54: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 44,
+              "column": 54
+            },
+            "end": {
+              "line": 44,
+              "column": 55
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_44_col_54_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_44_col_54_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.536221208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.005043625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:45:24: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
                 "column": 2
               }
             }
@@ -119,31 +2652,42 @@
           "span": {
             "start": {
               "line": 45,
-              "column": 5
+              "column": 24
             },
             "end": {
-              "line": 63,
-              "column": 6
+              "line": 45,
+              "column": 25
             }
           },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
+          "replacement": "-",
+          "genre": "BinaryOperator"
         }
       },
-      "summary": "Unviable",
-      "log_path": "log/core__src__lib.rs_line_45_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_45_col_5.diff",
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_45_col_24.log",
+      "diff_path": "diff/core__src__instant.rs_line_45_col_24.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.160223208,
+          "duration": 0.426936417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.048690958,
           "process_status": {
             "Failure": 101
           },
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
             "test",
-            "--no-run",
             "--verbose",
             "--package=tapkey-core@0.0.0"
           ]
@@ -153,19 +2697,2034 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:49:25: replace != with == in dispatch",
+          "name": "core/src/instant.rs:45:24: replace + with * in civil_from_days",
           "package": "tapkey-core",
-          "file": "core/src/lib.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "dispatch",
-            "return_type": "-> Response",
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
             "span": {
               "start": {
-                "line": 44,
+                "line": 33,
                 "column": 1
               },
               "end": {
-                "line": 64,
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 24
+            },
+            "end": {
+              "line": 45,
+              "column": 25
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_45_col_24_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_45_col_24_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.488914584,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.209957875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:45:37: replace * with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 37
+            },
+            "end": {
+              "line": 45,
+              "column": 38
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_45_col_37.log",
+      "diff_path": "diff/core__src__instant.rs_line_45_col_37.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.420038625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.406520125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:45:37: replace * with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 45,
+              "column": 37
+            },
+            "end": {
+              "line": 45,
+              "column": 38
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_45_col_37_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_45_col_37_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.535961959,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.330074459,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:19: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 19
+            },
+            "end": {
+              "line": 46,
+              "column": 20
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_19.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_19.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.426586958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.568393,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:19: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 19
+            },
+            "end": {
+              "line": 46,
+              "column": 20
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_19_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_19_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.432279667,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.779929166,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:42: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 42
+            },
+            "end": {
+              "line": 46,
+              "column": 43
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_42.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_42.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.484503167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.451523542,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:42: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 42
+            },
+            "end": {
+              "line": 46,
+              "column": 43
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_42_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_42_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.598336625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.425802625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:32: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 32
+            },
+            "end": {
+              "line": 46,
+              "column": 33
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_32.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.477656584,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.501320417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:32: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 32
+            },
+            "end": {
+              "line": 46,
+              "column": 33
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_32_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_32_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.43520025,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.141240166,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:26: replace * with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 26
+            },
+            "end": {
+              "line": 46,
+              "column": 27
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_26.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_26.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.433947208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.340991625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:26: replace * with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 26
+            },
+            "end": {
+              "line": 46,
+              "column": 27
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_26_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_26_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.532417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.103132958,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:38: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 38
+            },
+            "end": {
+              "line": 46,
+              "column": 39
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_38.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_38.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.492876083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.158603583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:38: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 38
+            },
+            "end": {
+              "line": 46,
+              "column": 39
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_38_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_38_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.42279275,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.380419417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:48: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 48
+            },
+            "end": {
+              "line": 46,
+              "column": 49
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_48.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_48.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.487040334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.362238083,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:46:48: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 46,
+              "column": 48
+            },
+            "end": {
+              "line": 46,
+              "column": 49
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_46_col_48_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_46_col_48_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.539922125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.4529644170000005,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:28: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 28
+            },
+            "end": {
+              "line": 47,
+              "column": 29
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_28.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.481144709,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.420378708,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:28: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 28
+            },
+            "end": {
+              "line": 47,
+              "column": 29
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_28_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.489314625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.309386375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:23: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 23
+            },
+            "end": {
+              "line": 47,
+              "column": 24
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_23.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_23.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.492753917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.313523667,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:23: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 23
+            },
+            "end": {
+              "line": 47,
+              "column": 24
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_23_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_23_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.582490125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.209515084,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:17: replace * with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 17
+            },
+            "end": {
+              "line": 47,
+              "column": 18
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_17.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.477655792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.426480083,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:47:17: replace * with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 47,
+              "column": 17
+            },
+            "end": {
+              "line": 47,
+              "column": 18
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_47_col_17_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_47_col_17_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.439497833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.59905025,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:39: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 39
+            },
+            "end": {
+              "line": 48,
+              "column": 40
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_39.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_39.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.480098291,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.570992917,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:39: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 39
+            },
+            "end": {
+              "line": 48,
+              "column": 40
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_39_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_39_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.543037791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.467788542,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:18: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 18
+            },
+            "end": {
+              "line": 48,
+              "column": 19
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_18.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_18.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.47040675,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.543238916,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:18: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 18
+            },
+            "end": {
+              "line": 48,
+              "column": 19
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_18_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_18_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.427160667,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.584383375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:35: replace / with % in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 35
+            },
+            "end": {
+              "line": 48,
+              "column": 36
+            }
+          },
+          "replacement": "%",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_35.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_35.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.4871615,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.504785875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:35: replace / with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 35
+            },
+            "end": {
+              "line": 48,
+              "column": 36
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_35_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_35_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.533954542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.363759708,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:30: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 30
+            },
+            "end": {
+              "line": 48,
+              "column": 31
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_30.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_30.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.430806709,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.523780167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:30: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 30
+            },
+            "end": {
+              "line": 48,
+              "column": 31
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_30_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_30_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.429984,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.508134834,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:25: replace * with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 25
+            },
+            "end": {
+              "line": 48,
+              "column": 26
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_25.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.48137975,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.471379042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:48:25: replace * with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 48,
+              "column": 25
+            },
+            "end": {
+              "line": 48,
+              "column": 26
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_48_col_25_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_48_col_25_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.532420542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.518178709,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:49:19: replace < with == in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
                 "column": 2
               }
             }
@@ -173,11 +4732,11 @@
           "span": {
             "start": {
               "line": 49,
-              "column": 25
+              "column": 19
             },
             "end": {
               "line": 49,
-              "column": 27
+              "column": 20
             }
           },
           "replacement": "==",
@@ -185,12 +4744,12 @@
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_49_col_25.log",
-      "diff_path": "diff/core__src__lib.rs_line_49_col_25.diff",
+      "log_path": "log/core__src__instant.rs_line_49_col_19.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_19.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.809426666,
+          "duration": 0.484337375,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -202,7 +4761,7 @@
         },
         {
           "phase": "Test",
-          "duration": 0.813009792,
+          "duration": 6.5095045,
           "process_status": {
             "Failure": 101
           },
@@ -218,1224 +4777,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/lib.rs:67:5: replace refuse -> Response with Default::default()",
+          "name": "core/src/instant.rs:49:19: replace < with > in civil_from_days",
           "package": "tapkey-core",
-          "file": "core/src/lib.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "refuse",
-            "return_type": "-> Response",
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
             "span": {
               "start": {
-                "line": 66,
+                "line": 33,
                 "column": 1
               },
               "end": {
-                "line": 71,
+                "line": 51,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 67,
-              "column": 5
+              "line": 49,
+              "column": 19
             },
             "end": {
-              "line": 70,
-              "column": 6
+              "line": 49,
+              "column": 20
             }
           },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__lib.rs_line_67_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_67_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.165625167,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:58:5: replace effective_state -> Result<ToolState, crate::json::Error> with Ok(Default::default())",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "effective_state",
-            "return_type": "-> Result<ToolState, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 56,
-                "column": 1
-              },
-              "end": {
-                "line": 68,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 58,
-              "column": 5
-            },
-            "end": {
-              "line": 67,
-              "column": 7
-            }
-          },
-          "replacement": "Ok(Default::default())",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_58_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_58_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.159297125,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:25:5: replace handle -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 23,
-                "column": 1
-              },
-              "end": {
-                "line": 26,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 25,
-              "column": 5
-            },
-            "end": {
-              "line": 25,
-              "column": 39
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_25_col_5_001.log",
-      "diff_path": "diff/core__src__lib.rs_line_25_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 5.798398875,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.699836291,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![Default::default()])",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "resolve_env_var",
-            "return_type": "-> Result<Vec<Link>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 70,
-                "column": 1
-              },
-              "end": {
-                "line": 113,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 76,
-              "column": 5
-            },
-            "end": {
-              "line": 112,
-              "column": 14
-            }
-          },
-          "replacement": "Ok(vec![Default::default()])",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_76_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_76_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.107272583,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:116:5: replace unobservable -> Link with Default::default()",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "unobservable",
-            "return_type": "-> Link",
-            "span": {
-              "start": {
-                "line": 115,
-                "column": 1
-              },
-              "end": {
-                "line": 123,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 116,
-              "column": 5
-            },
-            "end": {
-              "line": 122,
-              "column": 6
-            }
-          },
-          "replacement": "Default::default()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_116_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_116_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.107802709,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:33:5: replace handle_with -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle_with",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 28,
-                "column": 1
-              },
-              "end": {
-                "line": 42,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 33,
-              "column": 5
-            },
-            "end": {
-              "line": 41,
-              "column": 7
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_33_col_5_001.log",
-      "diff_path": "diff/core__src__lib.rs_line_33_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 6.097349958,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 0.643430208,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:76:5: replace resolve_env_var -> Result<Vec<Link>, crate::json::Error> with Ok(vec![])",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "resolve_env_var",
-            "return_type": "-> Result<Vec<Link>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 70,
-                "column": 1
-              },
-              "end": {
-                "line": 113,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 76,
-              "column": 5
-            },
-            "end": {
-              "line": 112,
-              "column": 14
-            }
-          },
-          "replacement": "Ok(vec![])",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_76_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_76_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.590250208,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 1.827548292,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/lib.rs:33:5: replace handle_with -> String with String::new()",
-          "package": "tapkey-core",
-          "file": "core/src/lib.rs",
-          "function": {
-            "function_name": "handle_with",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 28,
-                "column": 1
-              },
-              "end": {
-                "line": 42,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 33,
-              "column": 5
-            },
-            "end": {
-              "line": 41,
-              "column": 7
-            }
-          },
-          "replacement": "String::new()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__lib.rs_line_33_col_5.log",
-      "diff_path": "diff/core__src__lib.rs_line_33_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 6.35561975,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 1.074862958,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with None",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 126,
-              "column": 5
-            },
-            "end": {
-              "line": 132,
-              "column": 6
-            }
-          },
-          "replacement": "None",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_126_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_126_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.432530667,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 2.562942875,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:126:5: replace scope_path -> Option<PathBuf> with Some(Default::default())",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 126,
-              "column": 5
-            },
-            "end": {
-              "line": 132,
-              "column": 6
-            }
-          },
-          "replacement": "Some(Default::default())",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_126_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_126_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.602064334,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.159962375,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:127:9: delete match arm \"managed\" in scope_path",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 127,
-              "column": 9
-            },
-            "end": {
-              "line": 127,
-              "column": 56
-            }
-          },
-          "replacement": "",
-          "genre": "MatchArm"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_127_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_127_col_9.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.595444125,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.734116,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:128:9: delete match arm \"project local\" in scope_path",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 128,
-              "column": 9
-            },
-            "end": {
-              "line": 128,
-              "column": 93
-            }
-          },
-          "replacement": "",
-          "genre": "MatchArm"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_128_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_128_col_9.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.595193667,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.75174825,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(Some(Default::default()))",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "read_settings",
-            "return_type": "-> Result<Option<Document>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 135,
-                "column": 1
-              },
-              "end": {
-                "line": 141,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 136,
-              "column": 5
-            },
-            "end": {
-              "line": 140,
-              "column": 6
-            }
-          },
-          "replacement": "Ok(Some(Default::default()))",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "Unviable",
-      "log_path": "log/core__src__adapters__claude.rs_line_136_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_136_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.164014209,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:129:9: delete match arm \"project\" in scope_path",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 129,
-              "column": 9
-            },
-            "end": {
-              "line": 129,
-              "column": 81
-            }
-          },
-          "replacement": "",
-          "genre": "MatchArm"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_129_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_129_col_9.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.382904375,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.5419748330000003,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:130:9: delete match arm \"user\" in scope_path",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "scope_path",
-            "return_type": "-> Option<PathBuf>",
-            "span": {
-              "start": {
-                "line": 125,
-                "column": 1
-              },
-              "end": {
-                "line": 133,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 130,
-              "column": 9
-            },
-            "end": {
-              "line": 130,
-              "column": 74
-            }
-          },
-          "replacement": "",
-          "genre": "MatchArm"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_130_col_9.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_130_col_9.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.430683625,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.334615375,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:136:5: replace read_settings -> Result<Option<Document>, crate::json::Error> with Ok(None)",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "read_settings",
-            "return_type": "-> Result<Option<Document>, crate::json::Error>",
-            "span": {
-              "start": {
-                "line": 135,
-                "column": 1
-              },
-              "end": {
-                "line": 141,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 136,
-              "column": 5
-            },
-            "end": {
-              "line": 140,
-              "column": 6
-            }
-          },
-          "replacement": "Ok(None)",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_136_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_136_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.3683135,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.059124417,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with String::new()",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "display_path",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 143,
-                "column": 1
-              },
-              "end": {
-                "line": 149,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 145,
-              "column": 5
-            },
-            "end": {
-              "line": 148,
-              "column": 6
-            }
-          },
-          "replacement": "String::new()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_145_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_145_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.327893417,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.178984083,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:145:5: replace display_path -> String with \"xyzzy\".into()",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "display_path",
-            "return_type": "-> String",
-            "span": {
-              "start": {
-                "line": 143,
-                "column": 1
-              },
-              "end": {
-                "line": 149,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 145,
-              "column": 5
-            },
-            "end": {
-              "line": 148,
-              "column": 6
-            }
-          },
-          "replacement": "\"xyzzy\".into()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_145_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_145_col_5_001.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.429995625,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.327852542,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:155:5: replace settle with ()",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "settle",
-            "return_type": "",
-            "span": {
-              "start": {
-                "line": 151,
-                "column": 1
-              },
-              "end": {
-                "line": 158,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 155,
-              "column": 5
-            },
-            "end": {
-              "line": 157,
-              "column": 6
-            }
-          },
-          "replacement": "()",
-          "genre": "FnValue"
-        }
-      },
-      "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_155_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_155_col_5.diff",
-      "phase_results": [
-        {
-          "phase": "Build",
-          "duration": 0.429013375,
-          "process_status": "Success",
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--no-run",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        },
-        {
-          "phase": "Test",
-          "duration": 3.365567709,
-          "process_status": {
-            "Failure": 101
-          },
-          "argv": [
-            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
-            "test",
-            "--verbose",
-            "--package=tapkey-core@0.0.0"
-          ]
-        }
-      ]
-    },
-    {
-      "scenario": {
-        "Mutant": {
-          "name": "core/src/adapters/claude.rs:155:64: replace && with || in settle",
-          "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
-          "function": {
-            "function_name": "settle",
-            "return_type": "",
-            "span": {
-              "start": {
-                "line": 151,
-                "column": 1
-              },
-              "end": {
-                "line": 158,
-                "column": 2
-              }
-            }
-          },
-          "span": {
-            "start": {
-              "line": 155,
-              "column": 64
-            },
-            "end": {
-              "line": 155,
-              "column": 66
-            }
-          },
-          "replacement": "||",
+          "replacement": ">",
           "genre": "BinaryOperator"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_155_col_64.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_155_col_64.diff",
+      "log_path": "log/core__src__instant.rs_line_49_col_19_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_19_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.382394334,
+          "duration": 0.476214458,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1447,7 +4826,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.313030625,
+          "duration": 6.337867042,
           "process_status": {
             "Failure": 101
           },
@@ -1463,44 +4842,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with None",
+          "name": "core/src/instant.rs:49:19: replace < with <= in civil_from_days",
           "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "winning_value",
-            "return_type": "-> Option<String>",
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
             "span": {
               "start": {
-                "line": 160,
+                "line": 33,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 51,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
-              "column": 5
+              "line": 49,
+              "column": 19
             },
             "end": {
-              "line": 161,
-              "column": 64
+              "line": 49,
+              "column": 20
             }
           },
-          "replacement": "None",
-          "genre": "FnValue"
+          "replacement": "<=",
+          "genre": "BinaryOperator"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5.diff",
+      "log_path": "log/core__src__instant.rs_line_49_col_19_002.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_19_002.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.379317542,
+          "duration": 0.481475709,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1512,7 +4891,7 @@
         },
         {
           "phase": "Test",
-          "duration": 3.31677475,
+          "duration": 6.30501375,
           "process_status": {
             "Failure": 101
           },
@@ -1528,44 +4907,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(String::new())",
+          "name": "core/src/instant.rs:49:29: replace + with - in civil_from_days",
           "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "winning_value",
-            "return_type": "-> Option<String>",
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
             "span": {
               "start": {
-                "line": 160,
+                "line": 33,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 51,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
-              "column": 5
+              "line": 49,
+              "column": 29
             },
             "end": {
-              "line": 161,
-              "column": 64
+              "line": 49,
+              "column": 30
             }
           },
-          "replacement": "Some(String::new())",
-          "genre": "FnValue"
+          "replacement": "-",
+          "genre": "BinaryOperator"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5_001.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5_001.diff",
+      "log_path": "log/core__src__instant.rs_line_49_col_29.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_29.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.480371792,
+          "duration": 0.4983975,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1577,7 +4956,7 @@
         },
         {
           "phase": "Test",
-          "duration": 2.5952105420000002,
+          "duration": 6.36579525,
           "process_status": {
             "Failure": 101
           },
@@ -1593,44 +4972,44 @@
     {
       "scenario": {
         "Mutant": {
-          "name": "core/src/adapters/claude.rs:161:5: replace winning_value -> Option<String> with Some(\"xyzzy\".into())",
+          "name": "core/src/instant.rs:49:29: replace + with * in civil_from_days",
           "package": "tapkey-core",
-          "file": "core/src/adapters/claude.rs",
+          "file": "core/src/instant.rs",
           "function": {
-            "function_name": "winning_value",
-            "return_type": "-> Option<String>",
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
             "span": {
               "start": {
-                "line": 160,
+                "line": 33,
                 "column": 1
               },
               "end": {
-                "line": 162,
+                "line": 51,
                 "column": 2
               }
             }
           },
           "span": {
             "start": {
-              "line": 161,
-              "column": 5
+              "line": 49,
+              "column": 29
             },
             "end": {
-              "line": 161,
-              "column": 64
+              "line": 49,
+              "column": 30
             }
           },
-          "replacement": "Some(\"xyzzy\".into())",
-          "genre": "FnValue"
+          "replacement": "*",
+          "genre": "BinaryOperator"
         }
       },
       "summary": "CaughtMutant",
-      "log_path": "log/core__src__adapters__claude.rs_line_161_col_5_002.log",
-      "diff_path": "diff/core__src__adapters__claude.rs_line_161_col_5_002.diff",
+      "log_path": "log/core__src__instant.rs_line_49_col_29_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_29_001.diff",
       "phase_results": [
         {
           "phase": "Build",
-          "duration": 0.431273792,
+          "duration": 0.487336334,
           "process_status": "Success",
           "argv": [
             "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
@@ -1642,7 +5021,332 @@
         },
         {
           "phase": "Test",
-          "duration": 2.23687325,
+          "duration": 6.3336545,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:49:45: replace - with + in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 49,
+              "column": 45
+            },
+            "end": {
+              "line": 49,
+              "column": 46
+            }
+          },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_49_col_45.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_45.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.491048834,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.551250334,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:49:45: replace - with / in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 49,
+              "column": 45
+            },
+            "end": {
+              "line": 49,
+              "column": 46
+            }
+          },
+          "replacement": "/",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_49_col_45_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_49_col_45_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.487027375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.566722542,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:50:11: replace <= with > in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 50,
+              "column": 11
+            },
+            "end": {
+              "line": 50,
+              "column": 13
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_50_col_11.log",
+      "diff_path": "diff/core__src__instant.rs_line_50_col_11.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.540318375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.4099404159999995,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:50:20: replace + with - in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 50,
+              "column": 20
+            },
+            "end": {
+              "line": 50,
+              "column": 21
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_50_col_20.log",
+      "diff_path": "diff/core__src__instant.rs_line_50_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.488302625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.397299167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/instant.rs:50:20: replace + with * in civil_from_days",
+          "package": "tapkey-core",
+          "file": "core/src/instant.rs",
+          "function": {
+            "function_name": "civil_from_days",
+            "return_type": "-> (i64, u32, u32)",
+            "span": {
+              "start": {
+                "line": 33,
+                "column": 1
+              },
+              "end": {
+                "line": 51,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 50,
+              "column": 20
+            },
+            "end": {
+              "line": 50,
+              "column": 21
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__instant.rs_line_50_col_20_001.log",
+      "diff_path": "diff/core__src__instant.rs_line_50_col_20_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.490736791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 4.004905166,
           "process_status": {
             "Failure": 101
           },
@@ -1656,13 +5360,13 @@
       ]
     }
   ],
-  "total_mutants": 26,
-  "missed": 0,
-  "caught": 20,
+  "total_mutants": 82,
+  "missed": 1,
+  "caught": 81,
   "timeout": 0,
-  "unviable": 6,
+  "unviable": 0,
   "success": 0,
-  "start_time": "2026-08-28T16:21:00.097597Z",
-  "end_time": "2026-08-28T16:21:26.706013Z",
+  "start_time": "2026-08-28T16:31:44.901299Z",
+  "end_time": "2026-08-28T16:34:14.117685Z",
   "cargo_mutants_version": "27.1.0"
 }
