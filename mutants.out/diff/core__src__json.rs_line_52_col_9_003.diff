@@ -1,0 +1,24 @@
+--- core/src/json.rs
++++ replace Node::span -> Range<usize> with Range::from(0)
+@@ -44,20 +44,17 @@
+     Opaque {
+         span: Range<usize>,
+         is_string: bool,
+     },
+ }
+ 
+ impl Node {
+     fn span(&self) -> Range<usize> {
+-        match self {
+-            Node::Object { span, .. } => span.clone(),
+-            Node::Opaque { span, .. } => span.clone(),
+-        }
++        Range::from(0) /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ struct Member {
+     key: String,
+     #[allow(dead_code)]
+     key_span: Range<usize>,
+     value: Node,

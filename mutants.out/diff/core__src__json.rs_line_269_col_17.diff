@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete match arm None in Parser<'a>::array
+@@ -261,17 +261,17 @@
+             match self.b.get(self.i) {
+                 Some(b']') => {
+                     self.i += 1;
+                     return Ok(Node::Opaque {
+                         span: start..self.i,
+                         is_string: false,
+                     });
+                 }
+-                None => return Err(self.error("an unterminated array")),
++                 /* ~ changed by cargo-mutants ~ */
+                 _ => {}
+             }
+             self.value()?;
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+                 Some(b',') => self.i += 1,
+                 Some(b']') => {}
+                 _ => return Err(self.error("a comma or a closing bracket was expected")),

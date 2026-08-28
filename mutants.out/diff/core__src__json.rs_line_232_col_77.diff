@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace == with != in Parser<'a>::object
+@@ -224,17 +224,17 @@
+ 
+             self.skip_whitespace();
+             if self.b.get(self.i) != Some(&b':') {
+                 return Err(self.error("a colon was expected after a key"));
+             }
+             self.i += 1;
+             self.skip_whitespace();
+ 
+-            if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {
++            if let Some(previous) = members.iter().find(|m: &&Member| m.key != /* ~ changed by cargo-mutants ~ */ key) {
+                 let _ = previous;
+                 return Err(Error::DuplicateKey {
+                     offset: key_start,
+                     key,
+                 });
+             }
+ 
+             let value = self.value()?;

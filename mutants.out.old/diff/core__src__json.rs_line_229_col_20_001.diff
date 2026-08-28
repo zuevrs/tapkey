@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace += with *= in Parser<'a>::object
+@@ -221,17 +221,17 @@
+             let key_start = self.i;
+             let key = self.string()?;
+             let key_span = key_start..self.i;
+ 
+             self.skip_whitespace();
+             if self.b.get(self.i) != Some(&b':') {
+                 return Err(self.error("a colon was expected after a key"));
+             }
+-            self.i += 1;
++            self.i *= /* ~ changed by cargo-mutants ~ */ 1;
+             self.skip_whitespace();
+ 
+             if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {
+                 let _ = previous;
+                 return Err(Error::DuplicateKey {
+                     offset: key_start,
+                     key,
+                 });

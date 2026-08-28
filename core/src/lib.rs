@@ -9,6 +9,7 @@
 //! out, behind a versioned schema, with three consumers sharing it.
 
 pub mod atomic;
+pub mod json;
 
 /// The schema version carried by every request and response.
 ///

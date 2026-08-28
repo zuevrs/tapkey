@@ -1,0 +1,161 @@
+
+*** core/src/json.rs:249:17: delete match arm Some(b',') in Parser<'a>::object
+
+*** mutation diff:
+--- core/src/json.rs
++++ delete match arm Some(b',') in Parser<'a>::object
+@@ -241,17 +241,17 @@
+             members.push(Member {
+                 key,
+                 key_span,
+                 value,
+             });
+ 
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+-                Some(b',') => self.i += 1,
++                 /* ~ changed by cargo-mutants ~ */
+                 Some(b'}') => {}
+                 _ => return Err(self.error("a comma or a closing brace was expected")),
+             }
+         }
+     }
+ 
+     fn array(&mut self) -> Result<Node, Error> {
+         let start = self.i;
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh libc v0.2.189
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/core): the file `core/src/json.rs` has changed (1787933542.748060887s, 3s after last build at 1787933539.298255030s)
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=9105275b8aef62b4 -C extra-filename=-0d7cc80528a209b4 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=7a405cffd96d514b -C extra-filename=-565f42156525e2da --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib`
+warning: method `span` is never used
+  --> core/src/json.rs:51:8
+   |
+50 | impl Node {
+   | --------- method in this implementation
+51 |     fn span(&self) -> Range<usize> {
+   |        ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tapkey-core` (lib) generated 1 warning (1 duplicate)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name atomic_write --edition=2024 core/tests/atomic_write.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=0b52fd1bcaeab0b0 -C extra-filename=-ce1d66eb000cfee9 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/libtapkey_core-0d7cc80528a209b4.rlib`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name json_document --edition=2024 core/tests/json_document.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=61689da969055e25 -C extra-filename=-eb095f4703358108 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib --extern tapkey_core=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/libtapkey_core-0d7cc80528a209b4.rlib`
+warning: `tapkey-core` (lib test) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/tapkey_core-565f42156525e2da`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/atomic_write-ce1d66eb000cfee9`
+  Executable `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/json_document-eb095f4703358108`
+
+*** result: Success
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --verbose --package=tapkey-core@0.0.0
+       Fresh libc v0.2.189
+warning: method `span` is never used
+  --> core/src/json.rs:51:8
+   |
+50 | impl Node {
+   | --------- method in this implementation
+51 |     fn span(&self) -> Range<usize> {
+   |        ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `tapkey-core` (lib) generated 1 warning
+       Fresh tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/core)
+warning: `tapkey-core` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/tapkey_core-565f42156525e2da`
+
+running 2 tests
+test atomic::tests::the_temp_file_is_a_sibling_of_the_target ... ok
+test tests::the_crate_compiles_and_declares_an_unstable_schema ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/atomic_write-ce1d66eb000cfee9`
+
+running 8 tests
+test a_new_file_is_created_at_the_requested_mode ... ok
+test writes_the_bytes_to_a_new_file ... ok
+test replaces_the_contents_of_an_existing_file ... ok
+test leaves_no_debris_when_the_write_fails_after_the_temp_file_exists ... ok
+test refuses_when_the_destination_directory_cannot_be_written_even_if_the_file_can ... ok
+test an_existing_file_keeps_the_mode_it_had ... ok
+test resolves_a_relative_symlink_against_the_directory_holding_it ... ok
+test follows_a_symlink_instead_of_replacing_it ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running `/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-6oNMbz.tmp/target/debug/deps/json_document-eb095f4703358108`
+
+running 18 tests
+test a_byte_order_mark_survives ... ok
+test a_control_character_in_a_written_value_is_escaped ... ok
+test a_duplicate_key_is_refused ... ok
+test a_minified_file_stays_minified ... FAILED
+test a_missing_trailing_newline_is_not_added ... ok
+test a_path_that_is_not_there_is_reported_rather_than_created ... ok
+test an_array_missing_its_separator_is_a_syntax_error ... ok
+test an_unterminated_array_is_a_syntax_error ... ok
+test arrays_are_preserved_including_nested_ones ... FAILED
+test braces_and_commas_inside_a_string_are_not_structure ... FAILED
+test carriage_returns_survive ... ok
+test non_ascii_passes_through_as_utf8_rather_than_being_escaped ... ok
+test replaces_a_nested_value_and_leaves_every_other_byte_alone ... FAILED
+test replaces_a_top_level_string_and_changes_nothing_else ... ok
+test setting_one_key_twice_keeps_only_the_last_value ... ok
+test setting_the_same_value_twice_is_byte_identical ... FAILED
+test strict_json_refuses_a_comment ... ok
+test strings_holding_escapes_survive_untouched ... FAILED
+
+failures:
+
+---- a_minified_file_stays_minified stdout ----
+
+thread 'a_minified_file_stays_minified' (16496014) panicked at core/tests/json_document.rs:75:89:
+parse: Syntax { offset: 30, message: "a comma or a closing brace was expected" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- arrays_are_preserved_including_nested_ones stdout ----
+
+thread 'arrays_are_preserved_including_nested_ones' (16496019) panicked at core/tests/json_document.rs:157:43:
+parse: Syntax { offset: 69, message: "a comma or a closing brace was expected" }
+
+---- braces_and_commas_inside_a_string_are_not_structure stdout ----
+
+thread 'braces_and_commas_inside_a_string_are_not_structure' (16496020) panicked at core/tests/json_document.rs:142:43:
+parse: Syntax { offset: 22, message: "a comma or a closing brace was expected" }
+
+---- replaces_a_nested_value_and_leaves_every_other_byte_alone stdout ----
+
+thread 'replaces_a_nested_value_and_leaves_every_other_byte_alone' (16496023) panicked at core/tests/json_document.rs:33:41:
+parse: Syntax { offset: 62, message: "a comma or a closing brace was expected" }
+
+---- setting_the_same_value_twice_is_byte_identical stdout ----
+
+thread 'setting_the_same_value_twice_is_byte_identical' (16496026) panicked at core/tests/json_document.rs:94:45:
+parse: Syntax { offset: 62, message: "a comma or a closing brace was expected" }
+
+---- strings_holding_escapes_survive_untouched stdout ----
+
+thread 'strings_holding_escapes_survive_untouched' (16496028) panicked at core/tests/json_document.rs:129:43:
+parse: Syntax { offset: 20, message: "a comma or a closing brace was expected" }
+
+
+failures:
+    a_minified_file_stays_minified
+    arrays_are_preserved_including_nested_ones
+    braces_and_commas_inside_a_string_are_not_structure
+    replaces_a_nested_value_and_leaves_every_other_byte_alone
+    setting_the_same_value_twice_is_byte_identical
+    strings_holding_escapes_survive_untouched
+
+test result: FAILED. 12 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p tapkey-core --test json_document`
+
+*** result: Failure(101)

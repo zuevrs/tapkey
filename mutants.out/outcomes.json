@@ -1,0 +1,5922 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.8618475,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.184377333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new()",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::new()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.108119333,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from_iter([1])",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::from_iter([1])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_004.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_004.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.105620541,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new(1)",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::new(1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_005.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_005.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.110972,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from(1)",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::from(1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_006.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_006.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.104423167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:69:9: replace Document::parse -> Result<Self, Error> with Ok(Default::default())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::parse",
+            "return_type": "-> Result<Self, Error>",
+            "span": {
+              "start": {
+                "line": 67,
+                "column": 5
+              },
+              "end": {
+                "line": 82,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 69,
+              "column": 9
+            },
+            "end": {
+              "line": 81,
+              "column": 11
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_69_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_69_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.107088792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from(0)",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::from(0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_003.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_003.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.695434667,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.107764125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new(0)",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::new(0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_002.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.8597325,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([0]))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::from_iter([0]))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_001.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.109669125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(0))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::new(0))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_002.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.109308792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from_iter([0])",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Node::span",
+            "return_type": "-> Range<usize>",
+            "span": {
+              "start": {
+                "line": 51,
+                "column": 5
+              },
+              "end": {
+                "line": 56,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 52,
+              "column": 9
+            },
+            "end": {
+              "line": 55,
+              "column": 10
+            }
+          },
+          "replacement": "Range::from_iter([0])",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_52_col_9_001.log",
+      "diff_path": "diff/core__src__json.rs_line_52_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.0166355,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(0))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::from(0))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_003.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_003.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.11317425,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([1]))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::from_iter([1]))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_004.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_004.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.109752958,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(1))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::new(1))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_005.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_005.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.108691166,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(1))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 87,
+              "column": 9
+            },
+            "end": {
+              "line": 99,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Range::from(1))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_87_col_9_006.log",
+      "diff_path": "diff/core__src__json.rs_line_87_col_9_006.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.105308917,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:74:21: replace != with == in Document::parse",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::parse",
+            "return_type": "-> Result<Self, Error>",
+            "span": {
+              "start": {
+                "line": 67,
+                "column": 5
+              },
+              "end": {
+                "line": 82,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 74,
+              "column": 21
+            },
+            "end": {
+              "line": 74,
+              "column": 23
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_74_col_21.log",
+      "diff_path": "diff/core__src__json.rs_line_74_col_21.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.265864542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.020402833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:91:13: delete match arm Node::Opaque{span, is_string:true} in Document::set_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::set_string",
+            "return_type": "-> Result<Range<usize>, Error>",
+            "span": {
+              "start": {
+                "line": 84,
+                "column": 5
+              },
+              "end": {
+                "line": 100,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 91,
+              "column": 13
+            },
+            "end": {
+              "line": 95,
+              "column": 14
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_91_col_13.log",
+      "diff_path": "diff/core__src__json.rs_line_91_col_13.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.534819958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.593896167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::to_bytes",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 102,
+                "column": 5
+              },
+              "end": {
+                "line": 116,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 104,
+              "column": 9
+            },
+            "end": {
+              "line": 115,
+              "column": 12
+            }
+          },
+          "replacement": "vec![]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_104_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_104_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.537012417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.158196875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![0]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::to_bytes",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 102,
+                "column": 5
+              },
+              "end": {
+                "line": 116,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 104,
+              "column": 9
+            },
+            "end": {
+              "line": 115,
+              "column": 12
+            }
+          },
+          "replacement": "vec![0]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_104_col_9_001.log",
+      "diff_path": "diff/core__src__json.rs_line_104_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.596785,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.338497375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![1]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::to_bytes",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 102,
+                "column": 5
+              },
+              "end": {
+                "line": 116,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 104,
+              "column": 9
+            },
+            "end": {
+              "line": 115,
+              "column": 12
+            }
+          },
+          "replacement": "vec![1]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_104_col_9_002.log",
+      "diff_path": "diff/core__src__json.rs_line_104_col_9_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.273119458,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.550335583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:126:5: replace resolve -> Option<&'a Node> with Some(Box::leak(Box::new(Default::default())))",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "resolve",
+            "return_type": "-> Option<&'a Node>",
+            "span": {
+              "start": {
+                "line": 125,
+                "column": 1
+              },
+              "end": {
+                "line": 134,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 126,
+              "column": 5
+            },
+            "end": {
+              "line": 133,
+              "column": 33
+            }
+          },
+          "replacement": "Some(Box::leak(Box::new(Default::default())))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_126_col_5_001.log",
+      "diff_path": "diff/core__src__json.rs_line_126_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.111608333,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:120:9: replace Document::record with ()",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::record",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 118,
+                "column": 5
+              },
+              "end": {
+                "line": 122,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 120,
+              "column": 9
+            },
+            "end": {
+              "line": 121,
+              "column": 58
+            }
+          },
+          "replacement": "()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_120_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_120_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.265458041,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.0069435,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:120:41: replace != with == in Document::record",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Document::record",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 118,
+                "column": 5
+              },
+              "end": {
+                "line": 122,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 120,
+              "column": 41
+            },
+            "end": {
+              "line": 120,
+              "column": 43
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_120_col_41.log",
+      "diff_path": "diff/core__src__json.rs_line_120_col_41.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.272193583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.896417333,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:126:5: replace resolve -> Option<&'a Node> with None",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "resolve",
+            "return_type": "-> Option<&'a Node>",
+            "span": {
+              "start": {
+                "line": 125,
+                "column": 1
+              },
+              "end": {
+                "line": 134,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 126,
+              "column": 5
+            },
+            "end": {
+              "line": 133,
+              "column": 33
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_126_col_5.log",
+      "diff_path": "diff/core__src__json.rs_line_126_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.269057583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.209522292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:132:48: replace == with != in resolve",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "resolve",
+            "return_type": "-> Option<&'a Node>",
+            "span": {
+              "start": {
+                "line": 125,
+                "column": 1
+              },
+              "end": {
+                "line": 134,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 132,
+              "column": 48
+            },
+            "end": {
+              "line": 132,
+              "column": 50
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_132_col_48.log",
+      "diff_path": "diff/core__src__json.rs_line_132_col_48.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.270435084,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.558500833,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 139,
+              "column": 5
+            },
+            "end": {
+              "line": 158,
+              "column": 8
+            }
+          },
+          "replacement": "vec![]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_139_col_5.log",
+      "diff_path": "diff/core__src__json.rs_line_139_col_5.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.377147458,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.546523042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![0]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 139,
+              "column": 5
+            },
+            "end": {
+              "line": 158,
+              "column": 8
+            }
+          },
+          "replacement": "vec![0]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_139_col_5_001.log",
+      "diff_path": "diff/core__src__json.rs_line_139_col_5_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.285507375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.403197125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![1]",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 139,
+              "column": 5
+            },
+            "end": {
+              "line": 158,
+              "column": 8
+            }
+          },
+          "replacement": "vec![1]",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_139_col_5_002.log",
+      "diff_path": "diff/core__src__json.rs_line_139_col_5_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.271717916,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.258883041,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:148:18: replace match guard (c as u32) < 0x20 with true in encode_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 148,
+              "column": 18
+            },
+            "end": {
+              "line": 148,
+              "column": 35
+            }
+          },
+          "replacement": "true",
+          "genre": "MatchArmGuard"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_148_col_18.log",
+      "diff_path": "diff/core__src__json.rs_line_148_col_18.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.275765958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.690884375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:148:18: replace match guard (c as u32) < 0x20 with false in encode_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 148,
+              "column": 18
+            },
+            "end": {
+              "line": 148,
+              "column": 35
+            }
+          },
+          "replacement": "false",
+          "genre": "MatchArmGuard"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_148_col_18_001.log",
+      "diff_path": "diff/core__src__json.rs_line_148_col_18_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.269359916,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.114301959,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:168:9: replace Parser<'a>::error -> Error with Default::default()",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::error",
+            "return_type": "-> Error",
+            "span": {
+              "start": {
+                "line": 167,
+                "column": 5
+              },
+              "end": {
+                "line": 172,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 168,
+              "column": 9
+            },
+            "end": {
+              "line": 171,
+              "column": 10
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_168_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_168_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.112490209,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:148:29: replace < with == in encode_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 148,
+              "column": 29
+            },
+            "end": {
+              "line": 148,
+              "column": 30
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_148_col_29.log",
+      "diff_path": "diff/core__src__json.rs_line_148_col_29.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.271016792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.418756834,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:148:29: replace < with > in encode_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 148,
+              "column": 29
+            },
+            "end": {
+              "line": 148,
+              "column": 30
+            }
+          },
+          "replacement": ">",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_148_col_29_001.log",
+      "diff_path": "diff/core__src__json.rs_line_148_col_29_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.272459375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.234780792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:148:29: replace < with <= in encode_string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "encode_string",
+            "return_type": "-> Vec<u8>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 1
+              },
+              "end": {
+                "line": 159,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 148,
+              "column": 29
+            },
+            "end": {
+              "line": 148,
+              "column": 30
+            }
+          },
+          "replacement": "<=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_148_col_29_002.log",
+      "diff_path": "diff/core__src__json.rs_line_148_col_29_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.326184875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.270182417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:181:9: replace Parser<'a>::value -> Result<Node, Error> with Ok(Default::default())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::value",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 180,
+                "column": 5
+              },
+              "end": {
+                "line": 202,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 181,
+              "column": 9
+            },
+            "end": {
+              "line": 201,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_181_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_181_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.157799584,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:205:9: replace Parser<'a>::object -> Result<Node, Error> with Ok(Default::default())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 205,
+              "column": 9
+            },
+            "end": {
+              "line": 253,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_205_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_205_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.126892125,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:175:9: replace Parser<'a>::skip_whitespace with ()",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::skip_whitespace",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 174,
+                "column": 5
+              },
+              "end": {
+                "line": 178,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 175,
+              "column": 9
+            },
+            "end": {
+              "line": 177,
+              "column": 10
+            }
+          },
+          "replacement": "()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_175_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_175_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.266437666,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.06128325,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:176:20: replace += with -= in Parser<'a>::skip_whitespace",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::skip_whitespace",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 174,
+                "column": 5
+              },
+              "end": {
+                "line": 178,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 176,
+              "column": 20
+            },
+            "end": {
+              "line": 176,
+              "column": 22
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_176_col_20.log",
+      "diff_path": "diff/core__src__json.rs_line_176_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.268057708,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.890103333,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:206:16: replace += with -= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 206,
+              "column": 16
+            },
+            "end": {
+              "line": 206,
+              "column": 18
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_206_col_16.log",
+      "diff_path": "diff/core__src__json.rs_line_206_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.274307208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.998032375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:206:16: replace += with *= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 206,
+              "column": 16
+            },
+            "end": {
+              "line": 206,
+              "column": 18
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_206_col_16_001.log",
+      "diff_path": "diff/core__src__json.rs_line_206_col_16_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.275735292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.667447959,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:211:17: delete match arm Some(b'}') in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 211,
+              "column": 17
+            },
+            "end": {
+              "line": 217,
+              "column": 18
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_211_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_211_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.215866542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.879794542,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:218:17: delete match arm Some(b'\"') in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 218,
+              "column": 17
+            },
+            "end": {
+              "line": 218,
+              "column": 33
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_218_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_218_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.443948583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.844244542,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:212:28: replace += with -= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 212,
+              "column": 28
+            },
+            "end": {
+              "line": 212,
+              "column": 30
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_212_col_28.log",
+      "diff_path": "diff/core__src__json.rs_line_212_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.324057958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.426634584,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:212:28: replace += with *= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 212,
+              "column": 28
+            },
+            "end": {
+              "line": 212,
+              "column": 30
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_212_col_28_001.log",
+      "diff_path": "diff/core__src__json.rs_line_212_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.323790916,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.308602959,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:226:35: replace != with == in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 226,
+              "column": 35
+            },
+            "end": {
+              "line": 226,
+              "column": 37
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_226_col_35.log",
+      "diff_path": "diff/core__src__json.rs_line_226_col_35.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.375034917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.258676709,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:229:20: replace += with -= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 229,
+              "column": 20
+            },
+            "end": {
+              "line": 229,
+              "column": 22
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_229_col_20.log",
+      "diff_path": "diff/core__src__json.rs_line_229_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.325649791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.139475,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:229:20: replace += with *= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 229,
+              "column": 20
+            },
+            "end": {
+              "line": 229,
+              "column": 22
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_229_col_20_001.log",
+      "diff_path": "diff/core__src__json.rs_line_229_col_20_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.326005417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.489363625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:232:77: replace == with != in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 232,
+              "column": 77
+            },
+            "end": {
+              "line": 232,
+              "column": 79
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_232_col_77.log",
+      "diff_path": "diff/core__src__json.rs_line_232_col_77.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.382311333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.131937583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:249:17: delete match arm Some(b',') in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 249,
+              "column": 17
+            },
+            "end": {
+              "line": 249,
+              "column": 43
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_249_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_249_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.329927667,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.771419291,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:250:17: delete match arm Some(b'}') in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 250,
+              "column": 17
+            },
+            "end": {
+              "line": 250,
+              "column": 33
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_250_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_250_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.471712375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.429657792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:257:9: replace Parser<'a>::array -> Result<Node, Error> with Ok(Default::default())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 257,
+              "column": 9
+            },
+            "end": {
+              "line": 279,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/core__src__json.rs_line_257_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_257_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.108016916,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:249:38: replace += with -= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 249,
+              "column": 38
+            },
+            "end": {
+              "line": 249,
+              "column": 40
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_249_col_38.log",
+      "diff_path": "diff/core__src__json.rs_line_249_col_38.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.375118042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 4.222818042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:176:20: replace += with *= in Parser<'a>::skip_whitespace",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::skip_whitespace",
+            "return_type": "",
+            "span": {
+              "start": {
+                "line": 174,
+                "column": 5
+              },
+              "end": {
+                "line": 178,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 176,
+              "column": 20
+            },
+            "end": {
+              "line": 176,
+              "column": 22
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/core__src__json.rs_line_176_col_20_001.log",
+      "diff_path": "diff/core__src__json.rs_line_176_col_20_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.221033542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.0127685,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:249:38: replace += with *= in Parser<'a>::object",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::object",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 204,
+                "column": 5
+              },
+              "end": {
+                "line": 254,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 249,
+              "column": 38
+            },
+            "end": {
+              "line": 249,
+              "column": 40
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_249_col_38_001.log",
+      "diff_path": "diff/core__src__json.rs_line_249_col_38_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.448719709,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.1359093749999998,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:258:16: replace += with -= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 258,
+              "column": 16
+            },
+            "end": {
+              "line": 258,
+              "column": 18
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_258_col_16.log",
+      "diff_path": "diff/core__src__json.rs_line_258_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.324710208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.223365458,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:258:16: replace += with *= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 258,
+              "column": 16
+            },
+            "end": {
+              "line": 258,
+              "column": 18
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_258_col_16_001.log",
+      "diff_path": "diff/core__src__json.rs_line_258_col_16_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.311374875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.130814792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:262:17: delete match arm Some(b']') in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 262,
+              "column": 17
+            },
+            "end": {
+              "line": 268,
+              "column": 18
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_262_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_262_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.385187542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.256449166,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:269:17: delete match arm None in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 269,
+              "column": 17
+            },
+            "end": {
+              "line": 269,
+              "column": 73
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/core__src__json.rs_line_269_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_269_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.272539375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.697060875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:263:28: replace += with -= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 263,
+              "column": 28
+            },
+            "end": {
+              "line": 263,
+              "column": 30
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_263_col_28.log",
+      "diff_path": "diff/core__src__json.rs_line_263_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.275573583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.492284167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:263:28: replace += with *= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 263,
+              "column": 28
+            },
+            "end": {
+              "line": 263,
+              "column": 30
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_263_col_28_001.log",
+      "diff_path": "diff/core__src__json.rs_line_263_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.272872,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.428919375,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:275:17: delete match arm Some(b',') in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 275,
+              "column": 17
+            },
+            "end": {
+              "line": 275,
+              "column": 43
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_275_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_275_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.218850875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.461501416,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:276:17: delete match arm Some(b']') in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 276,
+              "column": 17
+            },
+            "end": {
+              "line": 276,
+              "column": 33
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_276_col_17.log",
+      "diff_path": "diff/core__src__json.rs_line_276_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.267637416,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.41428475,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:275:38: replace += with *= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 275,
+              "column": 38
+            },
+            "end": {
+              "line": 275,
+              "column": 40
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_275_col_38_001.log",
+      "diff_path": "diff/core__src__json.rs_line_275_col_38_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.265441625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.063451334,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:283:9: replace Parser<'a>::string -> Result<String, Error> with Ok(String::new())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 283,
+              "column": 9
+            },
+            "end": {
+              "line": 339,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(String::new())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_283_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_283_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.267808625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.098257792,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:283:9: replace Parser<'a>::string -> Result<String, Error> with Ok(\"xyzzy\".into())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 283,
+              "column": 9
+            },
+            "end": {
+              "line": 339,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(\"xyzzy\".into())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_283_col_9_001.log",
+      "diff_path": "diff/core__src__json.rs_line_283_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.316560791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.205729458,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:283:31: replace != with == in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 283,
+              "column": 31
+            },
+            "end": {
+              "line": 283,
+              "column": 33
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_283_col_31.log",
+      "diff_path": "diff/core__src__json.rs_line_283_col_31.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.264684625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.311059291,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:286:16: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 286,
+              "column": 16
+            },
+            "end": {
+              "line": 286,
+              "column": 18
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_286_col_16.log",
+      "diff_path": "diff/core__src__json.rs_line_286_col_16.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.328803917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.3078765,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:286:16: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 286,
+              "column": 16
+            },
+            "end": {
+              "line": 286,
+              "column": 18
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_286_col_16_001.log",
+      "diff_path": "diff/core__src__json.rs_line_286_col_16_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.270638083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.643268042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:292:28: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 292,
+              "column": 28
+            },
+            "end": {
+              "line": 292,
+              "column": 30
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_292_col_28.log",
+      "diff_path": "diff/core__src__json.rs_line_292_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.269092583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.255447708,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:292:28: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 292,
+              "column": 28
+            },
+            "end": {
+              "line": 292,
+              "column": 30
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_292_col_28_001.log",
+      "diff_path": "diff/core__src__json.rs_line_292_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.278174541,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.233794292,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:296:28: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 296,
+              "column": 28
+            },
+            "end": {
+              "line": 296,
+              "column": 30
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_296_col_28.log",
+      "diff_path": "diff/core__src__json.rs_line_296_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.276533292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.072198334,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:296:28: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 296,
+              "column": 28
+            },
+            "end": {
+              "line": 296,
+              "column": 30
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_296_col_28_001.log",
+      "diff_path": "diff/core__src__json.rs_line_296_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.271039667,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.242236583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:298:28: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 298,
+              "column": 28
+            },
+            "end": {
+              "line": 298,
+              "column": 30
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_298_col_28_001.log",
+      "diff_path": "diff/core__src__json.rs_line_298_col_28_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.26761825,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.224518916,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:300:25: delete match arm b'\"' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 300,
+              "column": 25
+            },
+            "end": {
+              "line": 300,
+              "column": 47
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_300_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_300_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.266651625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.9839665,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:301:25: delete match arm b'\\\\' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 301,
+              "column": 25
+            },
+            "end": {
+              "line": 301,
+              "column": 49
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_301_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_301_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.271525834,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.830011958,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:302:25: delete match arm b'/' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 302,
+              "column": 25
+            },
+            "end": {
+              "line": 302,
+              "column": 47
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_302_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_302_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.315600208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.676467042,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:303:25: delete match arm b'b' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 303,
+              "column": 25
+            },
+            "end": {
+              "line": 303,
+              "column": 51
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_303_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_303_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.309102625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.292960167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:304:25: delete match arm b'f' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 304,
+              "column": 25
+            },
+            "end": {
+              "line": 304,
+              "column": 51
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_304_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_304_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.32819725,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.5125845,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:305:25: delete match arm b'n' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 305,
+              "column": 25
+            },
+            "end": {
+              "line": 305,
+              "column": 48
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_305_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_305_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.325755791,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.923936625,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:275:38: replace += with -= in Parser<'a>::array",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::array",
+            "return_type": "-> Result<Node, Error>",
+            "span": {
+              "start": {
+                "line": 256,
+                "column": 5
+              },
+              "end": {
+                "line": 280,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 275,
+              "column": 38
+            },
+            "end": {
+              "line": 275,
+              "column": 40
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/core__src__json.rs_line_275_col_38.log",
+      "diff_path": "diff/core__src__json.rs_line_275_col_38.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.210485958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.006012917,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:306:25: delete match arm b'r' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 306,
+              "column": 25
+            },
+            "end": {
+              "line": 306,
+              "column": 48
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_306_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_306_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.274157292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.765179583,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:307:25: delete match arm b't' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 307,
+              "column": 25
+            },
+            "end": {
+              "line": 307,
+              "column": 48
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_307_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_307_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.318286291,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.626547041,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:308:25: delete match arm b'u' in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 308,
+              "column": 25
+            },
+            "end": {
+              "line": 322,
+              "column": 26
+            }
+          },
+          "replacement": "",
+          "genre": "MatchArm"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_308_col_25.log",
+      "diff_path": "diff/core__src__json.rs_line_308_col_25.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.320297,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.54698225,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:311:53: replace + with - in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 311,
+              "column": 53
+            },
+            "end": {
+              "line": 311,
+              "column": 54
+            }
+          },
+          "replacement": "-",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_311_col_53.log",
+      "diff_path": "diff/core__src__json.rs_line_311_col_53.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.2738495,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.593659417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:311:53: replace + with * in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 311,
+              "column": 53
+            },
+            "end": {
+              "line": 311,
+              "column": 54
+            }
+          },
+          "replacement": "*",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_311_col_53_001.log",
+      "diff_path": "diff/core__src__json.rs_line_311_col_53_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.315458541,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.46456325,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:318:36: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 318,
+              "column": 36
+            },
+            "end": {
+              "line": 318,
+              "column": 38
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_318_col_36.log",
+      "diff_path": "diff/core__src__json.rs_line_318_col_36.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.268494167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.472277333,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:318:36: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 318,
+              "column": 36
+            },
+            "end": {
+              "line": 318,
+              "column": 38
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_318_col_36_001.log",
+      "diff_path": "diff/core__src__json.rs_line_318_col_36_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.378314708,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.754598,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:329:32: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 329,
+              "column": 32
+            },
+            "end": {
+              "line": 329,
+              "column": 34
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_329_col_32.log",
+      "diff_path": "diff/core__src__json.rs_line_329_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.267674875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.606656417,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:343:9: replace Parser<'a>::scalar -> Result<(), Error> with Ok(())",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::scalar",
+            "return_type": "-> Result<(), Error>",
+            "span": {
+              "start": {
+                "line": 342,
+                "column": 5
+              },
+              "end": {
+                "line": 366,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 343,
+              "column": 9
+            },
+            "end": {
+              "line": 365,
+              "column": 10
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_343_col_9.log",
+      "diff_path": "diff/core__src__json.rs_line_343_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.322280375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.489131875,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:298:28: replace += with -= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 298,
+              "column": 28
+            },
+            "end": {
+              "line": 298,
+              "column": 30
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/core__src__json.rs_line_298_col_28.log",
+      "diff_path": "diff/core__src__json.rs_line_298_col_28.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.316569792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.016118083,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:348:20: replace += with -= in Parser<'a>::scalar",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::scalar",
+            "return_type": "-> Result<(), Error>",
+            "span": {
+              "start": {
+                "line": 342,
+                "column": 5
+              },
+              "end": {
+                "line": 366,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 348,
+              "column": 20
+            },
+            "end": {
+              "line": 348,
+              "column": 22
+            }
+          },
+          "replacement": "-=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_348_col_20.log",
+      "diff_path": "diff/core__src__json.rs_line_348_col_20.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.376158625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.242300916,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:350:19: replace == with != in Parser<'a>::scalar",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::scalar",
+            "return_type": "-> Result<(), Error>",
+            "span": {
+              "start": {
+                "line": 342,
+                "column": 5
+              },
+              "end": {
+                "line": 366,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 350,
+              "column": 19
+            },
+            "end": {
+              "line": 350,
+              "column": 21
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/core__src__json.rs_line_350_col_19.log",
+      "diff_path": "diff/core__src__json.rs_line_350_col_19.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.430806583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.226169167,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:329:32: replace += with *= in Parser<'a>::string",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::string",
+            "return_type": "-> Result<String, Error>",
+            "span": {
+              "start": {
+                "line": 282,
+                "column": 5
+              },
+              "end": {
+                "line": 340,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 329,
+              "column": 32
+            },
+            "end": {
+              "line": 329,
+              "column": 34
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/core__src__json.rs_line_329_col_32_001.log",
+      "diff_path": "diff/core__src__json.rs_line_329_col_32_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.268515,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.004618541,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "core/src/json.rs:348:20: replace += with *= in Parser<'a>::scalar",
+          "package": "tapkey-core",
+          "file": "core/src/json.rs",
+          "function": {
+            "function_name": "Parser<'a>::scalar",
+            "return_type": "-> Result<(), Error>",
+            "span": {
+              "start": {
+                "line": 342,
+                "column": 5
+              },
+              "end": {
+                "line": 366,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 348,
+              "column": 20
+            },
+            "end": {
+              "line": 348,
+              "column": 22
+            }
+          },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/core__src__json.rs_line_348_col_20_001.log",
+      "diff_path": "diff/core__src__json.rs_line_348_col_20_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.445476459,
+          "process_status": "Success",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 20.02616575,
+          "process_status": "Timeout",
+          "argv": [
+            "/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=tapkey-core@0.0.0"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 94,
+  "missed": 1,
+  "caught": 68,
+  "timeout": 5,
+  "unviable": 20,
+  "success": 0,
+  "start_time": "2026-08-28T16:11:51.250969Z",
+  "end_time": "2026-08-28T16:13:25.891393Z",
+  "cargo_mutants_version": "27.1.0"
+}

@@ -1,0 +1,33 @@
+--- core/src/json.rs
++++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(0))
+@@ -79,29 +79,17 @@
+             root,
+             splices: Vec::new(),
+         })
+     }
+ 
+     /// Replace the string at `path`. Creates nothing: a path that is not already there is an
+     /// error, because creating is a different decision with its own rules about placement.
+     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {
+-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {
+-            path: path.join("."),
+-        })?;
+-        match node {
+-            Node::Opaque { span, is_string: true } => {
+-                let range = span.clone();
+-                self.record(range.clone(), encode_string(value));
+-                Ok(range)
+-            }
+-            _ => Err(Error::NotAString {
+-                path: path.join("."),
+-            }),
+-        }
++        Ok(Range::from(0)) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// The document's bytes with every pending splice applied.
+     pub fn to_bytes(&self) -> Vec<u8> {
+         let mut ordered: Vec<&Splice> = self.splices.iter().collect();
+         ordered.sort_by_key(|s| s.range.start);
+ 
+         let mut out = Vec::with_capacity(self.original.len());

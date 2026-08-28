@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace != with == in Document::parse
+@@ -66,17 +66,17 @@
+ impl Document {
+     /// Parse `bytes` as strict JSON.
+     pub fn parse(bytes: &[u8]) -> Result<Self, Error> {
+         let start = if bytes.starts_with(b"\xEF\xBB\xBF") { 3 } else { 0 };
+         let mut parser = Parser { b: bytes, i: start };
+         parser.skip_whitespace();
+         let root = parser.value()?;
+         parser.skip_whitespace();
+-        if parser.i != bytes.len() {
++        if parser.i == /* ~ changed by cargo-mutants ~ */ bytes.len() {
+             return Err(parser.error("trailing content after the top-level value"));
+         }
+         Ok(Document {
+             original: bytes.to_vec(),
+             root,
+             splices: Vec::new(),
+         })
+     }

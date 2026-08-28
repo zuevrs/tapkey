@@ -1,0 +1,3010 @@
+[
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::new()\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::new() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new()",
+    "package": "tapkey-core",
+    "replacement": "Range::new()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::from_iter([0])\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::from_iter([0]) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from_iter([0])",
+    "package": "tapkey-core",
+    "replacement": "Range::from_iter([0])",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::new(0)\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::new(0) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new(0)",
+    "package": "tapkey-core",
+    "replacement": "Range::new(0)",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::from(0)\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::from(0) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from(0)",
+    "package": "tapkey-core",
+    "replacement": "Range::from(0)",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::from_iter([1])\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::from_iter([1]) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from_iter([1])",
+    "package": "tapkey-core",
+    "replacement": "Range::from_iter([1])",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::new(1)\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::new(1) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new(1)",
+    "package": "tapkey-core",
+    "replacement": "Range::new(1)",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Node::span -> Range<usize> with Range::from(1)\n@@ -44,20 +44,17 @@\n     Opaque {\n         span: Range<usize>,\n         is_string: bool,\n     },\n }\n \n impl Node {\n     fn span(&self) -> Range<usize> {\n-        match self {\n-            Node::Object { span, .. } => span.clone(),\n-            Node::Opaque { span, .. } => span.clone(),\n-        }\n+        Range::from(1) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n struct Member {\n     key: String,\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Node::span",
+      "return_type": "-> Range<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 56
+        },
+        "start": {
+          "column": 5,
+          "line": 51
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::from(1)",
+    "package": "tapkey-core",
+    "replacement": "Range::from(1)",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 55
+      },
+      "start": {
+        "column": 9,
+        "line": 52
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::parse -> Result<Self, Error> with Ok(Default::default())\n@@ -61,29 +61,17 @@\n     #[allow(dead_code)]\n     key_span: Range<usize>,\n     value: Node,\n }\n \n impl Document {\n     /// Parse `bytes` as strict JSON.\n     pub fn parse(bytes: &[u8]) -> Result<Self, Error> {\n-        let start = if bytes.starts_with(b\"\\xEF\\xBB\\xBF\") { 3 } else { 0 };\n-        let mut parser = Parser { b: bytes, i: start };\n-        parser.skip_whitespace();\n-        let root = parser.value()?;\n-        parser.skip_whitespace();\n-        if parser.i != bytes.len() {\n-            return Err(parser.error(\"trailing content after the top-level value\"));\n-        }\n-        Ok(Document {\n-            original: bytes.to_vec(),\n-            root,\n-            splices: Vec::new(),\n-        })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n         let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n             path: path.join(\".\"),\n         })?;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::parse",
+      "return_type": "-> Result<Self, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 82
+        },
+        "start": {
+          "column": 5,
+          "line": 67
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:69:9: replace Document::parse -> Result<Self, Error> with Ok(Default::default())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 81
+      },
+      "start": {
+        "column": 9,
+        "line": 69
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace != with == in Document::parse\n@@ -66,17 +66,17 @@\n impl Document {\n     /// Parse `bytes` as strict JSON.\n     pub fn parse(bytes: &[u8]) -> Result<Self, Error> {\n         let start = if bytes.starts_with(b\"\\xEF\\xBB\\xBF\") { 3 } else { 0 };\n         let mut parser = Parser { b: bytes, i: start };\n         parser.skip_whitespace();\n         let root = parser.value()?;\n         parser.skip_whitespace();\n-        if parser.i != bytes.len() {\n+        if parser.i == /* ~ changed by cargo-mutants ~ */ bytes.len() {\n             return Err(parser.error(\"trailing content after the top-level value\"));\n         }\n         Ok(Document {\n             original: bytes.to_vec(),\n             root,\n             splices: Vec::new(),\n         })\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::parse",
+      "return_type": "-> Result<Self, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 82
+        },
+        "start": {
+          "column": 5,
+          "line": 67
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:74:21: replace != with == in Document::parse",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 23,
+        "line": 74
+      },
+      "start": {
+        "column": 21,
+        "line": 74
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new())\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::new()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::new())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([0]))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::from_iter([0])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([0]))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::from_iter([0]))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(0))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::new(0)) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(0))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::new(0))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(0))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::from(0)) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(0))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::from(0))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([1]))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::from_iter([1])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from_iter([1]))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::from_iter([1]))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(1))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::new(1)) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::new(1))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::new(1))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(1))\n@@ -79,29 +79,17 @@\n             root,\n             splices: Vec::new(),\n         })\n     }\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n-        let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n-            path: path.join(\".\"),\n-        })?;\n-        match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n-            _ => Err(Error::NotAString {\n-                path: path.join(\".\"),\n-            }),\n-        }\n+        Ok(Range::from(1)) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n         let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n         ordered.sort_by_key(|s| s.range.start);\n \n         let mut out = Vec::with_capacity(self.original.len());\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:87:9: replace Document::set_string -> Result<Range<usize>, Error> with Ok(Range::from(1))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Range::from(1))",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 99
+      },
+      "start": {
+        "column": 9,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Node::Opaque{span, is_string:true} in Document::set_string\n@@ -83,21 +83,17 @@\n \n     /// Replace the string at `path`. Creates nothing: a path that is not already there is an\n     /// error, because creating is a different decision with its own rules about placement.\n     pub fn set_string(&mut self, path: &[&str], value: &str) -> Result<Range<usize>, Error> {\n         let node = resolve(&self.root, path).ok_or_else(|| Error::Missing {\n             path: path.join(\".\"),\n         })?;\n         match node {\n-            Node::Opaque { span, is_string: true } => {\n-                let range = span.clone();\n-                self.record(range.clone(), encode_string(value));\n-                Ok(range)\n-            }\n+             /* ~ changed by cargo-mutants ~ */\n             _ => Err(Error::NotAString {\n                 path: path.join(\".\"),\n             }),\n         }\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::set_string",
+      "return_type": "-> Result<Range<usize>, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 100
+        },
+        "start": {
+          "column": 5,
+          "line": 84
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:91:13: delete match arm Node::Opaque{span, is_string:true} in Document::set_string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 14,
+        "line": 95
+      },
+      "start": {
+        "column": 13,
+        "line": 91
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::to_bytes -> Vec<u8> with vec![]\n@@ -96,28 +96,17 @@\n             _ => Err(Error::NotAString {\n                 path: path.join(\".\"),\n             }),\n         }\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n-        let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n-        ordered.sort_by_key(|s| s.range.start);\n-\n-        let mut out = Vec::with_capacity(self.original.len());\n-        let mut cursor = 0usize;\n-        for splice in ordered {\n-            out.extend_from_slice(&self.original[cursor..splice.range.start]);\n-            out.extend_from_slice(&splice.replacement);\n-            cursor = splice.range.end;\n-        }\n-        out.extend_from_slice(&self.original[cursor..]);\n-        out\n+        vec![] /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n         self.splices.retain(|s| s.range != range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::to_bytes",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 102
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![]",
+    "package": "tapkey-core",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 115
+      },
+      "start": {
+        "column": 9,
+        "line": 104
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::to_bytes -> Vec<u8> with vec![0]\n@@ -96,28 +96,17 @@\n             _ => Err(Error::NotAString {\n                 path: path.join(\".\"),\n             }),\n         }\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n-        let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n-        ordered.sort_by_key(|s| s.range.start);\n-\n-        let mut out = Vec::with_capacity(self.original.len());\n-        let mut cursor = 0usize;\n-        for splice in ordered {\n-            out.extend_from_slice(&self.original[cursor..splice.range.start]);\n-            out.extend_from_slice(&splice.replacement);\n-            cursor = splice.range.end;\n-        }\n-        out.extend_from_slice(&self.original[cursor..]);\n-        out\n+        vec![0] /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n         self.splices.retain(|s| s.range != range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::to_bytes",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 102
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![0]",
+    "package": "tapkey-core",
+    "replacement": "vec![0]",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 115
+      },
+      "start": {
+        "column": 9,
+        "line": 104
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::to_bytes -> Vec<u8> with vec![1]\n@@ -96,28 +96,17 @@\n             _ => Err(Error::NotAString {\n                 path: path.join(\".\"),\n             }),\n         }\n     }\n \n     /// The document's bytes with every pending splice applied.\n     pub fn to_bytes(&self) -> Vec<u8> {\n-        let mut ordered: Vec<&Splice> = self.splices.iter().collect();\n-        ordered.sort_by_key(|s| s.range.start);\n-\n-        let mut out = Vec::with_capacity(self.original.len());\n-        let mut cursor = 0usize;\n-        for splice in ordered {\n-            out.extend_from_slice(&self.original[cursor..splice.range.start]);\n-            out.extend_from_slice(&splice.replacement);\n-            cursor = splice.range.end;\n-        }\n-        out.extend_from_slice(&self.original[cursor..]);\n-        out\n+        vec![1] /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n         self.splices.retain(|s| s.range != range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::to_bytes",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 116
+        },
+        "start": {
+          "column": 5,
+          "line": 102
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:104:9: replace Document::to_bytes -> Vec<u8> with vec![1]",
+    "package": "tapkey-core",
+    "replacement": "vec![1]",
+    "span": {
+      "end": {
+        "column": 12,
+        "line": 115
+      },
+      "start": {
+        "column": 9,
+        "line": 104
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Document::record with ()\n@@ -112,18 +112,17 @@\n             cursor = splice.range.end;\n         }\n         out.extend_from_slice(&self.original[cursor..]);\n         out\n     }\n \n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n-        self.splices.retain(|s| s.range != range);\n-        self.splices.push(Splice { range, replacement });\n+        () /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {\n     let Some((head, rest)) = path.split_first() else {\n         return Some(node);\n     };\n     let Node::Object { members, .. } = node else {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::record",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 122
+        },
+        "start": {
+          "column": 5,
+          "line": 118
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:120:9: replace Document::record with ()",
+    "package": "tapkey-core",
+    "replacement": "()",
+    "span": {
+      "end": {
+        "column": 58,
+        "line": 121
+      },
+      "start": {
+        "column": 9,
+        "line": 120
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace != with == in Document::record\n@@ -112,17 +112,17 @@\n             cursor = splice.range.end;\n         }\n         out.extend_from_slice(&self.original[cursor..]);\n         out\n     }\n \n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n-        self.splices.retain(|s| s.range != range);\n+        self.splices.retain(|s| s.range == /* ~ changed by cargo-mutants ~ */ range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n \n fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {\n     let Some((head, rest)) = path.split_first() else {\n         return Some(node);\n     };\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Document::record",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 122
+        },
+        "start": {
+          "column": 5,
+          "line": 118
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:120:41: replace != with == in Document::record",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 120
+      },
+      "start": {
+        "column": 41,
+        "line": 120
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace resolve -> Option<&'a Node> with None\n@@ -118,24 +118,17 @@\n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n         self.splices.retain(|s| s.range != range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n \n fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {\n-    let Some((head, rest)) = path.split_first() else {\n-        return Some(node);\n-    };\n-    let Node::Object { members, .. } = node else {\n-        return None;\n-    };\n-    let member = members.iter().find(|m| m.key == *head)?;\n-    resolve(&member.value, rest)\n+    None /* ~ changed by cargo-mutants ~ */\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n     let mut out = Vec::with_capacity(value.len() + 2);\n     out.push(b'\"');\n     for ch in value.chars() {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<&'a Node>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 134
+        },
+        "start": {
+          "column": 1,
+          "line": 125
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:126:5: replace resolve -> Option<&'a Node> with None",
+    "package": "tapkey-core",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 133
+      },
+      "start": {
+        "column": 5,
+        "line": 126
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace resolve -> Option<&'a Node> with Some(Box::leak(Box::new(Default::default())))\n@@ -118,24 +118,17 @@\n     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {\n         // Setting the same place twice replaces the earlier intent rather than stacking on it.\n         self.splices.retain(|s| s.range != range);\n         self.splices.push(Splice { range, replacement });\n     }\n }\n \n fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {\n-    let Some((head, rest)) = path.split_first() else {\n-        return Some(node);\n-    };\n-    let Node::Object { members, .. } = node else {\n-        return None;\n-    };\n-    let member = members.iter().find(|m| m.key == *head)?;\n-    resolve(&member.value, rest)\n+    Some(Box::leak(Box::new(Default::default()))) /* ~ changed by cargo-mutants ~ */\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n     let mut out = Vec::with_capacity(value.len() + 2);\n     out.push(b'\"');\n     for ch in value.chars() {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<&'a Node>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 134
+        },
+        "start": {
+          "column": 1,
+          "line": 125
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:126:5: replace resolve -> Option<&'a Node> with Some(Box::leak(Box::new(Default::default())))",
+    "package": "tapkey-core",
+    "replacement": "Some(Box::leak(Box::new(Default::default())))",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 133
+      },
+      "start": {
+        "column": 5,
+        "line": 126
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace == with != in resolve\n@@ -124,17 +124,17 @@\n \n fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {\n     let Some((head, rest)) = path.split_first() else {\n         return Some(node);\n     };\n     let Node::Object { members, .. } = node else {\n         return None;\n     };\n-    let member = members.iter().find(|m| m.key == *head)?;\n+    let member = members.iter().find(|m| m.key != /* ~ changed by cargo-mutants ~ */ *head)?;\n     resolve(&member.value, rest)\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n     let mut out = Vec::with_capacity(value.len() + 2);\n     out.push(b'\"');\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "resolve",
+      "return_type": "-> Option<&'a Node>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 134
+        },
+        "start": {
+          "column": 1,
+          "line": 125
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:132:48: replace == with != in resolve",
+    "package": "tapkey-core",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 50,
+        "line": 132
+      },
+      "start": {
+        "column": 48,
+        "line": 132
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace encode_string -> Vec<u8> with vec![]\n@@ -131,36 +131,17 @@\n     };\n     let member = members.iter().find(|m| m.key == *head)?;\n     resolve(&member.value, rest)\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n-    let mut out = Vec::with_capacity(value.len() + 2);\n-    out.push(b'\"');\n-    for ch in value.chars() {\n-        match ch {\n-            '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n-            '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n-            '\\n' => out.extend_from_slice(b\"\\\\n\"),\n-            '\\r' => out.extend_from_slice(b\"\\\\r\"),\n-            '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n-                out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n-            }\n-            c => {\n-                let mut buf = [0u8; 4];\n-                out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n-            }\n-        }\n-    }\n-    out.push(b'\"');\n-    out\n+    vec![] /* ~ changed by cargo-mutants ~ */\n }\n \n struct Parser<'a> {\n     b: &'a [u8],\n     i: usize,\n }\n \n impl<'a> Parser<'a> {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![]",
+    "package": "tapkey-core",
+    "replacement": "vec![]",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 158
+      },
+      "start": {
+        "column": 5,
+        "line": 139
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace encode_string -> Vec<u8> with vec![0]\n@@ -131,36 +131,17 @@\n     };\n     let member = members.iter().find(|m| m.key == *head)?;\n     resolve(&member.value, rest)\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n-    let mut out = Vec::with_capacity(value.len() + 2);\n-    out.push(b'\"');\n-    for ch in value.chars() {\n-        match ch {\n-            '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n-            '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n-            '\\n' => out.extend_from_slice(b\"\\\\n\"),\n-            '\\r' => out.extend_from_slice(b\"\\\\r\"),\n-            '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n-                out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n-            }\n-            c => {\n-                let mut buf = [0u8; 4];\n-                out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n-            }\n-        }\n-    }\n-    out.push(b'\"');\n-    out\n+    vec![0] /* ~ changed by cargo-mutants ~ */\n }\n \n struct Parser<'a> {\n     b: &'a [u8],\n     i: usize,\n }\n \n impl<'a> Parser<'a> {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![0]",
+    "package": "tapkey-core",
+    "replacement": "vec![0]",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 158
+      },
+      "start": {
+        "column": 5,
+        "line": 139
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace encode_string -> Vec<u8> with vec![1]\n@@ -131,36 +131,17 @@\n     };\n     let member = members.iter().find(|m| m.key == *head)?;\n     resolve(&member.value, rest)\n }\n \n /// Only what the format requires: a value tapkey writes must not arrive in the file more\n /// escaped than the user's own values are.\n fn encode_string(value: &str) -> Vec<u8> {\n-    let mut out = Vec::with_capacity(value.len() + 2);\n-    out.push(b'\"');\n-    for ch in value.chars() {\n-        match ch {\n-            '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n-            '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n-            '\\n' => out.extend_from_slice(b\"\\\\n\"),\n-            '\\r' => out.extend_from_slice(b\"\\\\r\"),\n-            '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n-                out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n-            }\n-            c => {\n-                let mut buf = [0u8; 4];\n-                out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n-            }\n-        }\n-    }\n-    out.push(b'\"');\n-    out\n+    vec![1] /* ~ changed by cargo-mutants ~ */\n }\n \n struct Parser<'a> {\n     b: &'a [u8],\n     i: usize,\n }\n \n impl<'a> Parser<'a> {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:139:5: replace encode_string -> Vec<u8> with vec![1]",
+    "package": "tapkey-core",
+    "replacement": "vec![1]",
+    "span": {
+      "end": {
+        "column": 8,
+        "line": 158
+      },
+      "start": {
+        "column": 5,
+        "line": 139
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace match guard (c as u32) < 0x20 with true in encode_string\n@@ -140,17 +140,17 @@\n     out.push(b'\"');\n     for ch in value.chars() {\n         match ch {\n             '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n             '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n             '\\n' => out.extend_from_slice(b\"\\\\n\"),\n             '\\r' => out.extend_from_slice(b\"\\\\r\"),\n             '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n+            c if true /* ~ changed by cargo-mutants ~ */ => {\n                 out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n             }\n             c => {\n                 let mut buf = [0u8; 4];\n                 out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n             }\n         }\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "core/src/json.rs:148:18: replace match guard (c as u32) < 0x20 with true in encode_string",
+    "package": "tapkey-core",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 148
+      },
+      "start": {
+        "column": 18,
+        "line": 148
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace match guard (c as u32) < 0x20 with false in encode_string\n@@ -140,17 +140,17 @@\n     out.push(b'\"');\n     for ch in value.chars() {\n         match ch {\n             '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n             '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n             '\\n' => out.extend_from_slice(b\"\\\\n\"),\n             '\\r' => out.extend_from_slice(b\"\\\\r\"),\n             '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n+            c if false /* ~ changed by cargo-mutants ~ */ => {\n                 out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n             }\n             c => {\n                 let mut buf = [0u8; 4];\n                 out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n             }\n         }\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "core/src/json.rs:148:18: replace match guard (c as u32) < 0x20 with false in encode_string",
+    "package": "tapkey-core",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 35,
+        "line": 148
+      },
+      "start": {
+        "column": 18,
+        "line": 148
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace < with == in encode_string\n@@ -140,17 +140,17 @@\n     out.push(b'\"');\n     for ch in value.chars() {\n         match ch {\n             '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n             '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n             '\\n' => out.extend_from_slice(b\"\\\\n\"),\n             '\\r' => out.extend_from_slice(b\"\\\\r\"),\n             '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n+            c if (c as u32) == /* ~ changed by cargo-mutants ~ */ 0x20 => {\n                 out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n             }\n             c => {\n                 let mut buf = [0u8; 4];\n                 out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n             }\n         }\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:148:29: replace < with == in encode_string",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 148
+      },
+      "start": {
+        "column": 29,
+        "line": 148
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace < with > in encode_string\n@@ -140,17 +140,17 @@\n     out.push(b'\"');\n     for ch in value.chars() {\n         match ch {\n             '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n             '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n             '\\n' => out.extend_from_slice(b\"\\\\n\"),\n             '\\r' => out.extend_from_slice(b\"\\\\r\"),\n             '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n+            c if (c as u32) > /* ~ changed by cargo-mutants ~ */ 0x20 => {\n                 out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n             }\n             c => {\n                 let mut buf = [0u8; 4];\n                 out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n             }\n         }\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:148:29: replace < with > in encode_string",
+    "package": "tapkey-core",
+    "replacement": ">",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 148
+      },
+      "start": {
+        "column": 29,
+        "line": 148
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace < with <= in encode_string\n@@ -140,17 +140,17 @@\n     out.push(b'\"');\n     for ch in value.chars() {\n         match ch {\n             '\"' => out.extend_from_slice(b\"\\\\\\\"\"),\n             '\\\\' => out.extend_from_slice(b\"\\\\\\\\\"),\n             '\\n' => out.extend_from_slice(b\"\\\\n\"),\n             '\\r' => out.extend_from_slice(b\"\\\\r\"),\n             '\\t' => out.extend_from_slice(b\"\\\\t\"),\n-            c if (c as u32) < 0x20 => {\n+            c if (c as u32) <= /* ~ changed by cargo-mutants ~ */ 0x20 => {\n                 out.extend_from_slice(format!(\"\\\\u{:04x}\", c as u32).as_bytes())\n             }\n             c => {\n                 let mut buf = [0u8; 4];\n                 out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes())\n             }\n         }\n     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "encode_string",
+      "return_type": "-> Vec<u8>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 159
+        },
+        "start": {
+          "column": 1,
+          "line": 136
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:148:29: replace < with <= in encode_string",
+    "package": "tapkey-core",
+    "replacement": "<=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 148
+      },
+      "start": {
+        "column": 29,
+        "line": 148
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::error -> Error with Default::default()\n@@ -160,20 +160,17 @@\n \n struct Parser<'a> {\n     b: &'a [u8],\n     i: usize,\n }\n \n impl<'a> Parser<'a> {\n     fn error(&self, message: &str) -> Error {\n-        Error::Syntax {\n-            offset: self.i,\n-            message: message.to_string(),\n-        }\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn skip_whitespace(&mut self) {\n         while matches!(self.b.get(self.i), Some(b' ' | b'\\t' | b'\\n' | b'\\r')) {\n             self.i += 1;\n         }\n     }\n \n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::error",
+      "return_type": "-> Error",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 172
+        },
+        "start": {
+          "column": 5,
+          "line": 167
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:168:9: replace Parser<'a>::error -> Error with Default::default()",
+    "package": "tapkey-core",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 171
+      },
+      "start": {
+        "column": 9,
+        "line": 168
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::skip_whitespace with ()\n@@ -167,19 +167,17 @@\n     fn error(&self, message: &str) -> Error {\n         Error::Syntax {\n             offset: self.i,\n             message: message.to_string(),\n         }\n     }\n \n     fn skip_whitespace(&mut self) {\n-        while matches!(self.b.get(self.i), Some(b' ' | b'\\t' | b'\\n' | b'\\r')) {\n-            self.i += 1;\n-        }\n+        () /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn value(&mut self) -> Result<Node, Error> {\n         match self.b.get(self.i) {\n             Some(b'{') => self.object(),\n             Some(b'[') => self.array(),\n             Some(b'\"') => {\n                 let start = self.i;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::skip_whitespace",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 178
+        },
+        "start": {
+          "column": 5,
+          "line": 174
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:175:9: replace Parser<'a>::skip_whitespace with ()",
+    "package": "tapkey-core",
+    "replacement": "()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 177
+      },
+      "start": {
+        "column": 9,
+        "line": 175
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::skip_whitespace\n@@ -168,17 +168,17 @@\n         Error::Syntax {\n             offset: self.i,\n             message: message.to_string(),\n         }\n     }\n \n     fn skip_whitespace(&mut self) {\n         while matches!(self.b.get(self.i), Some(b' ' | b'\\t' | b'\\n' | b'\\r')) {\n-            self.i += 1;\n+            self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n     }\n \n     fn value(&mut self) -> Result<Node, Error> {\n         match self.b.get(self.i) {\n             Some(b'{') => self.object(),\n             Some(b'[') => self.array(),\n             Some(b'\"') => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::skip_whitespace",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 178
+        },
+        "start": {
+          "column": 5,
+          "line": 174
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:176:20: replace += with -= in Parser<'a>::skip_whitespace",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 176
+      },
+      "start": {
+        "column": 20,
+        "line": 176
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::skip_whitespace\n@@ -168,17 +168,17 @@\n         Error::Syntax {\n             offset: self.i,\n             message: message.to_string(),\n         }\n     }\n \n     fn skip_whitespace(&mut self) {\n         while matches!(self.b.get(self.i), Some(b' ' | b'\\t' | b'\\n' | b'\\r')) {\n-            self.i += 1;\n+            self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n     }\n \n     fn value(&mut self) -> Result<Node, Error> {\n         match self.b.get(self.i) {\n             Some(b'{') => self.object(),\n             Some(b'[') => self.array(),\n             Some(b'\"') => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::skip_whitespace",
+      "return_type": "",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 178
+        },
+        "start": {
+          "column": 5,
+          "line": 174
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:176:20: replace += with *= in Parser<'a>::skip_whitespace",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 176
+      },
+      "start": {
+        "column": 20,
+        "line": 176
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::value -> Result<Node, Error> with Ok(Default::default())\n@@ -173,37 +173,17 @@\n \n     fn skip_whitespace(&mut self) {\n         while matches!(self.b.get(self.i), Some(b' ' | b'\\t' | b'\\n' | b'\\r')) {\n             self.i += 1;\n         }\n     }\n \n     fn value(&mut self) -> Result<Node, Error> {\n-        match self.b.get(self.i) {\n-            Some(b'{') => self.object(),\n-            Some(b'[') => self.array(),\n-            Some(b'\"') => {\n-                let start = self.i;\n-                self.string()?;\n-                Ok(Node::Opaque {\n-                    span: start..self.i,\n-                    is_string: true,\n-                })\n-            }\n-            Some(_) => {\n-                let start = self.i;\n-                self.scalar()?;\n-                Ok(Node::Opaque {\n-                    span: start..self.i,\n-                    is_string: false,\n-                })\n-            }\n-            None => Err(self.error(\"a value was expected\")),\n-        }\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::value",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 202
+        },
+        "start": {
+          "column": 5,
+          "line": 180
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:181:9: replace Parser<'a>::value -> Result<Node, Error> with Ok(Default::default())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 201
+      },
+      "start": {
+        "column": 9,
+        "line": 181
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::object -> Result<Node, Error> with Ok(Default::default())\n@@ -197,65 +197,17 @@\n                     is_string: false,\n                 })\n             }\n             None => Err(self.error(\"a value was expected\")),\n         }\n     }\n \n     fn object(&mut self) -> Result<Node, Error> {\n-        let start = self.i;\n-        self.i += 1; // '{'\n-        let mut members = Vec::new();\n-        loop {\n-            self.skip_whitespace();\n-            match self.b.get(self.i) {\n-                Some(b'}') => {\n-                    self.i += 1;\n-                    return Ok(Node::Object {\n-                        members,\n-                        span: start..self.i,\n-                    });\n-                }\n-                Some(b'\"') => {}\n-                _ => return Err(self.error(\"a key or a closing brace was expected\")),\n-            }\n-            let key_start = self.i;\n-            let key = self.string()?;\n-            let key_span = key_start..self.i;\n-\n-            self.skip_whitespace();\n-            if self.b.get(self.i) != Some(&b':') {\n-                return Err(self.error(\"a colon was expected after a key\"));\n-            }\n-            self.i += 1;\n-            self.skip_whitespace();\n-\n-            if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {\n-                let _ = previous;\n-                return Err(Error::DuplicateKey {\n-                    offset: key_start,\n-                    key,\n-                });\n-            }\n-\n-            let value = self.value()?;\n-            members.push(Member {\n-                key,\n-                key_span,\n-                value,\n-            });\n-\n-            self.skip_whitespace();\n-            match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n-                Some(b'}') => {}\n-                _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n-            }\n-        }\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:205:9: replace Parser<'a>::object -> Result<Node, Error> with Ok(Default::default())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 253
+      },
+      "start": {
+        "column": 9,
+        "line": 205
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::object\n@@ -198,17 +198,17 @@\n                 })\n             }\n             None => Err(self.error(\"a value was expected\")),\n         }\n     }\n \n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n-        self.i += 1; // '{'\n+        self.i -= /* ~ changed by cargo-mutants ~ */ 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b'}') => {\n                     self.i += 1;\n                     return Ok(Node::Object {\n                         members,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:206:16: replace += with -= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 206
+      },
+      "start": {
+        "column": 16,
+        "line": 206
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::object\n@@ -198,17 +198,17 @@\n                 })\n             }\n             None => Err(self.error(\"a value was expected\")),\n         }\n     }\n \n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n-        self.i += 1; // '{'\n+        self.i *= /* ~ changed by cargo-mutants ~ */ 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b'}') => {\n                     self.i += 1;\n                     return Ok(Node::Object {\n                         members,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:206:16: replace += with *= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 206
+      },
+      "start": {
+        "column": 16,
+        "line": 206
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b'}') in Parser<'a>::object\n@@ -203,23 +203,17 @@\n \n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b'}') => {\n-                    self.i += 1;\n-                    return Ok(Node::Object {\n-                        members,\n-                        span: start..self.i,\n-                    });\n-                }\n+                 /* ~ changed by cargo-mutants ~ */\n                 Some(b'\"') => {}\n                 _ => return Err(self.error(\"a key or a closing brace was expected\")),\n             }\n             let key_start = self.i;\n             let key = self.string()?;\n             let key_span = key_start..self.i;\n \n             self.skip_whitespace();\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:211:17: delete match arm Some(b'}') in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 217
+      },
+      "start": {
+        "column": 17,
+        "line": 211
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b'\"') in Parser<'a>::object\n@@ -210,17 +210,17 @@\n             match self.b.get(self.i) {\n                 Some(b'}') => {\n                     self.i += 1;\n                     return Ok(Node::Object {\n                         members,\n                         span: start..self.i,\n                     });\n                 }\n-                Some(b'\"') => {}\n+                 /* ~ changed by cargo-mutants ~ */\n                 _ => return Err(self.error(\"a key or a closing brace was expected\")),\n             }\n             let key_start = self.i;\n             let key = self.string()?;\n             let key_span = key_start..self.i;\n \n             self.skip_whitespace();\n             if self.b.get(self.i) != Some(&b':') {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:218:17: delete match arm Some(b'\"') in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 218
+      },
+      "start": {
+        "column": 17,
+        "line": 218
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::object\n@@ -204,17 +204,17 @@\n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b'}') => {\n-                    self.i += 1;\n+                    self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(Node::Object {\n                         members,\n                         span: start..self.i,\n                     });\n                 }\n                 Some(b'\"') => {}\n                 _ => return Err(self.error(\"a key or a closing brace was expected\")),\n             }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:212:28: replace += with -= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 212
+      },
+      "start": {
+        "column": 28,
+        "line": 212
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::object\n@@ -204,17 +204,17 @@\n     fn object(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '{'\n         let mut members = Vec::new();\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b'}') => {\n-                    self.i += 1;\n+                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(Node::Object {\n                         members,\n                         span: start..self.i,\n                     });\n                 }\n                 Some(b'\"') => {}\n                 _ => return Err(self.error(\"a key or a closing brace was expected\")),\n             }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:212:28: replace += with *= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 212
+      },
+      "start": {
+        "column": 28,
+        "line": 212
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace != with == in Parser<'a>::object\n@@ -218,17 +218,17 @@\n                 Some(b'\"') => {}\n                 _ => return Err(self.error(\"a key or a closing brace was expected\")),\n             }\n             let key_start = self.i;\n             let key = self.string()?;\n             let key_span = key_start..self.i;\n \n             self.skip_whitespace();\n-            if self.b.get(self.i) != Some(&b':') {\n+            if self.b.get(self.i) == /* ~ changed by cargo-mutants ~ */ Some(&b':') {\n                 return Err(self.error(\"a colon was expected after a key\"));\n             }\n             self.i += 1;\n             self.skip_whitespace();\n \n             if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {\n                 let _ = previous;\n                 return Err(Error::DuplicateKey {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:226:35: replace != with == in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 37,
+        "line": 226
+      },
+      "start": {
+        "column": 35,
+        "line": 226
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::object\n@@ -221,17 +221,17 @@\n             let key_start = self.i;\n             let key = self.string()?;\n             let key_span = key_start..self.i;\n \n             self.skip_whitespace();\n             if self.b.get(self.i) != Some(&b':') {\n                 return Err(self.error(\"a colon was expected after a key\"));\n             }\n-            self.i += 1;\n+            self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n             self.skip_whitespace();\n \n             if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {\n                 let _ = previous;\n                 return Err(Error::DuplicateKey {\n                     offset: key_start,\n                     key,\n                 });\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:229:20: replace += with -= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 229
+      },
+      "start": {
+        "column": 20,
+        "line": 229
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::object\n@@ -221,17 +221,17 @@\n             let key_start = self.i;\n             let key = self.string()?;\n             let key_span = key_start..self.i;\n \n             self.skip_whitespace();\n             if self.b.get(self.i) != Some(&b':') {\n                 return Err(self.error(\"a colon was expected after a key\"));\n             }\n-            self.i += 1;\n+            self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n             self.skip_whitespace();\n \n             if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {\n                 let _ = previous;\n                 return Err(Error::DuplicateKey {\n                     offset: key_start,\n                     key,\n                 });\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:229:20: replace += with *= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 229
+      },
+      "start": {
+        "column": 20,
+        "line": 229
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace == with != in Parser<'a>::object\n@@ -224,17 +224,17 @@\n \n             self.skip_whitespace();\n             if self.b.get(self.i) != Some(&b':') {\n                 return Err(self.error(\"a colon was expected after a key\"));\n             }\n             self.i += 1;\n             self.skip_whitespace();\n \n-            if let Some(previous) = members.iter().find(|m: &&Member| m.key == key) {\n+            if let Some(previous) = members.iter().find(|m: &&Member| m.key != /* ~ changed by cargo-mutants ~ */ key) {\n                 let _ = previous;\n                 return Err(Error::DuplicateKey {\n                     offset: key_start,\n                     key,\n                 });\n             }\n \n             let value = self.value()?;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:232:77: replace == with != in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 79,
+        "line": 232
+      },
+      "start": {
+        "column": 77,
+        "line": 232
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b',') in Parser<'a>::object\n@@ -241,17 +241,17 @@\n             members.push(Member {\n                 key,\n                 key_span,\n                 value,\n             });\n \n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                 /* ~ changed by cargo-mutants ~ */\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:249:17: delete match arm Some(b',') in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 249
+      },
+      "start": {
+        "column": 17,
+        "line": 249
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b'}') in Parser<'a>::object\n@@ -242,17 +242,17 @@\n                 key,\n                 key_span,\n                 value,\n             });\n \n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b',') => self.i += 1,\n-                Some(b'}') => {}\n+                 /* ~ changed by cargo-mutants ~ */\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '['\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:250:17: delete match arm Some(b'}') in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 250
+      },
+      "start": {
+        "column": 17,
+        "line": 250
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::object\n@@ -241,17 +241,17 @@\n             members.push(Member {\n                 key,\n                 key_span,\n                 value,\n             });\n \n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                Some(b',') => self.i -= /* ~ changed by cargo-mutants ~ */ 1,\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:249:38: replace += with -= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 40,
+        "line": 249
+      },
+      "start": {
+        "column": 38,
+        "line": 249
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::object\n@@ -241,17 +241,17 @@\n             members.push(Member {\n                 key,\n                 key_span,\n                 value,\n             });\n \n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                Some(b',') => self.i *= /* ~ changed by cargo-mutants ~ */ 1,\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::object",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 254
+        },
+        "start": {
+          "column": 5,
+          "line": 204
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:249:38: replace += with *= in Parser<'a>::object",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 40,
+        "line": 249
+      },
+      "start": {
+        "column": 38,
+        "line": 249
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::array -> Result<Node, Error> with Ok(Default::default())\n@@ -249,39 +249,17 @@\n                 Some(b',') => self.i += 1,\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n-        let start = self.i;\n-        self.i += 1; // '['\n-        loop {\n-            self.skip_whitespace();\n-            match self.b.get(self.i) {\n-                Some(b']') => {\n-                    self.i += 1;\n-                    return Ok(Node::Opaque {\n-                        span: start..self.i,\n-                        is_string: false,\n-                    });\n-                }\n-                None => return Err(self.error(\"an unterminated array\")),\n-                _ => {}\n-            }\n-            self.value()?;\n-            self.skip_whitespace();\n-            match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n-                Some(b']') => {}\n-                _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n-            }\n-        }\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n             return Err(self.error(\"a string was expected\"));\n         }\n         self.i += 1;\n         let mut out = String::new();\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:257:9: replace Parser<'a>::array -> Result<Node, Error> with Ok(Default::default())",
+    "package": "tapkey-core",
+    "replacement": "Ok(Default::default())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 279
+      },
+      "start": {
+        "column": 9,
+        "line": 257
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::array\n@@ -250,17 +250,17 @@\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n-        self.i += 1; // '['\n+        self.i -= /* ~ changed by cargo-mutants ~ */ 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b']') => {\n                     self.i += 1;\n                     return Ok(Node::Opaque {\n                         span: start..self.i,\n                         is_string: false,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:258:16: replace += with -= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 258
+      },
+      "start": {
+        "column": 16,
+        "line": 258
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::array\n@@ -250,17 +250,17 @@\n                 Some(b'}') => {}\n                 _ => return Err(self.error(\"a comma or a closing brace was expected\")),\n             }\n         }\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n-        self.i += 1; // '['\n+        self.i *= /* ~ changed by cargo-mutants ~ */ 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b']') => {\n                     self.i += 1;\n                     return Ok(Node::Opaque {\n                         span: start..self.i,\n                         is_string: false,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:258:16: replace += with *= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 258
+      },
+      "start": {
+        "column": 16,
+        "line": 258
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b']') in Parser<'a>::array\n@@ -254,23 +254,17 @@\n     }\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b']') => {\n-                    self.i += 1;\n-                    return Ok(Node::Opaque {\n-                        span: start..self.i,\n-                        is_string: false,\n-                    });\n-                }\n+                 /* ~ changed by cargo-mutants ~ */\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b',') => self.i += 1,\n                 Some(b']') => {}\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:262:17: delete match arm Some(b']') in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 268
+      },
+      "start": {
+        "column": 17,
+        "line": 262
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm None in Parser<'a>::array\n@@ -261,17 +261,17 @@\n             match self.b.get(self.i) {\n                 Some(b']') => {\n                     self.i += 1;\n                     return Ok(Node::Opaque {\n                         span: start..self.i,\n                         is_string: false,\n                     });\n                 }\n-                None => return Err(self.error(\"an unterminated array\")),\n+                 /* ~ changed by cargo-mutants ~ */\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b',') => self.i += 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:269:17: delete match arm None in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 73,
+        "line": 269
+      },
+      "start": {
+        "column": 17,
+        "line": 269
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::array\n@@ -255,17 +255,17 @@\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b']') => {\n-                    self.i += 1;\n+                    self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(Node::Opaque {\n                         span: start..self.i,\n                         is_string: false,\n                     });\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:263:28: replace += with -= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 263
+      },
+      "start": {
+        "column": 28,
+        "line": 263
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::array\n@@ -255,17 +255,17 @@\n \n     fn array(&mut self) -> Result<Node, Error> {\n         let start = self.i;\n         self.i += 1; // '['\n         loop {\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b']') => {\n-                    self.i += 1;\n+                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(Node::Opaque {\n                         span: start..self.i,\n                         is_string: false,\n                     });\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:263:28: replace += with *= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 263
+      },
+      "start": {
+        "column": 28,
+        "line": 263
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b',') in Parser<'a>::array\n@@ -267,17 +267,17 @@\n                     });\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                 /* ~ changed by cargo-mutants ~ */\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:275:17: delete match arm Some(b',') in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 43,
+        "line": 275
+      },
+      "start": {
+        "column": 17,
+        "line": 275
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm Some(b']') in Parser<'a>::array\n@@ -268,17 +268,17 @@\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n                 Some(b',') => self.i += 1,\n-                Some(b']') => {}\n+                 /* ~ changed by cargo-mutants ~ */\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n             return Err(self.error(\"a string was expected\"));\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:276:17: delete match arm Some(b']') in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 276
+      },
+      "start": {
+        "column": 17,
+        "line": 276
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::array\n@@ -267,17 +267,17 @@\n                     });\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                Some(b',') => self.i -= /* ~ changed by cargo-mutants ~ */ 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:275:38: replace += with -= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 40,
+        "line": 275
+      },
+      "start": {
+        "column": 38,
+        "line": 275
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::array\n@@ -267,17 +267,17 @@\n                     });\n                 }\n                 None => return Err(self.error(\"an unterminated array\")),\n                 _ => {}\n             }\n             self.value()?;\n             self.skip_whitespace();\n             match self.b.get(self.i) {\n-                Some(b',') => self.i += 1,\n+                Some(b',') => self.i *= /* ~ changed by cargo-mutants ~ */ 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::array",
+      "return_type": "-> Result<Node, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 280
+        },
+        "start": {
+          "column": 5,
+          "line": 256
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:275:38: replace += with *= in Parser<'a>::array",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 40,
+        "line": 275
+      },
+      "start": {
+        "column": 38,
+        "line": 275
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::string -> Result<String, Error> with Ok(String::new())\n@@ -275,73 +275,17 @@\n                 Some(b',') => self.i += 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n-        if self.b.get(self.i) != Some(&b'\"') {\n-            return Err(self.error(\"a string was expected\"));\n-        }\n-        self.i += 1;\n-        let mut out = String::new();\n-        loop {\n-            match self.b.get(self.i) {\n-                None => return Err(self.error(\"an unterminated string\")),\n-                Some(b'\"') => {\n-                    self.i += 1;\n-                    return Ok(out);\n-                }\n-                Some(b'\\\\') => {\n-                    self.i += 1;\n-                    let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n-                    self.i += 1;\n-                    match escaped {\n-                        b'\"' => out.push('\"'),\n-                        b'\\\\' => out.push('\\\\'),\n-                        b'/' => out.push('/'),\n-                        b'b' => out.push('\\u{8}'),\n-                        b'f' => out.push('\\u{c}'),\n-                        b'n' => out.push('\\n'),\n-                        b'r' => out.push('\\r'),\n-                        b't' => out.push('\\t'),\n-                        b'u' => {\n-                            let hex = self\n-                                .b\n-                                .get(self.i..self.i + 4)\n-                                .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n-                            let code = u32::from_str_radix(\n-                                std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n-                                16,\n-                            )\n-                            .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n-                            self.i += 4;\n-                            // A lone surrogate is kept as the replacement character: the key it\n-                            // names still matches, and tapkey never writes this value back.\n-                            out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n-                        }\n-                        _ => return Err(self.error(\"an unknown escape\")),\n-                    }\n-                }\n-                Some(&byte) => {\n-                    let start = self.i;\n-                    while matches!(self.b.get(self.i), Some(&c) if c != b'\"' && c != b'\\\\') {\n-                        self.i += 1;\n-                    }\n-                    let raw = &self.b[start..self.i];\n-                    out.push_str(std::str::from_utf8(raw).map_err(|_| Error::Syntax {\n-                        offset: start,\n-                        message: \"a string holds bytes that are not UTF-8\".to_string(),\n-                    })?);\n-                    let _ = byte;\n-                }\n-            }\n-        }\n+        Ok(String::new()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn scalar(&mut self) -> Result<(), Error> {\n         let start = self.i;\n         while matches!(\n             self.b.get(self.i),\n             Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n         ) {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:283:9: replace Parser<'a>::string -> Result<String, Error> with Ok(String::new())",
+    "package": "tapkey-core",
+    "replacement": "Ok(String::new())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 339
+      },
+      "start": {
+        "column": 9,
+        "line": 283
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::string -> Result<String, Error> with Ok(\"xyzzy\".into())\n@@ -275,73 +275,17 @@\n                 Some(b',') => self.i += 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n-        if self.b.get(self.i) != Some(&b'\"') {\n-            return Err(self.error(\"a string was expected\"));\n-        }\n-        self.i += 1;\n-        let mut out = String::new();\n-        loop {\n-            match self.b.get(self.i) {\n-                None => return Err(self.error(\"an unterminated string\")),\n-                Some(b'\"') => {\n-                    self.i += 1;\n-                    return Ok(out);\n-                }\n-                Some(b'\\\\') => {\n-                    self.i += 1;\n-                    let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n-                    self.i += 1;\n-                    match escaped {\n-                        b'\"' => out.push('\"'),\n-                        b'\\\\' => out.push('\\\\'),\n-                        b'/' => out.push('/'),\n-                        b'b' => out.push('\\u{8}'),\n-                        b'f' => out.push('\\u{c}'),\n-                        b'n' => out.push('\\n'),\n-                        b'r' => out.push('\\r'),\n-                        b't' => out.push('\\t'),\n-                        b'u' => {\n-                            let hex = self\n-                                .b\n-                                .get(self.i..self.i + 4)\n-                                .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n-                            let code = u32::from_str_radix(\n-                                std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n-                                16,\n-                            )\n-                            .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n-                            self.i += 4;\n-                            // A lone surrogate is kept as the replacement character: the key it\n-                            // names still matches, and tapkey never writes this value back.\n-                            out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n-                        }\n-                        _ => return Err(self.error(\"an unknown escape\")),\n-                    }\n-                }\n-                Some(&byte) => {\n-                    let start = self.i;\n-                    while matches!(self.b.get(self.i), Some(&c) if c != b'\"' && c != b'\\\\') {\n-                        self.i += 1;\n-                    }\n-                    let raw = &self.b[start..self.i];\n-                    out.push_str(std::str::from_utf8(raw).map_err(|_| Error::Syntax {\n-                        offset: start,\n-                        message: \"a string holds bytes that are not UTF-8\".to_string(),\n-                    })?);\n-                    let _ = byte;\n-                }\n-            }\n-        }\n+        Ok(\"xyzzy\".into()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn scalar(&mut self) -> Result<(), Error> {\n         let start = self.i;\n         while matches!(\n             self.b.get(self.i),\n             Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n         ) {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:283:9: replace Parser<'a>::string -> Result<String, Error> with Ok(\"xyzzy\".into())",
+    "package": "tapkey-core",
+    "replacement": "Ok(\"xyzzy\".into())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 339
+      },
+      "start": {
+        "column": 9,
+        "line": 283
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace != with == in Parser<'a>::string\n@@ -275,17 +275,17 @@\n                 Some(b',') => self.i += 1,\n                 Some(b']') => {}\n                 _ => return Err(self.error(\"a comma or a closing bracket was expected\")),\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n-        if self.b.get(self.i) != Some(&b'\"') {\n+        if self.b.get(self.i) == /* ~ changed by cargo-mutants ~ */ Some(&b'\"') {\n             return Err(self.error(\"a string was expected\"));\n         }\n         self.i += 1;\n         let mut out = String::new();\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:283:31: replace != with == in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 33,
+        "line": 283
+      },
+      "start": {
+        "column": 31,
+        "line": 283
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -278,17 +278,17 @@\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n             return Err(self.error(\"a string was expected\"));\n         }\n-        self.i += 1;\n+        self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n         let mut out = String::new();\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:286:16: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 286
+      },
+      "start": {
+        "column": 16,
+        "line": 286
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -278,17 +278,17 @@\n             }\n         }\n     }\n \n     fn string(&mut self) -> Result<String, Error> {\n         if self.b.get(self.i) != Some(&b'\"') {\n             return Err(self.error(\"a string was expected\"));\n         }\n-        self.i += 1;\n+        self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n         let mut out = String::new();\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:286:16: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 18,
+        "line": 286
+      },
+      "start": {
+        "column": 16,
+        "line": 286
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -284,17 +284,17 @@\n             return Err(self.error(\"a string was expected\"));\n         }\n         self.i += 1;\n         let mut out = String::new();\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n-                    self.i += 1;\n+                    self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:292:28: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 292
+      },
+      "start": {
+        "column": 28,
+        "line": 292
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -284,17 +284,17 @@\n             return Err(self.error(\"a string was expected\"));\n         }\n         self.i += 1;\n         let mut out = String::new();\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n-                    self.i += 1;\n+                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:292:28: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 292
+      },
+      "start": {
+        "column": 28,
+        "line": 292
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -288,17 +288,17 @@\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n-                    self.i += 1;\n+                    self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:296:28: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 296
+      },
+      "start": {
+        "column": 28,
+        "line": 296
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -288,17 +288,17 @@\n         loop {\n             match self.b.get(self.i) {\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n-                    self.i += 1;\n+                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:296:28: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 296
+      },
+      "start": {
+        "column": 28,
+        "line": 296
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -290,17 +290,17 @@\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n-                    self.i += 1;\n+                    self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:298:28: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 298
+      },
+      "start": {
+        "column": 28,
+        "line": 298
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -290,17 +290,17 @@\n                 None => return Err(self.error(\"an unterminated string\")),\n                 Some(b'\"') => {\n                     self.i += 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n-                    self.i += 1;\n+                    self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:298:28: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 30,
+        "line": 298
+      },
+      "start": {
+        "column": 28,
+        "line": 298
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'\"' in Parser<'a>::string\n@@ -292,17 +292,17 @@\n                     self.i += 1;\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n-                        b'\"' => out.push('\"'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:300:25: delete match arm b'\"' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 300
+      },
+      "start": {
+        "column": 25,
+        "line": 300
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'\\\\' in Parser<'a>::string\n@@ -293,17 +293,17 @@\n                     return Ok(out);\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n-                        b'\\\\' => out.push('\\\\'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:301:25: delete match arm b'\\\\' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 49,
+        "line": 301
+      },
+      "start": {
+        "column": 25,
+        "line": 301
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'/' in Parser<'a>::string\n@@ -294,17 +294,17 @@\n                 }\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n-                        b'/' => out.push('/'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:302:25: delete match arm b'/' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 302
+      },
+      "start": {
+        "column": 25,
+        "line": 302
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'b' in Parser<'a>::string\n@@ -295,17 +295,17 @@\n                 Some(b'\\\\') => {\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n-                        b'b' => out.push('\\u{8}'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n                                 .get(self.i..self.i + 4)\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:303:25: delete match arm b'b' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 51,
+        "line": 303
+      },
+      "start": {
+        "column": 25,
+        "line": 303
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'f' in Parser<'a>::string\n@@ -296,17 +296,17 @@\n                     self.i += 1;\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n-                        b'f' => out.push('\\u{c}'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:304:25: delete match arm b'f' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 51,
+        "line": 304
+      },
+      "start": {
+        "column": 25,
+        "line": 304
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'n' in Parser<'a>::string\n@@ -297,17 +297,17 @@\n                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error(\"a truncated escape\"))?;\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n-                        b'n' => out.push('\\n'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:305:25: delete match arm b'n' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 48,
+        "line": 305
+      },
+      "start": {
+        "column": 25,
+        "line": 305
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'r' in Parser<'a>::string\n@@ -298,17 +298,17 @@\n                     self.i += 1;\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n-                        b'r' => out.push('\\r'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:306:25: delete match arm b'r' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 48,
+        "line": 306
+      },
+      "start": {
+        "column": 25,
+        "line": 306
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b't' in Parser<'a>::string\n@@ -299,17 +299,17 @@\n                     match escaped {\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n-                        b't' => out.push('\\t'),\n+                         /* ~ changed by cargo-mutants ~ */\n                         b'u' => {\n                             let hex = self\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n                                 16,\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:307:25: delete match arm b't' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 48,
+        "line": 307
+      },
+      "start": {
+        "column": 25,
+        "line": 307
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ delete match arm b'u' in Parser<'a>::string\n@@ -300,31 +300,17 @@\n                         b'\"' => out.push('\"'),\n                         b'\\\\' => out.push('\\\\'),\n                         b'/' => out.push('/'),\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n-                        b'u' => {\n-                            let hex = self\n-                                .b\n-                                .get(self.i..self.i + 4)\n-                                .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n-                            let code = u32::from_str_radix(\n-                                std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n-                                16,\n-                            )\n-                            .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n-                            self.i += 4;\n-                            // A lone surrogate is kept as the replacement character: the key it\n-                            // names still matches, and tapkey never writes this value back.\n-                            out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n-                        }\n+                         /* ~ changed by cargo-mutants ~ */\n                         _ => return Err(self.error(\"an unknown escape\")),\n                     }\n                 }\n                 Some(&byte) => {\n                     let start = self.i;\n                     while matches!(self.b.get(self.i), Some(&c) if c != b'\"' && c != b'\\\\') {\n                         self.i += 1;\n                     }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "MatchArm",
+    "name": "core/src/json.rs:308:25: delete match arm b'u' in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 26,
+        "line": 322
+      },
+      "start": {
+        "column": 25,
+        "line": 308
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace + with - in Parser<'a>::string\n@@ -303,17 +303,17 @@\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n-                                .get(self.i..self.i + 4)\n+                                .get(self.i..self.i - /* ~ changed by cargo-mutants ~ */ 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n                                 16,\n                             )\n                             .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n                             self.i += 4;\n                             // A lone surrogate is kept as the replacement character: the key it\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:311:53: replace + with - in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 311
+      },
+      "start": {
+        "column": 53,
+        "line": 311
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace + with * in Parser<'a>::string\n@@ -303,17 +303,17 @@\n                         b'b' => out.push('\\u{8}'),\n                         b'f' => out.push('\\u{c}'),\n                         b'n' => out.push('\\n'),\n                         b'r' => out.push('\\r'),\n                         b't' => out.push('\\t'),\n                         b'u' => {\n                             let hex = self\n                                 .b\n-                                .get(self.i..self.i + 4)\n+                                .get(self.i..self.i * /* ~ changed by cargo-mutants ~ */ 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n                                 16,\n                             )\n                             .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n                             self.i += 4;\n                             // A lone surrogate is kept as the replacement character: the key it\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:311:53: replace + with * in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 311
+      },
+      "start": {
+        "column": 53,
+        "line": 311
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -310,17 +310,17 @@\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n                                 16,\n                             )\n                             .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n-                            self.i += 4;\n+                            self.i -= /* ~ changed by cargo-mutants ~ */ 4;\n                             // A lone surrogate is kept as the replacement character: the key it\n                             // names still matches, and tapkey never writes this value back.\n                             out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n                         }\n                         _ => return Err(self.error(\"an unknown escape\")),\n                     }\n                 }\n                 Some(&byte) => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:318:36: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 38,
+        "line": 318
+      },
+      "start": {
+        "column": 36,
+        "line": 318
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -310,17 +310,17 @@\n                                 .b\n                                 .get(self.i..self.i + 4)\n                                 .ok_or_else(|| self.error(\"a truncated \\\\u escape\"))?;\n                             let code = u32::from_str_radix(\n                                 std::str::from_utf8(hex).map_err(|_| self.error(\"a bad \\\\u escape\"))?,\n                                 16,\n                             )\n                             .map_err(|_| self.error(\"a bad \\\\u escape\"))?;\n-                            self.i += 4;\n+                            self.i *= /* ~ changed by cargo-mutants ~ */ 4;\n                             // A lone surrogate is kept as the replacement character: the key it\n                             // names still matches, and tapkey never writes this value back.\n                             out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n                         }\n                         _ => return Err(self.error(\"an unknown escape\")),\n                     }\n                 }\n                 Some(&byte) => {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:318:36: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 38,
+        "line": 318
+      },
+      "start": {
+        "column": 36,
+        "line": 318
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::string\n@@ -321,17 +321,17 @@\n                             out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n                         }\n                         _ => return Err(self.error(\"an unknown escape\")),\n                     }\n                 }\n                 Some(&byte) => {\n                     let start = self.i;\n                     while matches!(self.b.get(self.i), Some(&c) if c != b'\"' && c != b'\\\\') {\n-                        self.i += 1;\n+                        self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n                     }\n                     let raw = &self.b[start..self.i];\n                     out.push_str(std::str::from_utf8(raw).map_err(|_| Error::Syntax {\n                         offset: start,\n                         message: \"a string holds bytes that are not UTF-8\".to_string(),\n                     })?);\n                     let _ = byte;\n                 }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:329:32: replace += with -= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 34,
+        "line": 329
+      },
+      "start": {
+        "column": 32,
+        "line": 329
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::string\n@@ -321,17 +321,17 @@\n                             out.push(char::from_u32(code).unwrap_or('\\u{FFFD}'));\n                         }\n                         _ => return Err(self.error(\"an unknown escape\")),\n                     }\n                 }\n                 Some(&byte) => {\n                     let start = self.i;\n                     while matches!(self.b.get(self.i), Some(&c) if c != b'\"' && c != b'\\\\') {\n-                        self.i += 1;\n+                        self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n                     }\n                     let raw = &self.b[start..self.i];\n                     out.push_str(std::str::from_utf8(raw).map_err(|_| Error::Syntax {\n                         offset: start,\n                         message: \"a string holds bytes that are not UTF-8\".to_string(),\n                     })?);\n                     let _ = byte;\n                 }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::string",
+      "return_type": "-> Result<String, Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 340
+        },
+        "start": {
+          "column": 5,
+          "line": 282
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:329:32: replace += with *= in Parser<'a>::string",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 34,
+        "line": 329
+      },
+      "start": {
+        "column": 32,
+        "line": 329
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace Parser<'a>::scalar -> Result<(), Error> with Ok(())\n@@ -335,33 +335,11 @@\n                     })?);\n                     let _ = byte;\n                 }\n             }\n         }\n     }\n \n     fn scalar(&mut self) -> Result<(), Error> {\n-        let start = self.i;\n-        while matches!(\n-            self.b.get(self.i),\n-            Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n-        ) {\n-            self.i += 1;\n-        }\n-        if self.i == start {\n-            return Err(self.error(\"a value was expected\"));\n-        }\n-        match &self.b[start..self.i] {\n-            b\"true\" | b\"false\" | b\"null\" => Ok(()),\n-            other => {\n-                let text = std::str::from_utf8(other).map_err(|_| Error::Syntax {\n-                    offset: start,\n-                    message: \"a value that is not UTF-8\".to_string(),\n-                })?;\n-                text.parse::<f64>().map(|_| ()).map_err(|_| Error::Syntax {\n-                    offset: start,\n-                    message: format!(\"{text:?} is not a JSON value\"),\n-                })\n-            }\n-        }\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::scalar",
+      "return_type": "-> Result<(), Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 366
+        },
+        "start": {
+          "column": 5,
+          "line": 342
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/json.rs:343:9: replace Parser<'a>::scalar -> Result<(), Error> with Ok(())",
+    "package": "tapkey-core",
+    "replacement": "Ok(())",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 365
+      },
+      "start": {
+        "column": 9,
+        "line": 343
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with -= in Parser<'a>::scalar\n@@ -340,17 +340,17 @@\n     }\n \n     fn scalar(&mut self) -> Result<(), Error> {\n         let start = self.i;\n         while matches!(\n             self.b.get(self.i),\n             Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n         ) {\n-            self.i += 1;\n+            self.i -= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         if self.i == start {\n             return Err(self.error(\"a value was expected\"));\n         }\n         match &self.b[start..self.i] {\n             b\"true\" | b\"false\" | b\"null\" => Ok(()),\n             other => {\n                 let text = std::str::from_utf8(other).map_err(|_| Error::Syntax {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::scalar",
+      "return_type": "-> Result<(), Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 366
+        },
+        "start": {
+          "column": 5,
+          "line": 342
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:348:20: replace += with -= in Parser<'a>::scalar",
+    "package": "tapkey-core",
+    "replacement": "-=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 348
+      },
+      "start": {
+        "column": 20,
+        "line": 348
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace += with *= in Parser<'a>::scalar\n@@ -340,17 +340,17 @@\n     }\n \n     fn scalar(&mut self) -> Result<(), Error> {\n         let start = self.i;\n         while matches!(\n             self.b.get(self.i),\n             Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n         ) {\n-            self.i += 1;\n+            self.i *= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         if self.i == start {\n             return Err(self.error(\"a value was expected\"));\n         }\n         match &self.b[start..self.i] {\n             b\"true\" | b\"false\" | b\"null\" => Ok(()),\n             other => {\n                 let text = std::str::from_utf8(other).map_err(|_| Error::Syntax {\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::scalar",
+      "return_type": "-> Result<(), Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 366
+        },
+        "start": {
+          "column": 5,
+          "line": 342
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:348:20: replace += with *= in Parser<'a>::scalar",
+    "package": "tapkey-core",
+    "replacement": "*=",
+    "span": {
+      "end": {
+        "column": 22,
+        "line": 348
+      },
+      "start": {
+        "column": 20,
+        "line": 348
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/json.rs\n+++ replace == with != in Parser<'a>::scalar\n@@ -342,17 +342,17 @@\n     fn scalar(&mut self) -> Result<(), Error> {\n         let start = self.i;\n         while matches!(\n             self.b.get(self.i),\n             Some(c) if !matches!(c, b',' | b'}' | b']' | b' ' | b'\\t' | b'\\n' | b'\\r')\n         ) {\n             self.i += 1;\n         }\n-        if self.i == start {\n+        if self.i != /* ~ changed by cargo-mutants ~ */ start {\n             return Err(self.error(\"a value was expected\"));\n         }\n         match &self.b[start..self.i] {\n             b\"true\" | b\"false\" | b\"null\" => Ok(()),\n             other => {\n                 let text = std::str::from_utf8(other).map_err(|_| Error::Syntax {\n                     offset: start,\n                     message: \"a value that is not UTF-8\".to_string(),\n",
+    "file": "core/src/json.rs",
+    "function": {
+      "function_name": "Parser<'a>::scalar",
+      "return_type": "-> Result<(), Error>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 366
+        },
+        "start": {
+          "column": 5,
+          "line": 342
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/json.rs:350:19: replace == with != in Parser<'a>::scalar",
+    "package": "tapkey-core",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 21,
+        "line": 350
+      },
+      "start": {
+        "column": 19,
+        "line": 350
+      }
+    }
+  }
+]

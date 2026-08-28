@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace += with *= in Parser<'a>::string
+@@ -310,17 +310,17 @@
+                                 .b
+                                 .get(self.i..self.i + 4)
+                                 .ok_or_else(|| self.error("a truncated \\u escape"))?;
+                             let code = u32::from_str_radix(
+                                 std::str::from_utf8(hex).map_err(|_| self.error("a bad \\u escape"))?,
+                                 16,
+                             )
+                             .map_err(|_| self.error("a bad \\u escape"))?;
+-                            self.i += 4;
++                            self.i *= /* ~ changed by cargo-mutants ~ */ 4;
+                             // A lone surrogate is kept as the replacement character: the key it
+                             // names still matches, and tapkey never writes this value back.
+                             out.push(char::from_u32(code).unwrap_or('\u{FFFD}'));
+                         }
+                         _ => return Err(self.error("an unknown escape")),
+                     }
+                 }
+                 Some(&byte) => {

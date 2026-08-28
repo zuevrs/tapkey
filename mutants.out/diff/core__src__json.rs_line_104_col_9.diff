@@ -1,0 +1,32 @@
+--- core/src/json.rs
++++ replace Document::to_bytes -> Vec<u8> with vec![]
+@@ -96,28 +96,17 @@
+             _ => Err(Error::NotAString {
+                 path: path.join("."),
+             }),
+         }
+     }
+ 
+     /// The document's bytes with every pending splice applied.
+     pub fn to_bytes(&self) -> Vec<u8> {
+-        let mut ordered: Vec<&Splice> = self.splices.iter().collect();
+-        ordered.sort_by_key(|s| s.range.start);
+-
+-        let mut out = Vec::with_capacity(self.original.len());
+-        let mut cursor = 0usize;
+-        for splice in ordered {
+-            out.extend_from_slice(&self.original[cursor..splice.range.start]);
+-            out.extend_from_slice(&splice.replacement);
+-            cursor = splice.range.end;
+-        }
+-        out.extend_from_slice(&self.original[cursor..]);
+-        out
++        vec![] /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {
+         // Setting the same place twice replaces the earlier intent rather than stacking on it.
+         self.splices.retain(|s| s.range != range);
+         self.splices.push(Splice { range, replacement });
+     }
+ }

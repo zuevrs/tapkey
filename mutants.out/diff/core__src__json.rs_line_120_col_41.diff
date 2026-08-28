@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ replace != with == in Document::record
+@@ -112,17 +112,17 @@
+             cursor = splice.range.end;
+         }
+         out.extend_from_slice(&self.original[cursor..]);
+         out
+     }
+ 
+     fn record(&mut self, range: Range<usize>, replacement: Vec<u8>) {
+         // Setting the same place twice replaces the earlier intent rather than stacking on it.
+-        self.splices.retain(|s| s.range != range);
++        self.splices.retain(|s| s.range == /* ~ changed by cargo-mutants ~ */ range);
+         self.splices.push(Splice { range, replacement });
+     }
+ }
+ 
+ fn resolve<'a>(node: &'a Node, path: &[&str]) -> Option<&'a Node> {
+     let Some((head, rest)) = path.split_first() else {
+         return Some(node);
+     };

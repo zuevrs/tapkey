@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete match arm Some(b',') in Parser<'a>::array
+@@ -267,17 +267,17 @@
+                     });
+                 }
+                 None => return Err(self.error("an unterminated array")),
+                 _ => {}
+             }
+             self.value()?;
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+-                Some(b',') => self.i += 1,
++                 /* ~ changed by cargo-mutants ~ */
+                 Some(b']') => {}
+                 _ => return Err(self.error("a comma or a closing bracket was expected")),
+             }
+         }
+     }
+ 
+     fn string(&mut self) -> Result<String, Error> {
+         if self.b.get(self.i) != Some(&b'"') {

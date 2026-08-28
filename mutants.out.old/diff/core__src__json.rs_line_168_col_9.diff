@@ -1,0 +1,24 @@
+--- core/src/json.rs
++++ replace Parser<'a>::error -> Error with Default::default()
+@@ -160,20 +160,17 @@
+ 
+ struct Parser<'a> {
+     b: &'a [u8],
+     i: usize,
+ }
+ 
+ impl<'a> Parser<'a> {
+     fn error(&self, message: &str) -> Error {
+-        Error::Syntax {
+-            offset: self.i,
+-            message: message.to_string(),
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn skip_whitespace(&mut self) {
+         while matches!(self.b.get(self.i), Some(b' ' | b'\t' | b'\n' | b'\r')) {
+             self.i += 1;
+         }
+     }
+ 

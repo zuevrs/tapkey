@@ -1,0 +1,54 @@
+
+*** core/src/json.rs:52:9: replace Node::span -> Range<usize> with Range::new(1)
+
+*** mutation diff:
+--- core/src/json.rs
++++ replace Node::span -> Range<usize> with Range::new(1)
+@@ -44,20 +44,17 @@
+     Opaque {
+         span: Range<usize>,
+         is_string: bool,
+     },
+ }
+ 
+ impl Node {
+     fn span(&self) -> Range<usize> {
+-        match self {
+-            Node::Object { span, .. } => span.clone(),
+-            Node::Opaque { span, .. } => span.clone(),
+-        }
++        Range::new(1) /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ struct Member {
+     key: String,
+     #[allow(dead_code)]
+     key_span: Range<usize>,
+     value: Node,
+
+
+*** /Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo test --no-run --verbose --package=tapkey-core@0.0.0
+       Fresh libc v0.2.189
+       Dirty tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/core): couldn't read metadata for file `target/debug/deps/libtapkey_core-0d7cc80528a209b4.rlib`
+   Compiling tapkey-core v0.0.0 (/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/core)
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=9105275b8aef62b4 -C extra-filename=-0d7cc80528a209b4 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta`
+     Running `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=7a405cffd96d514b -C extra-filename=-565f42156525e2da --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib`
+error[E0599]: no function or associated item named `new` found for struct `std::ops::Range<Idx>` in the current scope
+  --> core/src/json.rs:52:16
+   |
+52 |         Range::new(1) /* ~ changed by cargo-mutants ~ */
+   |                ^^^ function or associated item not found in `std::ops::Range<_>`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `tapkey-core` (lib test) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=7a405cffd96d514b -C extra-filename=-565f42156525e2da --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rlib` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `tapkey-core` (lib) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/Users/zuevrs/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name tapkey_core --edition=2024 core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=9105275b8aef62b4 -C extra-filename=-0d7cc80528a209b4 --out-dir /private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps -C incremental=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/incremental -L dependency=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps --extern libc=/private/var/folders/6n/q9s0qd4d5b92jqqf9kk_0kdm0000gn/T/cargo-mutants-tapkey-nJmnFN.tmp/target/debug/deps/liblibc-52bcda4c9f95e8a3.rmeta` (exit status: 1)
+
+*** result: Failure(101)

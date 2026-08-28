@@ -78,6 +78,12 @@ test staged the wrong claim, another never reached the code path it named, and a
 something no implementation could get wrong.
 
 `cargo mutants` automates the same idea and is worth running over a module you have just written.
+Two things to know before reading its output. It does not respect `cfg`, so on macOS it reports
+every `#[cfg(not(unix))]` and Linux-only branch as untested — on a project built around a platform
+seam that is most of the noise. And a mutation that makes a parser loop forever is reported as a
+timeout rather than a survivor; those are not gaps either. What is left after removing both is
+usually real: a first run over the JSON reader reported 36 survivors, of which the genuine ones
+were that no test parsed a string containing an escape, and none parsed an array at all.
 
 ## Pull requests
 

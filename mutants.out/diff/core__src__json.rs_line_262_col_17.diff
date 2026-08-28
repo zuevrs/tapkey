@@ -1,0 +1,27 @@
+--- core/src/json.rs
++++ delete match arm Some(b']') in Parser<'a>::array
+@@ -254,23 +254,17 @@
+     }
+ 
+     fn array(&mut self) -> Result<Node, Error> {
+         let start = self.i;
+         self.i += 1; // '['
+         loop {
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+-                Some(b']') => {
+-                    self.i += 1;
+-                    return Ok(Node::Opaque {
+-                        span: start..self.i,
+-                        is_string: false,
+-                    });
+-                }
++                 /* ~ changed by cargo-mutants ~ */
+                 None => return Err(self.error("an unterminated array")),
+                 _ => {}
+             }
+             self.value()?;
+             self.skip_whitespace();
+             match self.b.get(self.i) {
+                 Some(b',') => self.i += 1,
+                 Some(b']') => {}

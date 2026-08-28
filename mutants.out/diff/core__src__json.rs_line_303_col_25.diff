@@ -1,0 +1,21 @@
+--- core/src/json.rs
++++ delete match arm b'b' in Parser<'a>::string
+@@ -295,17 +295,17 @@
+                 Some(b'\\') => {
+                     self.i += 1;
+                     let escaped = *self.b.get(self.i).ok_or_else(|| self.error("a truncated escape"))?;
+                     self.i += 1;
+                     match escaped {
+                         b'"' => out.push('"'),
+                         b'\\' => out.push('\\'),
+                         b'/' => out.push('/'),
+-                        b'b' => out.push('\u{8}'),
++                         /* ~ changed by cargo-mutants ~ */
+                         b'f' => out.push('\u{c}'),
+                         b'n' => out.push('\n'),
+                         b'r' => out.push('\r'),
+                         b't' => out.push('\t'),
+                         b'u' => {
+                             let hex = self
+                                 .b
+                                 .get(self.i..self.i + 4)
