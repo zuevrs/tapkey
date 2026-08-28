@@ -1,0 +1,14 @@
+{
+  "profiles": [
+    {
+      "id": "zai",
+      "name": "Z.ai GLM",
+      "tools": {
+        "claude": {
+          "endpoint": "https://api.z.ai/api/anthropic",
+          "slots": { "main": "glm-5.3", "utility": "glm-4.6-air" }
+        }
+      }
+    }
+  ]
+}

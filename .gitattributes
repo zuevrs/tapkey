@@ -1,0 +1,5 @@
+# Fixtures are compared byte for byte, and some of them exist precisely to prove that CRLF and
+# a missing trailing newline survive a switch. A contributor with core.autocrlf set would have
+# git rewrite both the input and the expectation identically, which makes the test pass while
+# proving nothing.
+core/tests/fixtures/** -text

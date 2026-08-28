@@ -1,0 +1,400 @@
+{
+  "ok": true,
+  "outcome": "applied",
+  "tools": [
+    {
+      "endpoint": {
+        "chain": [
+          {
+            "key": "",
+            "observable": false,
+            "scope": "command line",
+            "source": "--settings or a per-key flag",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "ANTHROPIC_BASE_URL",
+            "observable": true,
+            "scope": "user",
+            "source": "~/.claude/settings.json",
+            "value": "https://api.z.ai/api/anthropic",
+            "wins": true
+          },
+          {
+            "key": "ANTHROPIC_BASE_URL",
+            "observable": true,
+            "scope": "shell",
+            "source": "login shell",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "",
+            "observable": false,
+            "scope": "cloud session",
+            "source": "reads neither user settings nor the shell",
+            "value": null,
+            "wins": false
+          }
+        ],
+        "effective": "https://api.z.ai/api/anthropic"
+      },
+      "slots": [
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "session",
+              "source": "/model during a session",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": "glm-5.3",
+              "wins": true
+            },
+            {
+              "key": "ANTHROPIC_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "model",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": "glm-5.3",
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_SMALL_FAST_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_SMALL_FAST_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": "glm-4.6-air",
+              "wins": true
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": "glm-4.6-air",
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "CLAUDE_CODE_SUBAGENT_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "CLAUDE_CODE_SUBAGENT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "opus"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "sonnet"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_FABLE_MODEL",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_FABLE_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "fable"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "advisorModel",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "advisor"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "fallbackModel",
+              "observable": true,
+              "scope": "user",
+              "source": "~/.claude/settings.json",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "fallback"
+        }
+      ],
+      "tool": "claude"
+    }
+  ]
+}

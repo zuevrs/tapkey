@@ -81,6 +81,15 @@ impl Document {
         }
     }
 
+    /// The keys of the object at `path`, in the order the file has them. Empty when there is
+    /// no object there.
+    pub fn keys_at(&self, path: &[&str]) -> Vec<String> {
+        match resolve(&self.root, path) {
+            Some(Node::Object { members, .. }) => members.iter().map(|m| m.key.clone()).collect(),
+            _ => Vec::new(),
+        }
+    }
+
     /// Key start through value end for `path`, excluding the separating comma. What a caller
     /// needs to excise the regions tapkey owns and compare everything else byte for byte.
     pub fn member_span(&self, path: &[&str]) -> Option<Range<usize>> {

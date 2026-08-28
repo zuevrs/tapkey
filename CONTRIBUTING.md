@@ -62,11 +62,24 @@ key-shaped is ever committed.
 An adapter is finished when it back-fills a missing file, writes atomically, takes a backup, reads
 effective state, detects drift and restores — each under test.
 
-Each one is proved with golden fixtures: a real-world configuration file, the expected file after a
-switch, and the case where the tool had already rewritten its own configuration first. They are real
-files on disk compared byte for byte, because a file reads in a pull request diff and a snapshot blob
-does not. Expectations can be regenerated with a named command, which rewrites only the expected
-files and still fails the run, so a broken expectation cannot be blessed and go green in one step.
+Each one is proved with golden fixtures in `core/tests/fixtures/<tool>/<case>/`. A case is a
+self-contained directory: `request.json` is the real wire envelope, `profiles.json` its own
+profiles, `before/` a small mirrored filesystem, `after/` the expected result — always complete,
+even when identical — and `fail.json` optionally declares that one write refuses. A directory
+exists, therefore a test exists; `build.rs` generates one per case so a failure names its case and
+`cargo test crlf` selects it.
+
+Four properties run on every case, not only in cases written for them: applying twice moves no
+byte, everything outside the keys tapkey owns is identical, restoring the backup returns the tree
+exactly, and no temporary file is left behind.
+
+```sh
+UPDATE_GOLDEN=1 cargo test --test golden     # rewrites expectations, and still fails
+```
+
+It rewrites only expectations, never an input, and the run it happens in is red — read the diff and
+run again. A new case with no expectation fails too, printing where its output was written, because
+otherwise a case can arrive in a pull request carrying an expectation nobody chose.
 
 Where a tool's documented behaviour decides what tapkey writes, measure it against the tool rather
 than reading it. Documentation states intent; the shipped binary states the resolution order, and we

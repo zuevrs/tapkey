@@ -1,0 +1,8 @@
+{
+  "failure": {
+    "detail": "<home>/.claude/settings.json: injected write failure — 0 file(s) restored",
+    "kind": "write_failed"
+  },
+  "ok": false,
+  "outcome": "rolled back"
+}

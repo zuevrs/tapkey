@@ -287,6 +287,25 @@ const OWNED: &[(&str, &str, bool)] = &[
 /// created: an unconditional write would leave tapkey's fingerprints where nobody asked.
 const DEPRECATED_UTILITY: &str = "ANTHROPIC_SMALL_FAST_MODEL";
 
+/// Every place in a settings file tapkey may write, so a caller can cut them out and compare
+/// everything else byte for byte. This is what makes merge-never-own a machine check rather
+/// than a reviewer noticing a moved key in a diff.
+pub fn owned_paths() -> Vec<Vec<&'static str>> {
+    let mut out = vec![vec!["env", ENDPOINT_VAR], vec!["env", DEPRECATED_UTILITY]];
+    for (_, var, has_companion) in OWNED {
+        out.push(vec!["env", var]);
+        if *has_companion {
+            // Leaked deliberately and once per variable: the set is fixed at compile time and
+            // a caller wants plain `&'static str` to compare against.
+            out.push(vec![
+                "env",
+                Box::leak(format!("{var}_NAME").into_boxed_str()),
+            ]);
+        }
+    }
+    out
+}
+
 /// What tapkey has just written, ready to be recorded so drift has something to compare to.
 pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<String, String> {
     let mut out = std::collections::BTreeMap::new();

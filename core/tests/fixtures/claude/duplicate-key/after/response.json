@@ -1,0 +1,7 @@
+{
+  "failure": {
+    "detail": "DuplicateKey { offset: 23, key: \"theme\" }",
+    "kind": "unparsable"
+  },
+  "ok": false
+}
