@@ -1,0 +1,41 @@
+--- core/src/transaction.rs
++++ replace Transaction::apply -> Result<(), RolledBack> with Ok(())
+@@ -67,37 +67,17 @@
+                     mode: b.mode,
+                 })
+                 .collect()
+         })
+     }
+ 
+     /// Apply every action, or none of them.
+     pub fn apply(&self, fs: &mut dyn FileSystem) -> Result<(), RolledBack> {
+-        let before = self.before(fs).map_err(|e| RolledBack {
+-            failed_at: PathBuf::new(),
+-            reason: format!("could not read the files to be changed: {e}"),
+-            restored: 0,
+-        })?;
+-
+-        for (index, action) in self.actions.iter().enumerate() {
+-            let result = match action {
+-                Action::Write { path, bytes, mode } => fs.write(path, bytes, *mode),
+-                Action::Delete { path } => fs.remove(path),
+-            };
+-            if let Err(e) = result {
+-                let restored = undo(fs, &before[..index]);
+-                return Err(RolledBack {
+-                    failed_at: action.path().clone(),
+-                    reason: e.to_string(),
+-                    restored,
+-                });
+-            }
+-        }
+-        Ok(())
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn before(&self, fs: &dyn FileSystem) -> io::Result<Vec<Before>> {
+         self.actions
+             .iter()
+             .map(|a| {
+                 let path = a.path().clone();
+                 Ok(Before {

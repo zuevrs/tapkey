@@ -1,0 +1,17 @@
+--- core/src/transaction.rs
++++ replace += with -= in undo
+@@ -118,13 +118,13 @@
+ fn undo(fs: &mut dyn FileSystem, done: &[Before]) -> usize {
+     let mut restored = 0;
+     for entry in done.iter().rev() {
+         let outcome = match &entry.content {
+             Some(bytes) => fs.write(&entry.path, bytes, entry.mode.unwrap_or(0o600)),
+             None => fs.remove(&entry.path),
+         };
+         if outcome.is_ok() {
+-            restored += 1;
++            restored -= /* ~ changed by cargo-mutants ~ */ 1;
+         }
+     }
+     restored
+ }

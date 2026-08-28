@@ -1,0 +1,21 @@
+--- core/src/fs.rs
++++ replace == with != in <impl FileSystem for RealFs>::read
+@@ -28,17 +28,17 @@
+             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),
+             other => other,
+         }
+     }
+ 
+     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {
+         match std::fs::read(path) {
+             Ok(bytes) => Ok(Some(bytes)),
+-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),
++            Err(e) if e.kind() != /* ~ changed by cargo-mutants ~ */ io::ErrorKind::NotFound => Ok(None),
+             Err(e) => Err(e),
+         }
+     }
+ 
+     #[cfg(unix)]
+     fn mode(&self, path: &Path) -> Option<u32> {
+         use std::os::unix::fs::PermissionsExt;
+         std::fs::metadata(path)

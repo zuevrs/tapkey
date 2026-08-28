@@ -1,0 +1,25 @@
+--- core/src/fs.rs
++++ replace <impl FileSystem for FailOnce>::write -> io::Result<()> with Ok(())
+@@ -89,21 +89,17 @@
+             }
+             None => false,
+         }
+     }
+ }
+ 
+ impl FileSystem for FailOnce {
+     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {
+-        self.attempted.push(path.to_path_buf());
+-        if self.should_fail() {
+-            return Err(io::Error::other("injected write failure"));
+-        }
+-        self.real.write(path, bytes, mode)
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn remove(&mut self, path: &Path) -> io::Result<()> {
+         self.attempted.push(path.to_path_buf());
+         if self.should_fail() {
+             return Err(io::Error::other("injected removal failure"));
+         }
+         self.real.remove(path)

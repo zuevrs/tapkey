@@ -1,27 +1,29 @@
-core/src/store.rs:57:9: replace BackupId::as_str -> &str with ""
-core/src/store.rs:57:9: replace BackupId::as_str -> &str with "xyzzy"
-core/src/store.rs:119:9: replace Store::has_snapshot -> bool with false
-core/src/store.rs:124:9: replace Store::take_snapshot -> io::Result<()> with Ok(())
-core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])
-core/src/store.rs:149:16: delete ! in Store::backups
-core/src/store.rs:153:16: delete ! in Store::backups
-core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])
-core/src/store.rs:207:9: replace Store::sweep -> io::Result<()> with Ok(())
-core/src/store.rs:217:37: replace && with || in Store::sweep
-core/src/store.rs:217:22: replace <= with > in Store::sweep
-core/src/store.rs:217:46: replace <= with > in Store::sweep
-core/src/store.rs:222:19: replace -= with += in Store::sweep
-core/src/store.rs:222:19: replace -= with /= in Store::sweep
-core/src/store.rs:228:9: replace Store::snapshot_dir -> PathBuf with Default::default()
-core/src/store.rs:239:5: replace write_group -> io::Result<()> with Ok(())
-core/src/store.rs:232:9: replace Store::backups_dir -> PathBuf with Default::default()
-core/src/store.rs:276:25: replace > with == in read_manifest
-core/src/store.rs:276:25: replace > with >= in read_manifest
-core/src/store.rs:290:5: replace create_dir_closed -> io::Result<()> with Ok(())
-core/src/store.rs:296:5: replace set_dir_mode -> io::Result<()> with Ok(())
-core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(0)
-core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(1)
-core/src/store.rs:311:15: replace += with -= in directory_size
-core/src/store.rs:311:15: replace += with *= in directory_size
-core/src/store.rs:321:5: replace file_name -> String with String::new()
-core/src/store.rs:321:5: replace file_name -> String with "xyzzy".into()
+core/src/fs.rs:23:9: replace <impl FileSystem for RealFs>::write -> io::Result<()> with Ok(())
+core/src/fs.rs:28:23: replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::remove
+core/src/fs.rs:27:9: replace <impl FileSystem for RealFs>::remove -> io::Result<()> with Ok(())
+core/src/fs.rs:28:32: replace == with != in <impl FileSystem for RealFs>::remove
+core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(None)
+core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))
+core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))
+core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))
+core/src/fs.rs:36:23: replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::read
+core/src/fs.rs:36:23: replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::read
+core/src/fs.rs:36:32: replace == with != in <impl FileSystem for RealFs>::read
+core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with None
+core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)
+core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)
+core/src/fs.rs:46:45: replace & with | in <impl FileSystem for RealFs>::mode
+core/src/fs.rs:46:45: replace & with ^ in <impl FileSystem for RealFs>::mode
+core/src/fs.rs:81:9: replace FailOnce::should_fail -> bool with true
+core/src/fs.rs:81:9: replace FailOnce::should_fail -> bool with false
+core/src/fs.rs:87:41: replace - with + in FailOnce::should_fail
+core/src/fs.rs:87:41: replace - with / in FailOnce::should_fail
+core/src/fs.rs:97:9: replace <impl FileSystem for FailOnce>::write -> io::Result<()> with Ok(())
+core/src/fs.rs:105:9: replace <impl FileSystem for FailOnce>::remove -> io::Result<()> with Ok(())
+core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(None)
+core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))
+core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))
+core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))
+core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with None
+core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(0)
+core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(1)

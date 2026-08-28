@@ -1,0 +1,31 @@
+--- core/src/fs.rs
++++ replace FailOnce::should_fail -> bool with false
+@@ -73,27 +73,17 @@
+             real: RealFs,
+             countdown: Some(successes),
+             attempted: Vec::new(),
+         }
+     }
+ 
+     /// True once the injected failure has been delivered, so nothing further is refused.
+     fn should_fail(&mut self) -> bool {
+-        match self.countdown {
+-            Some(0) => {
+-                self.countdown = None;
+-                true
+-            }
+-            Some(n) => {
+-                self.countdown = Some(n - 1);
+-                false
+-            }
+-            None => false,
+-        }
++        false /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ impl FileSystem for FailOnce {
+     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {
+         self.attempted.push(path.to_path_buf());
+         if self.should_fail() {
+             return Err(io::Error::other("injected write failure"));

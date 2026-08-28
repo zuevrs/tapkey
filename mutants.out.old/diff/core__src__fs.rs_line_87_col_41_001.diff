@@ -1,0 +1,21 @@
+--- core/src/fs.rs
++++ replace - with / in FailOnce::should_fail
+@@ -79,17 +79,17 @@
+     /// True once the injected failure has been delivered, so nothing further is refused.
+     fn should_fail(&mut self) -> bool {
+         match self.countdown {
+             Some(0) => {
+                 self.countdown = None;
+                 true
+             }
+             Some(n) => {
+-                self.countdown = Some(n - 1);
++                self.countdown = Some(n / /* ~ changed by cargo-mutants ~ */ 1);
+                 false
+             }
+             None => false,
+         }
+     }
+ }
+ 
+ impl FileSystem for FailOnce {

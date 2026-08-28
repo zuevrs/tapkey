@@ -1,0 +1,31 @@
+--- core/src/transaction.rs
++++ replace Transaction::capture -> io::Result<Vec<Captured>> with Ok(vec![Default::default()])
+@@ -52,27 +52,17 @@
+ 
+ impl Transaction {
+     pub fn new(actions: Vec<Action>) -> Self {
+         Transaction { actions }
+     }
+ 
+     /// Read every file this transaction would touch, as it stands now.
+     pub fn capture(&self, fs: &dyn FileSystem, tool: &str) -> io::Result<Vec<Captured>> {
+-        self.before(fs).map(|before| {
+-            before
+-                .into_iter()
+-                .map(|b| Captured {
+-                    path: b.path,
+-                    tool: tool.to_string(),
+-                    content: b.content,
+-                    mode: b.mode,
+-                })
+-                .collect()
+-        })
++        Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Apply every action, or none of them.
+     pub fn apply(&self, fs: &mut dyn FileSystem) -> Result<(), RolledBack> {
+         let before = self.before(fs).map_err(|e| RolledBack {
+             failed_at: PathBuf::new(),
+             reason: format!("could not read the files to be changed: {e}"),
+             restored: 0,

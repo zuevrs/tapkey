@@ -1,0 +1,2 @@
+core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)
+core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)

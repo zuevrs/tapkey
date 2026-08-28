@@ -11,9 +11,11 @@
 pub mod adapters;
 pub mod atomic;
 pub mod env;
+pub mod fs;
 pub mod instant;
 pub mod json;
 pub mod store;
+pub mod transaction;
 pub mod wire;
 
 use env::Env;

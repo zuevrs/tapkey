@@ -1,1121 +1,1057 @@
 [
   {
-    "diff": "--- core/src/store.rs\n+++ replace BackupId::as_str -> &str with \"\"\n@@ -49,17 +49,17 @@\n     Backup(BackupId),\n }\n \n #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]\n pub struct BackupId(String);\n \n impl BackupId {\n     pub fn as_str(&self) -> &str {\n-        &self.0\n+        \"\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n         BackupId(s.to_string())\n     }\n }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::write -> io::Result<()> with Ok(())\n@@ -15,17 +15,17 @@\n     fn mode(&self, path: &Path) -> Option<u32>;\n }\n \n /// The real one. Every write goes through the atomic seam.\n pub struct RealFs;\n \n impl FileSystem for RealFs {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n-        write_atomically(path, bytes, mode)\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "BackupId::as_str",
-      "return_type": "-> &str",
+      "function_name": "<impl FileSystem for RealFs>::write",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 6,
-          "line": 58
+          "line": 24
         },
         "start": {
           "column": 5,
-          "line": 56
+          "line": 22
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:57:9: replace BackupId::as_str -> &str with \"\"",
+    "name": "core/src/fs.rs:23:9: replace <impl FileSystem for RealFs>::write -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
-    "replacement": "\"\"",
+    "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 16,
-        "line": 57
+        "column": 44,
+        "line": 23
       },
       "start": {
         "column": 9,
-        "line": 57
+        "line": 23
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace BackupId::as_str -> &str with \"xyzzy\"\n@@ -49,17 +49,17 @@\n     Backup(BackupId),\n }\n \n #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]\n pub struct BackupId(String);\n \n impl BackupId {\n     pub fn as_str(&self) -> &str {\n-        &self.0\n+        \"xyzzy\" /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n         BackupId(s.to_string())\n     }\n }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::remove -> io::Result<()> with Ok(())\n@@ -19,20 +19,17 @@\n pub struct RealFs;\n \n impl FileSystem for RealFs {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         write_atomically(path, bytes, mode)\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n-        match std::fs::remove_file(path) {\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n-            other => other,\n-        }\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n             Err(e) => Err(e),\n         }\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "BackupId::as_str",
-      "return_type": "-> &str",
+      "function_name": "<impl FileSystem for RealFs>::remove",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 6,
-          "line": 58
+          "line": 31
         },
         "start": {
           "column": 5,
-          "line": 56
+          "line": 26
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:57:9: replace BackupId::as_str -> &str with \"xyzzy\"",
+    "name": "core/src/fs.rs:27:9: replace <impl FileSystem for RealFs>::remove -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
-    "replacement": "\"xyzzy\"",
+    "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 16,
-        "line": 57
+        "column": 10,
+        "line": 30
       },
       "start": {
         "column": 9,
-        "line": 57
+        "line": 27
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace <impl From<&str> for BackupId>::from -> Self with Default::default()\n@@ -55,17 +55,17 @@\n impl BackupId {\n     pub fn as_str(&self) -> &str {\n         &self.0\n     }\n }\n \n impl From<&str> for BackupId {\n     fn from(s: &str) -> Self {\n-        BackupId(s.to_string())\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n #[derive(Debug)]\n pub struct BackupSummary {\n     pub id: BackupId,\n     pub profile: String,\n     pub instant: String,\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::remove\n@@ -20,17 +20,17 @@\n \n impl FileSystem for RealFs {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         write_atomically(path, bytes, mode)\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n+            Err(e) if true /* ~ changed by cargo-mutants ~ */ => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "<impl From<&str> for BackupId>::from",
-      "return_type": "-> Self",
+      "function_name": "<impl FileSystem for RealFs>::remove",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 6,
-          "line": 64
+          "line": 31
         },
         "start": {
           "column": 5,
-          "line": 62
+          "line": 26
         }
       }
     },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:63:9: replace <impl From<&str> for BackupId>::from -> Self with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 32,
-        "line": 63
-      },
-      "start": {
-        "column": 9,
-        "line": 63
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::open -> io::Result<Store> with Ok(Default::default())\n@@ -103,21 +103,17 @@\n pub struct Store {\n     root: PathBuf,\n }\n \n impl Store {\n     /// Open the store, creating it closed. The store is ours, unlike the tools' files, and a\n     /// copy inside it may contain a key.\n     pub fn open(root: &Path) -> io::Result<Store> {\n-        create_dir_closed(root)?;\n-        create_dir_closed(&root.join(\"backups\"))?;\n-        Ok(Store {\n-            root: root.to_path_buf(),\n-        })\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n         self.snapshot_dir().join(\"manifest.json\").exists()\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::open",
-      "return_type": "-> io::Result<Store>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 116
-        },
-        "start": {
-          "column": 5,
-          "line": 108
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:111:9: replace Store::open -> io::Result<Store> with Ok(Default::default())",
-    "package": "tapkey-core",
-    "replacement": "Ok(Default::default())",
-    "span": {
-      "end": {
-        "column": 11,
-        "line": 115
-      },
-      "start": {
-        "column": 9,
-        "line": 111
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::has_snapshot -> bool with true\n@@ -111,17 +111,17 @@\n         create_dir_closed(root)?;\n         create_dir_closed(&root.join(\"backups\"))?;\n         Ok(Store {\n             root: root.to_path_buf(),\n         })\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n-        self.snapshot_dir().join(\"manifest.json\").exists()\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n         let dir = self.snapshot_dir();\n         write_group(&dir, files, at, \"\")?;\n         Ok(())\n     }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::has_snapshot",
-      "return_type": "-> bool",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 120
-        },
-        "start": {
-          "column": 5,
-          "line": 118
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:119:9: replace Store::has_snapshot -> bool with true",
+    "genre": "MatchArmGuard",
+    "name": "core/src/fs.rs:28:23: replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::remove",
     "package": "tapkey-core",
     "replacement": "true",
     "span": {
       "end": {
-        "column": 59,
-        "line": 119
+        "column": 58,
+        "line": 28
       },
       "start": {
-        "column": 9,
-        "line": 119
+        "column": 23,
+        "line": 28
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace Store::has_snapshot -> bool with false\n@@ -111,17 +111,17 @@\n         create_dir_closed(root)?;\n         create_dir_closed(&root.join(\"backups\"))?;\n         Ok(Store {\n             root: root.to_path_buf(),\n         })\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n-        self.snapshot_dir().join(\"manifest.json\").exists()\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n         let dir = self.snapshot_dir();\n         write_group(&dir, files, at, \"\")?;\n         Ok(())\n     }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::remove\n@@ -20,17 +20,17 @@\n \n impl FileSystem for RealFs {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         write_atomically(path, bytes, mode)\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n+            Err(e) if false /* ~ changed by cargo-mutants ~ */ => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "Store::has_snapshot",
-      "return_type": "-> bool",
+      "function_name": "<impl FileSystem for RealFs>::remove",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 6,
-          "line": 120
+          "line": 31
         },
         "start": {
           "column": 5,
-          "line": 118
+          "line": 26
         }
       }
     },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:119:9: replace Store::has_snapshot -> bool with false",
+    "genre": "MatchArmGuard",
+    "name": "core/src/fs.rs:28:23: replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::remove",
     "package": "tapkey-core",
     "replacement": "false",
     "span": {
       "end": {
-        "column": 59,
-        "line": 119
+        "column": 58,
+        "line": 28
       },
       "start": {
-        "column": 9,
-        "line": 119
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::take_snapshot -> io::Result<()> with Ok(())\n@@ -116,19 +116,17 @@\n     }\n \n     pub fn has_snapshot(&self) -> bool {\n         self.snapshot_dir().join(\"manifest.json\").exists()\n     }\n \n     /// Record the configs as they were before tapkey first changed anything.\n     pub fn take_snapshot(&self, files: &[Captured], at: SystemTime) -> io::Result<()> {\n-        let dir = self.snapshot_dir();\n-        write_group(&dir, files, at, \"\")?;\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Save the files one change is about to touch.\n     pub fn take_backup(\n         &self,\n         files: &[Captured],\n         profile: &str,\n         at: SystemTime,\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::take_snapshot",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 127
-        },
-        "start": {
-          "column": 5,
-          "line": 122
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:124:9: replace Store::take_snapshot -> io::Result<()> with Ok(())",
-    "package": "tapkey-core",
-    "replacement": "Ok(())",
-    "span": {
-      "end": {
-        "column": 15,
-        "line": 126
-      },
-      "start": {
-        "column": 9,
-        "line": 124
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::take_backup -> io::Result<BackupId> with Ok(Default::default())\n@@ -128,19 +128,17 @@\n \n     /// Save the files one change is about to touch.\n     pub fn take_backup(\n         &self,\n         files: &[Captured],\n         profile: &str,\n         at: SystemTime,\n     ) -> io::Result<BackupId> {\n-        let id = BackupId(format_utc(at));\n-        write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n-        Ok(id)\n+        Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n         let mut out = Vec::new();\n         let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n             return Ok(out);\n         };\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::take_backup",
-      "return_type": "-> io::Result<BackupId>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 139
-        },
-        "start": {
-          "column": 5,
-          "line": 129
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:136:9: replace Store::take_backup -> io::Result<BackupId> with Ok(Default::default())",
-    "package": "tapkey-core",
-    "replacement": "Ok(Default::default())",
-    "span": {
-      "end": {
-        "column": 15,
-        "line": 138
-      },
-      "start": {
-        "column": 9,
-        "line": 136
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])\n@@ -135,52 +135,17 @@\n     ) -> io::Result<BackupId> {\n         let id = BackupId(format_utc(at));\n         write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n         Ok(id)\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n-        let mut out = Vec::new();\n-        let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n-            return Ok(out);\n-        };\n-        for entry in entries {\n-            let path = entry?.path();\n-            if !path.is_dir() {\n-                continue;\n-            }\n-            let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n-                // No manifest means the write never committed. Ours, not theirs.\n-                fs::remove_dir_all(&path)?;\n-                continue;\n-            }\n-            let id = BackupId(file_name(&path));\n-            out.push(match read_manifest(&manifest_path) {\n-                Ok(m) => BackupSummary {\n-                    profile: m.profile,\n-                    instant: m.instant,\n-                    restorable: m.files.iter().all(|e| match &e.stored {\n-                        Some(name) => path.join(\"files\").join(name).exists(),\n-                        None => true,\n-                    }),\n-                    id,\n-                },\n-                Err(_) => BackupSummary {\n-                    profile: String::new(),\n-                    instant: id.0.clone(),\n-                    restorable: false,\n-                    id,\n-                },\n-            });\n-        }\n-        out.sort_by(|a, b| a.id.cmp(&b.id));\n-        Ok(out)\n+        Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n         let dir = match target {\n             Target::Snapshot => self.snapshot_dir(),\n             Target::Backup(id) => self.backups_dir().join(&id.0),\n         };\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::backups",
-      "return_type": "-> io::Result<Vec<BackupSummary>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 179
-        },
-        "start": {
-          "column": 5,
-          "line": 141
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![])",
-    "span": {
-      "end": {
-        "column": 16,
-        "line": 178
-      },
-      "start": {
-        "column": 9,
-        "line": 143
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![Default::default()])\n@@ -135,52 +135,17 @@\n     ) -> io::Result<BackupId> {\n         let id = BackupId(format_utc(at));\n         write_group(&self.backups_dir().join(&id.0), files, at, profile)?;\n         Ok(id)\n     }\n \n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n-        let mut out = Vec::new();\n-        let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n-            return Ok(out);\n-        };\n-        for entry in entries {\n-            let path = entry?.path();\n-            if !path.is_dir() {\n-                continue;\n-            }\n-            let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n-                // No manifest means the write never committed. Ours, not theirs.\n-                fs::remove_dir_all(&path)?;\n-                continue;\n-            }\n-            let id = BackupId(file_name(&path));\n-            out.push(match read_manifest(&manifest_path) {\n-                Ok(m) => BackupSummary {\n-                    profile: m.profile,\n-                    instant: m.instant,\n-                    restorable: m.files.iter().all(|e| match &e.stored {\n-                        Some(name) => path.join(\"files\").join(name).exists(),\n-                        None => true,\n-                    }),\n-                    id,\n-                },\n-                Err(_) => BackupSummary {\n-                    profile: String::new(),\n-                    instant: id.0.clone(),\n-                    restorable: false,\n-                    id,\n-                },\n-            });\n-        }\n-        out.sort_by(|a, b| a.id.cmp(&b.id));\n-        Ok(out)\n+        Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n         let dir = match target {\n             Target::Snapshot => self.snapshot_dir(),\n             Target::Backup(id) => self.backups_dir().join(&id.0),\n         };\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::backups",
-      "return_type": "-> io::Result<Vec<BackupSummary>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 179
-        },
-        "start": {
-          "column": 5,
-          "line": 141
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:143:9: replace Store::backups -> io::Result<Vec<BackupSummary>> with Ok(vec![Default::default()])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![Default::default()])",
-    "span": {
-      "end": {
-        "column": 16,
-        "line": 178
-      },
-      "start": {
-        "column": 9,
-        "line": 143
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ delete ! in Store::backups\n@@ -141,17 +141,17 @@\n     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.\n     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {\n         let mut out = Vec::new();\n         let Ok(entries) = fs::read_dir(self.backups_dir()) else {\n             return Ok(out);\n         };\n         for entry in entries {\n             let path = entry?.path();\n-            if !path.is_dir() {\n+            if  /* ~ changed by cargo-mutants ~ */path.is_dir() {\n                 continue;\n             }\n             let manifest_path = path.join(\"manifest.json\");\n             if !manifest_path.exists() {\n                 // No manifest means the write never committed. Ours, not theirs.\n                 fs::remove_dir_all(&path)?;\n                 continue;\n             }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::backups",
-      "return_type": "-> io::Result<Vec<BackupSummary>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 179
-        },
-        "start": {
-          "column": 5,
-          "line": 141
-        }
-      }
-    },
-    "genre": "UnaryOperator",
-    "name": "core/src/store.rs:149:16: delete ! in Store::backups",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 17,
-        "line": 149
-      },
-      "start": {
-        "column": 16,
-        "line": 149
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ delete ! in Store::backups\n@@ -145,17 +145,17 @@\n             return Ok(out);\n         };\n         for entry in entries {\n             let path = entry?.path();\n             if !path.is_dir() {\n                 continue;\n             }\n             let manifest_path = path.join(\"manifest.json\");\n-            if !manifest_path.exists() {\n+            if  /* ~ changed by cargo-mutants ~ */manifest_path.exists() {\n                 // No manifest means the write never committed. Ours, not theirs.\n                 fs::remove_dir_all(&path)?;\n                 continue;\n             }\n             let id = BackupId(file_name(&path));\n             out.push(match read_manifest(&manifest_path) {\n                 Ok(m) => BackupSummary {\n                     profile: m.profile,\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::backups",
-      "return_type": "-> io::Result<Vec<BackupSummary>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 179
-        },
-        "start": {
-          "column": 5,
-          "line": 141
-        }
-      }
-    },
-    "genre": "UnaryOperator",
-    "name": "core/src/store.rs:153:16: delete ! in Store::backups",
-    "package": "tapkey-core",
-    "replacement": "",
-    "span": {
-      "end": {
-        "column": 17,
-        "line": 153
-      },
-      "start": {
-        "column": 16,
-        "line": 153
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])\n@@ -175,33 +175,17 @@\n             });\n         }\n         out.sort_by(|a, b| a.id.cmp(&b.id));\n         Ok(out)\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n-        let dir = match target {\n-            Target::Snapshot => self.snapshot_dir(),\n-            Target::Backup(id) => self.backups_dir().join(&id.0),\n-        };\n-        let manifest = read_manifest(&dir.join(\"manifest.json\"))?;\n-        manifest\n-            .files\n-            .into_iter()\n-            .map(|e| match e.stored {\n-                Some(name) => Ok(RestoreAction::Write {\n-                    bytes: fs::read(dir.join(\"files\").join(name))?,\n-                    path: e.path,\n-                    mode: e.mode,\n-                }),\n-                None => Ok(RestoreAction::Delete { path: e.path }),\n-            })\n-            .collect()\n+        Ok(vec![]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n         let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::restore_plan",
-      "return_type": "-> io::Result<Vec<RestoreAction>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 200
-        },
-        "start": {
-          "column": 5,
-          "line": 181
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![])",
-    "span": {
-      "end": {
         "column": 23,
-        "line": 199
-      },
-      "start": {
-        "column": 9,
-        "line": 183
+        "line": 28
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![Default::default()])\n@@ -175,33 +175,17 @@\n             });\n         }\n         out.sort_by(|a, b| a.id.cmp(&b.id));\n         Ok(out)\n     }\n \n     /// What going back to `target` would do to the filesystem.\n     pub fn restore_plan(&self, target: Target) -> io::Result<Vec<RestoreAction>> {\n-        let dir = match target {\n-            Target::Snapshot => self.snapshot_dir(),\n-            Target::Backup(id) => self.backups_dir().join(&id.0),\n-        };\n-        let manifest = read_manifest(&dir.join(\"manifest.json\"))?;\n-        manifest\n-            .files\n-            .into_iter()\n-            .map(|e| match e.stored {\n-                Some(name) => Ok(RestoreAction::Write {\n-                    bytes: fs::read(dir.join(\"files\").join(name))?,\n-                    path: e.path,\n-                    mode: e.mode,\n-                }),\n-                None => Ok(RestoreAction::Delete { path: e.path }),\n-            })\n-            .collect()\n+        Ok(vec![Default::default()]) /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n         let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace == with != in <impl FileSystem for RealFs>::remove\n@@ -20,17 +20,17 @@\n \n impl FileSystem for RealFs {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         write_atomically(path, bytes, mode)\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n+            Err(e) if e.kind() != /* ~ changed by cargo-mutants ~ */ io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "Store::restore_plan",
-      "return_type": "-> io::Result<Vec<RestoreAction>>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 200
-        },
-        "start": {
-          "column": 5,
-          "line": 181
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:183:9: replace Store::restore_plan -> io::Result<Vec<RestoreAction>> with Ok(vec![Default::default()])",
-    "package": "tapkey-core",
-    "replacement": "Ok(vec![Default::default()])",
-    "span": {
-      "end": {
-        "column": 23,
-        "line": 199
-      },
-      "start": {
-        "column": 9,
-        "line": 183
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::sweep -> io::Result<()> with Ok(())\n@@ -199,34 +199,17 @@\n             .collect()\n     }\n \n     /// Two ceilings, both binding, oldest first. Fifty guards against a long history, fifty\n     /// megabytes against one enormous config, and each alone misses what the other catches.\n     /// The snapshot is not counted and not reachable: counting it would let a large one evict\n     /// the whole history, or make it the suspect when the budget is reached.\n     pub fn sweep(&self, max_backups: usize, max_bytes: u64) -> io::Result<()> {\n-        let listed = self.backups()?; // oldest first, and sweeps torn writes on the way\n-        let mut sizes: Vec<(BackupId, u64)> = Vec::new();\n-        for summary in &listed {\n-            let dir = self.backups_dir().join(summary.id.as_str());\n-            sizes.push((summary.id.clone(), directory_size(&dir)?));\n-        }\n-\n-        let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n-        let mut count = sizes.len();\n-        for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n-                break;\n-            }\n-            fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n-            total = total.saturating_sub(size);\n-            count -= 1;\n-        }\n-        Ok(())\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
+      "function_name": "<impl FileSystem for RealFs>::remove",
       "return_type": "-> io::Result<()>",
       "span": {
         "end": {
           "column": 6,
-          "line": 225
+          "line": 31
         },
         "start": {
           "column": 5,
-          "line": 202
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:207:9: replace Store::sweep -> io::Result<()> with Ok(())",
-    "package": "tapkey-core",
-    "replacement": "Ok(())",
-    "span": {
-      "end": {
-        "column": 15,
-        "line": 224
-      },
-      "start": {
-        "column": 9,
-        "line": 207
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace && with || in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count <= max_backups || /* ~ changed by cargo-mutants ~ */ total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 225
-        },
-        "start": {
-          "column": 5,
-          "line": 202
+          "line": 26
         }
       }
     },
     "genre": "BinaryOperator",
-    "name": "core/src/store.rs:217:37: replace && with || in Store::sweep",
+    "name": "core/src/fs.rs:28:32: replace == with != in <impl FileSystem for RealFs>::remove",
     "package": "tapkey-core",
-    "replacement": "||",
-    "span": {
-      "end": {
-        "column": 39,
-        "line": 217
-      },
-      "start": {
-        "column": 37,
-        "line": 217
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace <= with > in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count > /* ~ changed by cargo-mutants ~ */ max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 225
-        },
-        "start": {
-          "column": 5,
-          "line": 202
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:217:22: replace <= with > in Store::sweep",
-    "package": "tapkey-core",
-    "replacement": ">",
-    "span": {
-      "end": {
-        "column": 24,
-        "line": 217
-      },
-      "start": {
-        "column": 22,
-        "line": 217
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace <= with > in Store::sweep\n@@ -209,17 +209,17 @@\n         for summary in &listed {\n             let dir = self.backups_dir().join(summary.id.as_str());\n             sizes.push((summary.id.clone(), directory_size(&dir)?));\n         }\n \n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n-            if count <= max_backups && total <= max_bytes {\n+            if count <= max_backups && total > /* ~ changed by cargo-mutants ~ */ max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 225
-        },
-        "start": {
-          "column": 5,
-          "line": 202
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:217:46: replace <= with > in Store::sweep",
-    "package": "tapkey-core",
-    "replacement": ">",
-    "span": {
-      "end": {
-        "column": 48,
-        "line": 217
-      },
-      "start": {
-        "column": 46,
-        "line": 217
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace -= with += in Store::sweep\n@@ -214,17 +214,17 @@\n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n             if count <= max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n-            count -= 1;\n+            count += /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 225
-        },
-        "start": {
-          "column": 5,
-          "line": 202
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:222:19: replace -= with += in Store::sweep",
-    "package": "tapkey-core",
-    "replacement": "+=",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 222
-      },
-      "start": {
-        "column": 19,
-        "line": 222
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace -= with /= in Store::sweep\n@@ -214,17 +214,17 @@\n         let mut total: u64 = sizes.iter().map(|(_, n)| *n).sum();\n         let mut count = sizes.len();\n         for (id, size) in sizes {\n             if count <= max_backups && total <= max_bytes {\n                 break;\n             }\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n-            count -= 1;\n+            count /= /* ~ changed by cargo-mutants ~ */ 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::sweep",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 225
-        },
-        "start": {
-          "column": 5,
-          "line": 202
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:222:19: replace -= with /= in Store::sweep",
-    "package": "tapkey-core",
-    "replacement": "/=",
-    "span": {
-      "end": {
-        "column": 21,
-        "line": 222
-      },
-      "start": {
-        "column": 19,
-        "line": 222
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::snapshot_dir -> PathBuf with Default::default()\n@@ -220,17 +220,17 @@\n             fs::remove_dir_all(self.backups_dir().join(id.as_str()))?;\n             total = total.saturating_sub(size);\n             count -= 1;\n         }\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n-        self.root.join(\"snapshot\")\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::snapshot_dir",
-      "return_type": "-> PathBuf",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 229
-        },
-        "start": {
-          "column": 5,
-          "line": 227
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:228:9: replace Store::snapshot_dir -> PathBuf with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
-    "span": {
-      "end": {
-        "column": 35,
-        "line": 228
-      },
-      "start": {
-        "column": 9,
-        "line": 228
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace Store::backups_dir -> PathBuf with Default::default()\n@@ -224,17 +224,17 @@\n         Ok(())\n     }\n \n     fn snapshot_dir(&self) -> PathBuf {\n         self.root.join(\"snapshot\")\n     }\n \n     fn backups_dir(&self) -> PathBuf {\n-        self.root.join(\"backups\")\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n /// spanning the store.\n fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {\n     create_dir_closed(dir)?;\n     create_dir_closed(&dir.join(\"files\"))?;\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "Store::backups_dir",
-      "return_type": "-> PathBuf",
-      "span": {
-        "end": {
-          "column": 6,
-          "line": 233
-        },
-        "start": {
-          "column": 5,
-          "line": 231
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:232:9: replace Store::backups_dir -> PathBuf with Default::default()",
-    "package": "tapkey-core",
-    "replacement": "Default::default()",
+    "replacement": "!=",
     "span": {
       "end": {
         "column": 34,
-        "line": 232
+        "line": 28
+      },
+      "start": {
+        "column": 32,
+        "line": 28
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(None)\n@@ -26,21 +26,17 @@\n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        match std::fs::read(path) {\n-            Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n-            Err(e) => Err(e),\n-        }\n+        Ok(None) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 39
+        },
+        "start": {
+          "column": 5,
+          "line": 33
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(None)",
+    "package": "tapkey-core",
+    "replacement": "Ok(None)",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 38
       },
       "start": {
         "column": 9,
-        "line": 232
+        "line": 34
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace write_group -> io::Result<()> with Ok(())\n@@ -231,47 +231,17 @@\n     fn backups_dir(&self) -> PathBuf {\n         self.root.join(\"backups\")\n     }\n }\n \n /// Copies first, manifest last by atomic rename: one point of commit rather than a transaction\n /// spanning the store.\n fn write_group(dir: &Path, files: &[Captured], at: SystemTime, profile: &str) -> io::Result<()> {\n-    create_dir_closed(dir)?;\n-    create_dir_closed(&dir.join(\"files\"))?;\n-\n-    let mut entries = Vec::new();\n-    for (n, file) in files.iter().enumerate() {\n-        let stored = match &file.content {\n-            Some(bytes) => {\n-                let name = format!(\"{:02}\", n + 1);\n-                write_atomically(&dir.join(\"files\").join(&name), bytes, FILE_MODE)?;\n-                Some(name)\n-            }\n-            None => None,\n-        };\n-        entries.push(Entry {\n-            path: file.path.clone(),\n-            tool: file.tool.clone(),\n-            size: file.content.as_ref().map(|b| b.len() as u64).unwrap_or(0),\n-            mode: file.mode,\n-            stored,\n-        });\n-    }\n-\n-    let manifest = Manifest {\n-        version: MANIFEST_VERSION,\n-        instant: format_utc(at),\n-        profile: profile.to_string(),\n-        files: entries,\n-    };\n-    let bytes = serde_json::to_vec_pretty(&manifest)\n-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     if manifest.version > MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))\n@@ -26,21 +26,17 @@\n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        match std::fs::read(path) {\n-            Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n-            Err(e) => Err(e),\n-        }\n+        Ok(Some(vec![])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "write_group",
-      "return_type": "-> io::Result<()>",
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 270
+          "column": 6,
+          "line": 39
         },
         "start": {
-          "column": 1,
-          "line": 236
+          "column": 5,
+          "line": 33
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:239:5: replace write_group -> io::Result<()> with Ok(())",
+    "name": "core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))",
     "package": "tapkey-core",
-    "replacement": "Ok(())",
+    "replacement": "Ok(Some(vec![]))",
     "span": {
       "end": {
-        "column": 68,
-        "line": 269
+        "column": 10,
+        "line": 38
       },
       "start": {
-        "column": 5,
-        "line": 239
+        "column": 9,
+        "line": 34
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace read_manifest -> io::Result<Manifest> with Ok(Default::default())\n@@ -265,30 +265,17 @@\n         files: entries,\n     };\n     let bytes = serde_json::to_vec_pretty(&manifest)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n-    let bytes = fs::read(path)?;\n-    let manifest: Manifest = serde_json::from_slice(&bytes)\n-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n-        // A version from the future is kept and marked, never reinterpreted by guesswork.\n-        return Err(io::Error::new(\n-            io::ErrorKind::InvalidData,\n-            format!(\n-                \"manifest version {} is newer than this build reads\",\n-                manifest.version\n-            ),\n-        ));\n-    }\n-    Ok(manifest)\n+    Ok(Default::default()) /* ~ changed by cargo-mutants ~ */\n }\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n     fs::create_dir_all(path)?;\n     set_dir_mode(path)\n }\n \n #[cfg(unix)]\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))\n@@ -26,21 +26,17 @@\n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        match std::fs::read(path) {\n-            Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n-            Err(e) => Err(e),\n-        }\n+        Ok(Some(vec![0])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "read_manifest",
-      "return_type": "-> io::Result<Manifest>",
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 287
+          "column": 6,
+          "line": 39
         },
         "start": {
-          "column": 1,
-          "line": 272
+          "column": 5,
+          "line": 33
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:273:5: replace read_manifest -> io::Result<Manifest> with Ok(Default::default())",
+    "name": "core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))",
     "package": "tapkey-core",
-    "replacement": "Ok(Default::default())",
+    "replacement": "Ok(Some(vec![0]))",
     "span": {
       "end": {
-        "column": 17,
-        "line": 286
+        "column": 10,
+        "line": 38
       },
       "start": {
-        "column": 5,
-        "line": 273
+        "column": 9,
+        "line": 34
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace > with == in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version == /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))\n@@ -26,21 +26,17 @@\n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         match std::fs::remove_file(path) {\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        match std::fs::read(path) {\n-            Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n-            Err(e) => Err(e),\n-        }\n+        Ok(Some(vec![1])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "read_manifest",
-      "return_type": "-> io::Result<Manifest>",
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 287
+          "column": 6,
+          "line": 39
         },
         "start": {
-          "column": 1,
-          "line": 272
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:276:25: replace > with == in read_manifest",
-    "package": "tapkey-core",
-    "replacement": "==",
-    "span": {
-      "end": {
-        "column": 26,
-        "line": 276
-      },
-      "start": {
-        "column": 25,
-        "line": 276
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace > with < in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version < /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "read_manifest",
-      "return_type": "-> io::Result<Manifest>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 287
-        },
-        "start": {
-          "column": 1,
-          "line": 272
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:276:25: replace > with < in read_manifest",
-    "package": "tapkey-core",
-    "replacement": "<",
-    "span": {
-      "end": {
-        "column": 26,
-        "line": 276
-      },
-      "start": {
-        "column": 25,
-        "line": 276
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace > with >= in read_manifest\n@@ -268,17 +268,17 @@\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n     write_atomically(&dir.join(\"manifest.json\"), &bytes, FILE_MODE)\n }\n \n fn read_manifest(path: &Path) -> io::Result<Manifest> {\n     let bytes = fs::read(path)?;\n     let manifest: Manifest = serde_json::from_slice(&bytes)\n         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n-    if manifest.version > MANIFEST_VERSION {\n+    if manifest.version >= /* ~ changed by cargo-mutants ~ */ MANIFEST_VERSION {\n         // A version from the future is kept and marked, never reinterpreted by guesswork.\n         return Err(io::Error::new(\n             io::ErrorKind::InvalidData,\n             format!(\n                 \"manifest version {} is newer than this build reads\",\n                 manifest.version\n             ),\n         ));\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "read_manifest",
-      "return_type": "-> io::Result<Manifest>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 287
-        },
-        "start": {
-          "column": 1,
-          "line": 272
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:276:25: replace > with >= in read_manifest",
-    "package": "tapkey-core",
-    "replacement": ">=",
-    "span": {
-      "end": {
-        "column": 26,
-        "line": 276
-      },
-      "start": {
-        "column": 25,
-        "line": 276
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace create_dir_closed -> io::Result<()> with Ok(())\n@@ -282,18 +282,17 @@\n                 manifest.version\n             ),\n         ));\n     }\n     Ok(manifest)\n }\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n-    fs::create_dir_all(path)?;\n-    set_dir_mode(path)\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(unix)]\n fn set_dir_mode(path: &Path) -> io::Result<()> {\n     use std::os::unix::fs::PermissionsExt;\n     fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))\n }\n \n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "create_dir_closed",
-      "return_type": "-> io::Result<()>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 292
-        },
-        "start": {
-          "column": 1,
-          "line": 289
+          "column": 5,
+          "line": 33
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:290:5: replace create_dir_closed -> io::Result<()> with Ok(())",
+    "name": "core/src/fs.rs:34:9: replace <impl FileSystem for RealFs>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))",
     "package": "tapkey-core",
-    "replacement": "Ok(())",
+    "replacement": "Ok(Some(vec![1]))",
     "span": {
       "end": {
+        "column": 10,
+        "line": 38
+      },
+      "start": {
+        "column": 9,
+        "line": 34
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::read\n@@ -28,17 +28,17 @@\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n+            Err(e) if true /* ~ changed by cargo-mutants ~ */ => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 39
+        },
+        "start": {
+          "column": 5,
+          "line": 33
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "core/src/fs.rs:36:23: replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::read",
+    "package": "tapkey-core",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 58,
+        "line": 36
+      },
+      "start": {
         "column": 23,
-        "line": 291
-      },
-      "start": {
-        "column": 5,
-        "line": 290
+        "line": 36
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace set_dir_mode -> io::Result<()> with Ok(())\n@@ -288,18 +288,17 @@\n \n fn create_dir_closed(path: &Path) -> io::Result<()> {\n     fs::create_dir_all(path)?;\n     set_dir_mode(path)\n }\n \n #[cfg(unix)]\n fn set_dir_mode(path: &Path) -> io::Result<()> {\n-    use std::os::unix::fs::PermissionsExt;\n-    fs::set_permissions(path, fs::Permissions::from_mode(DIR_MODE))\n+    Ok(()) /* ~ changed by cargo-mutants ~ */\n }\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::read\n@@ -28,17 +28,17 @@\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n+            Err(e) if false /* ~ changed by cargo-mutants ~ */ => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "set_dir_mode",
-      "return_type": "-> io::Result<()>",
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 298
+          "column": 6,
+          "line": 39
         },
         "start": {
-          "column": 1,
-          "line": 294
+          "column": 5,
+          "line": 33
+        }
+      }
+    },
+    "genre": "MatchArmGuard",
+    "name": "core/src/fs.rs:36:23: replace match guard e.kind() == io::ErrorKind::NotFound with false in <impl FileSystem for RealFs>::read",
+    "package": "tapkey-core",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 58,
+        "line": 36
+      },
+      "start": {
+        "column": 23,
+        "line": 36
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace == with != in <impl FileSystem for RealFs>::read\n@@ -28,17 +28,17 @@\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),\n             other => other,\n         }\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         match std::fs::read(path) {\n             Ok(bytes) => Ok(Some(bytes)),\n-            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n+            Err(e) if e.kind() != /* ~ changed by cargo-mutants ~ */ io::ErrorKind::NotFound => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 39
+        },
+        "start": {
+          "column": 5,
+          "line": 33
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fs.rs:36:32: replace == with != in <impl FileSystem for RealFs>::read",
+    "package": "tapkey-core",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 34,
+        "line": 36
+      },
+      "start": {
+        "column": 32,
+        "line": 36
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::mode -> Option<u32> with None\n@@ -35,20 +35,17 @@\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n-        use std::os::unix::fs::PermissionsExt;\n-        std::fs::metadata(path)\n-            .ok()\n-            .map(|m| m.permissions().mode() & 0o7777)\n+        None /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n         None\n     }\n }\n \n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 47
+        },
+        "start": {
+          "column": 5,
+          "line": 41
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:296:5: replace set_dir_mode -> io::Result<()> with Ok(())",
+    "name": "core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with None",
+    "package": "tapkey-core",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 46
+      },
+      "start": {
+        "column": 9,
+        "line": 43
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)\n@@ -35,20 +35,17 @@\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n-        use std::os::unix::fs::PermissionsExt;\n-        std::fs::metadata(path)\n-            .ok()\n-            .map(|m| m.permissions().mode() & 0o7777)\n+        Some(0) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n         None\n     }\n }\n \n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 47
+        },
+        "start": {
+          "column": 5,
+          "line": 41
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)",
+    "package": "tapkey-core",
+    "replacement": "Some(0)",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 46
+      },
+      "start": {
+        "column": 9,
+        "line": 43
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)\n@@ -35,20 +35,17 @@\n             Ok(bytes) => Ok(Some(bytes)),\n             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),\n             Err(e) => Err(e),\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n-        use std::os::unix::fs::PermissionsExt;\n-        std::fs::metadata(path)\n-            .ok()\n-            .map(|m| m.permissions().mode() & 0o7777)\n+        Some(1) /* ~ changed by cargo-mutants ~ */\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n         None\n     }\n }\n \n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 47
+        },
+        "start": {
+          "column": 5,
+          "line": 41
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:43:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)",
+    "package": "tapkey-core",
+    "replacement": "Some(1)",
+    "span": {
+      "end": {
+        "column": 54,
+        "line": 46
+      },
+      "start": {
+        "column": 9,
+        "line": 43
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace & with | in <impl FileSystem for RealFs>::mode\n@@ -38,17 +38,17 @@\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n-            .map(|m| m.permissions().mode() & 0o7777)\n+            .map(|m| m.permissions().mode() | /* ~ changed by cargo-mutants ~ */ 0o7777)\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n         None\n     }\n }\n \n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 47
+        },
+        "start": {
+          "column": 5,
+          "line": 41
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fs.rs:46:45: replace & with | in <impl FileSystem for RealFs>::mode",
+    "package": "tapkey-core",
+    "replacement": "|",
+    "span": {
+      "end": {
+        "column": 46,
+        "line": 46
+      },
+      "start": {
+        "column": 45,
+        "line": 46
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace & with ^ in <impl FileSystem for RealFs>::mode\n@@ -38,17 +38,17 @@\n         }\n     }\n \n     #[cfg(unix)]\n     fn mode(&self, path: &Path) -> Option<u32> {\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n-            .map(|m| m.permissions().mode() & 0o7777)\n+            .map(|m| m.permissions().mode() ^ /* ~ changed by cargo-mutants ~ */ 0o7777)\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n         None\n     }\n }\n \n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 47
+        },
+        "start": {
+          "column": 5,
+          "line": 41
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fs.rs:46:45: replace & with ^ in <impl FileSystem for RealFs>::mode",
+    "package": "tapkey-core",
+    "replacement": "^",
+    "span": {
+      "end": {
+        "column": 46,
+        "line": 46
+      },
+      "start": {
+        "column": 45,
+        "line": 46
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)\n@@ -43,17 +43,17 @@\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n-        None\n+        Some(0) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Fails exactly one operation — the one after `successes` have gone through — and behaves\n /// normally before and after it.\n ///\n /// Failing everything from that point on was the first shape, and it was wrong: the rollback\n /// writes through the same filesystem, so a permanently broken one meant nothing could be put\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 52
+        },
+        "start": {
+          "column": 5,
+          "line": 49
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)",
+    "package": "tapkey-core",
+    "replacement": "Some(0)",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 51
+      },
+      "start": {
+        "column": 9,
+        "line": 51
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)\n@@ -43,17 +43,17 @@\n         use std::os::unix::fs::PermissionsExt;\n         std::fs::metadata(path)\n             .ok()\n             .map(|m| m.permissions().mode() & 0o7777)\n     }\n \n     #[cfg(not(unix))]\n     fn mode(&self, _path: &Path) -> Option<u32> {\n-        None\n+        Some(1) /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n /// Fails exactly one operation — the one after `successes` have gone through — and behaves\n /// normally before and after it.\n ///\n /// Failing everything from that point on was the first shape, and it was wrong: the rollback\n /// writes through the same filesystem, so a permanently broken one meant nothing could be put\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for RealFs>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 52
+        },
+        "start": {
+          "column": 5,
+          "line": 49
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)",
+    "package": "tapkey-core",
+    "replacement": "Some(1)",
+    "span": {
+      "end": {
+        "column": 13,
+        "line": 51
+      },
+      "start": {
+        "column": 9,
+        "line": 51
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace FailOnce::after -> Self with Default::default()\n@@ -64,21 +64,17 @@\n pub struct FailOnce {\n     real: RealFs,\n     countdown: Option<usize>,\n     pub attempted: Vec<PathBuf>,\n }\n \n impl FailOnce {\n     pub fn after(successes: usize) -> Self {\n-        FailOnce {\n-            real: RealFs,\n-            countdown: Some(successes),\n-            attempted: Vec::new(),\n-        }\n+        Default::default() /* ~ changed by cargo-mutants ~ */\n     }\n \n     /// True once the injected failure has been delivered, so nothing further is refused.\n     fn should_fail(&mut self) -> bool {\n         match self.countdown {\n             Some(0) => {\n                 self.countdown = None;\n                 true\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "FailOnce::after",
+      "return_type": "-> Self",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 77
+        },
+        "start": {
+          "column": 5,
+          "line": 71
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:72:9: replace FailOnce::after -> Self with Default::default()",
+    "package": "tapkey-core",
+    "replacement": "Default::default()",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 76
+      },
+      "start": {
+        "column": 9,
+        "line": 72
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace FailOnce::should_fail -> bool with true\n@@ -73,27 +73,17 @@\n             real: RealFs,\n             countdown: Some(successes),\n             attempted: Vec::new(),\n         }\n     }\n \n     /// True once the injected failure has been delivered, so nothing further is refused.\n     fn should_fail(&mut self) -> bool {\n-        match self.countdown {\n-            Some(0) => {\n-                self.countdown = None;\n-                true\n-            }\n-            Some(n) => {\n-                self.countdown = Some(n - 1);\n-                false\n-            }\n-            None => false,\n-        }\n+        true /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl FileSystem for FailOnce {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected write failure\"));\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "FailOnce::should_fail",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 92
+        },
+        "start": {
+          "column": 5,
+          "line": 79
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:81:9: replace FailOnce::should_fail -> bool with true",
+    "package": "tapkey-core",
+    "replacement": "true",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 91
+      },
+      "start": {
+        "column": 9,
+        "line": 81
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace FailOnce::should_fail -> bool with false\n@@ -73,27 +73,17 @@\n             real: RealFs,\n             countdown: Some(successes),\n             attempted: Vec::new(),\n         }\n     }\n \n     /// True once the injected failure has been delivered, so nothing further is refused.\n     fn should_fail(&mut self) -> bool {\n-        match self.countdown {\n-            Some(0) => {\n-                self.countdown = None;\n-                true\n-            }\n-            Some(n) => {\n-                self.countdown = Some(n - 1);\n-                false\n-            }\n-            None => false,\n-        }\n+        false /* ~ changed by cargo-mutants ~ */\n     }\n }\n \n impl FileSystem for FailOnce {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected write failure\"));\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "FailOnce::should_fail",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 92
+        },
+        "start": {
+          "column": 5,
+          "line": 79
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:81:9: replace FailOnce::should_fail -> bool with false",
+    "package": "tapkey-core",
+    "replacement": "false",
+    "span": {
+      "end": {
+        "column": 10,
+        "line": 91
+      },
+      "start": {
+        "column": 9,
+        "line": 81
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace - with + in FailOnce::should_fail\n@@ -79,17 +79,17 @@\n     /// True once the injected failure has been delivered, so nothing further is refused.\n     fn should_fail(&mut self) -> bool {\n         match self.countdown {\n             Some(0) => {\n                 self.countdown = None;\n                 true\n             }\n             Some(n) => {\n-                self.countdown = Some(n - 1);\n+                self.countdown = Some(n + /* ~ changed by cargo-mutants ~ */ 1);\n                 false\n             }\n             None => false,\n         }\n     }\n }\n \n impl FileSystem for FailOnce {\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "FailOnce::should_fail",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 92
+        },
+        "start": {
+          "column": 5,
+          "line": 79
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fs.rs:87:41: replace - with + in FailOnce::should_fail",
+    "package": "tapkey-core",
+    "replacement": "+",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 87
+      },
+      "start": {
+        "column": 41,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace - with / in FailOnce::should_fail\n@@ -79,17 +79,17 @@\n     /// True once the injected failure has been delivered, so nothing further is refused.\n     fn should_fail(&mut self) -> bool {\n         match self.countdown {\n             Some(0) => {\n                 self.countdown = None;\n                 true\n             }\n             Some(n) => {\n-                self.countdown = Some(n - 1);\n+                self.countdown = Some(n / /* ~ changed by cargo-mutants ~ */ 1);\n                 false\n             }\n             None => false,\n         }\n     }\n }\n \n impl FileSystem for FailOnce {\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "FailOnce::should_fail",
+      "return_type": "-> bool",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 92
+        },
+        "start": {
+          "column": 5,
+          "line": 79
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "core/src/fs.rs:87:41: replace - with / in FailOnce::should_fail",
+    "package": "tapkey-core",
+    "replacement": "/",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 87
+      },
+      "start": {
+        "column": 41,
+        "line": 87
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::write -> io::Result<()> with Ok(())\n@@ -89,21 +89,17 @@\n             }\n             None => false,\n         }\n     }\n }\n \n impl FileSystem for FailOnce {\n     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {\n-        self.attempted.push(path.to_path_buf());\n-        if self.should_fail() {\n-            return Err(io::Error::other(\"injected write failure\"));\n-        }\n-        self.real.write(path, bytes, mode)\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected removal failure\"));\n         }\n         self.real.remove(path)\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::write",
+      "return_type": "-> io::Result<()>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 102
+        },
+        "start": {
+          "column": 5,
+          "line": 96
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:97:9: replace <impl FileSystem for FailOnce>::write -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
     "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 68,
-        "line": 297
+        "column": 43,
+        "line": 101
       },
       "start": {
-        "column": 5,
-        "line": 296
+        "column": 9,
+        "line": 97
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace directory_size -> io::Result<u64> with Ok(0)\n@@ -299,26 +299,16 @@\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n-    let mut total = 0;\n-    for entry in fs::read_dir(dir)? {\n-        let entry = entry?;\n-        let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n-            directory_size(&entry.path())?\n-        } else {\n-            meta.len()\n-        };\n-    }\n-    Ok(total)\n+    Ok(0) /* ~ changed by cargo-mutants ~ */\n }\n \n fn file_name(path: &Path) -> String {\n     path.file_name()\n         .map(|n| n.to_string_lossy().into_owned())\n         .unwrap_or_default()\n }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::remove -> io::Result<()> with Ok(())\n@@ -97,21 +97,17 @@\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected write failure\"));\n         }\n         self.real.write(path, bytes, mode)\n     }\n \n     fn remove(&mut self, path: &Path) -> io::Result<()> {\n-        self.attempted.push(path.to_path_buf());\n-        if self.should_fail() {\n-            return Err(io::Error::other(\"injected removal failure\"));\n-        }\n-        self.real.remove(path)\n+        Ok(()) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         self.real.read(path)\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n         self.real.mode(path)\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "directory_size",
-      "return_type": "-> io::Result<u64>",
+      "function_name": "<impl FileSystem for FailOnce>::remove",
+      "return_type": "-> io::Result<()>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 318
+          "column": 6,
+          "line": 110
         },
         "start": {
-          "column": 1,
-          "line": 306
+          "column": 5,
+          "line": 104
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(0)",
+    "name": "core/src/fs.rs:105:9: replace <impl FileSystem for FailOnce>::remove -> io::Result<()> with Ok(())",
     "package": "tapkey-core",
-    "replacement": "Ok(0)",
+    "replacement": "Ok(())",
     "span": {
       "end": {
-        "column": 14,
-        "line": 317
+        "column": 31,
+        "line": 109
       },
       "start": {
-        "column": 5,
-        "line": 307
+        "column": 9,
+        "line": 105
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace directory_size -> io::Result<u64> with Ok(1)\n@@ -299,26 +299,16 @@\n \n #[cfg(not(unix))]\n fn set_dir_mode(_path: &Path) -> io::Result<()> {\n     // Windows has no equivalent; revisited with the Windows platform seam.\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n-    let mut total = 0;\n-    for entry in fs::read_dir(dir)? {\n-        let entry = entry?;\n-        let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n-            directory_size(&entry.path())?\n-        } else {\n-            meta.len()\n-        };\n-    }\n-    Ok(total)\n+    Ok(1) /* ~ changed by cargo-mutants ~ */\n }\n \n fn file_name(path: &Path) -> String {\n     path.file_name()\n         .map(|n| n.to_string_lossy().into_owned())\n         .unwrap_or_default()\n }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(None)\n@@ -105,15 +105,15 @@\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected removal failure\"));\n         }\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        self.real.read(path)\n+        Ok(None) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n         self.real.mode(path)\n     }\n }\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "directory_size",
-      "return_type": "-> io::Result<u64>",
+      "function_name": "<impl FileSystem for FailOnce>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 318
+          "column": 6,
+          "line": 114
         },
         "start": {
-          "column": 1,
-          "line": 306
+          "column": 5,
+          "line": 112
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:307:5: replace directory_size -> io::Result<u64> with Ok(1)",
+    "name": "core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(None)",
     "package": "tapkey-core",
-    "replacement": "Ok(1)",
-    "span": {
-      "end": {
-        "column": 14,
-        "line": 317
-      },
-      "start": {
-        "column": 5,
-        "line": 307
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace += with -= in directory_size\n@@ -303,17 +303,17 @@\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n     let mut total = 0;\n     for entry in fs::read_dir(dir)? {\n         let entry = entry?;\n         let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n+        total -= /* ~ changed by cargo-mutants ~ */ if meta.is_dir() {\n             directory_size(&entry.path())?\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "directory_size",
-      "return_type": "-> io::Result<u64>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 318
-        },
-        "start": {
-          "column": 1,
-          "line": 306
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:311:15: replace += with -= in directory_size",
-    "package": "tapkey-core",
-    "replacement": "-=",
-    "span": {
-      "end": {
-        "column": 17,
-        "line": 311
-      },
-      "start": {
-        "column": 15,
-        "line": 311
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace += with *= in directory_size\n@@ -303,17 +303,17 @@\n     Ok(())\n }\n \n fn directory_size(dir: &Path) -> io::Result<u64> {\n     let mut total = 0;\n     for entry in fs::read_dir(dir)? {\n         let entry = entry?;\n         let meta = entry.metadata()?;\n-        total += if meta.is_dir() {\n+        total *= /* ~ changed by cargo-mutants ~ */ if meta.is_dir() {\n             directory_size(&entry.path())?\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "directory_size",
-      "return_type": "-> io::Result<u64>",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 318
-        },
-        "start": {
-          "column": 1,
-          "line": 306
-        }
-      }
-    },
-    "genre": "BinaryOperator",
-    "name": "core/src/store.rs:311:15: replace += with *= in directory_size",
-    "package": "tapkey-core",
-    "replacement": "*=",
-    "span": {
-      "end": {
-        "column": 17,
-        "line": 311
-      },
-      "start": {
-        "column": 15,
-        "line": 311
-      }
-    }
-  },
-  {
-    "diff": "--- core/src/store.rs\n+++ replace file_name -> String with String::new()\n@@ -313,12 +313,10 @@\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n fn file_name(path: &Path) -> String {\n-    path.file_name()\n-        .map(|n| n.to_string_lossy().into_owned())\n-        .unwrap_or_default()\n+    String::new() /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/store.rs",
-    "function": {
-      "function_name": "file_name",
-      "return_type": "-> String",
-      "span": {
-        "end": {
-          "column": 2,
-          "line": 324
-        },
-        "start": {
-          "column": 1,
-          "line": 320
-        }
-      }
-    },
-    "genre": "FnValue",
-    "name": "core/src/store.rs:321:5: replace file_name -> String with String::new()",
-    "package": "tapkey-core",
-    "replacement": "String::new()",
+    "replacement": "Ok(None)",
     "span": {
       "end": {
         "column": 29,
-        "line": 323
+        "line": 113
       },
       "start": {
-        "column": 5,
-        "line": 321
+        "column": 9,
+        "line": 113
       }
     }
   },
   {
-    "diff": "--- core/src/store.rs\n+++ replace file_name -> String with \"xyzzy\".into()\n@@ -313,12 +313,10 @@\n         } else {\n             meta.len()\n         };\n     }\n     Ok(total)\n }\n \n fn file_name(path: &Path) -> String {\n-    path.file_name()\n-        .map(|n| n.to_string_lossy().into_owned())\n-        .unwrap_or_default()\n+    \"xyzzy\".into() /* ~ changed by cargo-mutants ~ */\n }\n",
-    "file": "core/src/store.rs",
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))\n@@ -105,15 +105,15 @@\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected removal failure\"));\n         }\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        self.real.read(path)\n+        Ok(Some(vec![])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n         self.real.mode(path)\n     }\n }\n",
+    "file": "core/src/fs.rs",
     "function": {
-      "function_name": "file_name",
-      "return_type": "-> String",
+      "function_name": "<impl FileSystem for FailOnce>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
       "span": {
         "end": {
-          "column": 2,
-          "line": 324
+          "column": 6,
+          "line": 114
         },
         "start": {
-          "column": 1,
-          "line": 320
+          "column": 5,
+          "line": 112
         }
       }
     },
     "genre": "FnValue",
-    "name": "core/src/store.rs:321:5: replace file_name -> String with \"xyzzy\".into()",
+    "name": "core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![]))",
     "package": "tapkey-core",
-    "replacement": "\"xyzzy\".into()",
+    "replacement": "Ok(Some(vec![]))",
     "span": {
       "end": {
         "column": 29,
-        "line": 323
+        "line": 113
       },
       "start": {
-        "column": 5,
-        "line": 321
+        "column": 9,
+        "line": 113
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))\n@@ -105,15 +105,15 @@\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected removal failure\"));\n         }\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        self.real.read(path)\n+        Ok(Some(vec![0])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n         self.real.mode(path)\n     }\n }\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 114
+        },
+        "start": {
+          "column": 5,
+          "line": 112
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![0]))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Some(vec![0]))",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 113
+      },
+      "start": {
+        "column": 9,
+        "line": 113
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))\n@@ -105,15 +105,15 @@\n         self.attempted.push(path.to_path_buf());\n         if self.should_fail() {\n             return Err(io::Error::other(\"injected removal failure\"));\n         }\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n-        self.real.read(path)\n+        Ok(Some(vec![1])) /* ~ changed by cargo-mutants ~ */\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n         self.real.mode(path)\n     }\n }\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::read",
+      "return_type": "-> io::Result<Option<Vec<u8>>>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 114
+        },
+        "start": {
+          "column": 5,
+          "line": 112
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:113:9: replace <impl FileSystem for FailOnce>::read -> io::Result<Option<Vec<u8>>> with Ok(Some(vec![1]))",
+    "package": "tapkey-core",
+    "replacement": "Ok(Some(vec![1]))",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 113
+      },
+      "start": {
+        "column": 9,
+        "line": 113
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::mode -> Option<u32> with None\n@@ -109,11 +109,11 @@\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         self.real.read(path)\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n-        self.real.mode(path)\n+        None /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 118
+        },
+        "start": {
+          "column": 5,
+          "line": 116
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with None",
+    "package": "tapkey-core",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 117
+      },
+      "start": {
+        "column": 9,
+        "line": 117
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(0)\n@@ -109,11 +109,11 @@\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         self.real.read(path)\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n-        self.real.mode(path)\n+        Some(0) /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 118
+        },
+        "start": {
+          "column": 5,
+          "line": 116
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(0)",
+    "package": "tapkey-core",
+    "replacement": "Some(0)",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 117
+      },
+      "start": {
+        "column": 9,
+        "line": 117
+      }
+    }
+  },
+  {
+    "diff": "--- core/src/fs.rs\n+++ replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(1)\n@@ -109,11 +109,11 @@\n         self.real.remove(path)\n     }\n \n     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {\n         self.real.read(path)\n     }\n \n     fn mode(&self, path: &Path) -> Option<u32> {\n-        self.real.mode(path)\n+        Some(1) /* ~ changed by cargo-mutants ~ */\n     }\n }\n",
+    "file": "core/src/fs.rs",
+    "function": {
+      "function_name": "<impl FileSystem for FailOnce>::mode",
+      "return_type": "-> Option<u32>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 118
+        },
+        "start": {
+          "column": 5,
+          "line": 116
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "core/src/fs.rs:117:9: replace <impl FileSystem for FailOnce>::mode -> Option<u32> with Some(1)",
+    "package": "tapkey-core",
+    "replacement": "Some(1)",
+    "span": {
+      "end": {
+        "column": 29,
+        "line": 117
+      },
+      "start": {
+        "column": 9,
+        "line": 117
       }
     }
   }

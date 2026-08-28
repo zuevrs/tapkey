@@ -1,0 +1,21 @@
+--- core/src/fs.rs
++++ replace & with ^ in <impl FileSystem for RealFs>::mode
+@@ -38,17 +38,17 @@
+         }
+     }
+ 
+     #[cfg(unix)]
+     fn mode(&self, path: &Path) -> Option<u32> {
+         use std::os::unix::fs::PermissionsExt;
+         std::fs::metadata(path)
+             .ok()
+-            .map(|m| m.permissions().mode() & 0o7777)
++            .map(|m| m.permissions().mode() ^ /* ~ changed by cargo-mutants ~ */ 0o7777)
+     }
+ 
+     #[cfg(not(unix))]
+     fn mode(&self, _path: &Path) -> Option<u32> {
+         None
+     }
+ }
+ 

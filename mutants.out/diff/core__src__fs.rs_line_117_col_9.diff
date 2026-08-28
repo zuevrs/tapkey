@@ -1,0 +1,15 @@
+--- core/src/fs.rs
++++ replace <impl FileSystem for FailOnce>::mode -> Option<u32> with None
+@@ -109,11 +109,11 @@
+         self.real.remove(path)
+     }
+ 
+     fn read(&self, path: &Path) -> io::Result<Option<Vec<u8>>> {
+         self.real.read(path)
+     }
+ 
+     fn mode(&self, path: &Path) -> Option<u32> {
+-        self.real.mode(path)
++        None /* ~ changed by cargo-mutants ~ */
+     }
+ }

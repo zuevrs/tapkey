@@ -1,2 +1,3 @@
-core/src/store.rs:119:9: replace Store::has_snapshot -> bool with true
-core/src/store.rs:276:25: replace > with < in read_manifest
+core/src/fs.rs:28:23: replace match guard e.kind() == io::ErrorKind::NotFound with true in <impl FileSystem for RealFs>::remove
+core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(0)
+core/src/fs.rs:51:9: replace <impl FileSystem for RealFs>::mode -> Option<u32> with Some(1)

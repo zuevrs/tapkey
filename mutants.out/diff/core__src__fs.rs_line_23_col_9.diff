@@ -1,0 +1,21 @@
+--- core/src/fs.rs
++++ replace <impl FileSystem for RealFs>::write -> io::Result<()> with Ok(())
+@@ -15,17 +15,17 @@
+     fn mode(&self, path: &Path) -> Option<u32>;
+ }
+ 
+ /// The real one. Every write goes through the atomic seam.
+ pub struct RealFs;
+ 
+ impl FileSystem for RealFs {
+     fn write(&mut self, path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {
+-        write_atomically(path, bytes, mode)
++        Ok(()) /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     fn remove(&mut self, path: &Path) -> io::Result<()> {
+         match std::fs::remove_file(path) {
+             Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),
+             other => other,
+         }
+     }
