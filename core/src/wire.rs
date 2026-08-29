@@ -35,6 +35,8 @@ pub enum Request {
     /// List what the tools already know: the harvest offer. Reads other people's files and changes
     /// nothing, so it takes no lock.
     Harvest {},
+    /// The store's profiles, for the panel's rows. A read, no lock.
+    ListProfiles {},
     /// Take one candidate: the key is re-read from the tool's file at this moment and piped to the
     /// helper on stdin, so it lives in one buffer for one call and nowhere else.
     AcceptHarvest {
@@ -125,6 +127,10 @@ pub enum Response {
         because: Option<&'static str>,
         provider: String,
         tested_at: String,
+    },
+    Profiles {
+        ok: bool,
+        profiles: Vec<ProfileRow>,
     },
     Harvested {
         ok: bool,
@@ -263,4 +269,13 @@ pub struct Link {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub trusted: Option<bool>,
     pub wins: bool,
+}
+
+/// One panel row: what a profile is, not what a tool is using.
+#[derive(Debug, Serialize)]
+pub struct ProfileRow {
+    pub id: String,
+    pub name: String,
+    /// How many tools this profile names. The row's scope line — `{count} of {total} tools`.
+    pub tools: usize,
 }

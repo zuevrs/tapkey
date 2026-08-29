@@ -76,6 +76,26 @@ fn dispatch(env: &Env, request: &str) -> Response {
         Request::Switch { profile_id } => switch(env, &profile_id),
         Request::Test { provider_id } => test(env, &provider_id),
         Request::Harvest {} => harvest(env),
+        Request::ListProfiles {} => {
+            let profiles = profile::Profiles::read(&env.store().join("profiles.json")).unwrap_or(
+                profile::Profiles {
+                    providers: Vec::new(),
+                    profiles: Vec::new(),
+                },
+            );
+            Response::Profiles {
+                ok: true,
+                profiles: profiles
+                    .profiles
+                    .iter()
+                    .map(|p| wire::ProfileRow {
+                        id: p.id.clone(),
+                        name: p.name.clone(),
+                        tools: p.tools.len(),
+                    })
+                    .collect(),
+            }
+        }
         Request::AcceptHarvest { tool, id } => accept_harvest(env, &tool, &id),
         Request::DeclineHarvest { tool, id } => decline_harvest(env, &tool, &id),
         Request::CreateProfile { profile } => write_profiles(env, |p| {

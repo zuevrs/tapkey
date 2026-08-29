@@ -280,3 +280,35 @@ fn a_switch_names_the_backup_it_took() {
         "the named backup exists in the store: {backup}"
     );
 }
+
+/// The panel's rows are profiles, and the list is the core's to give: a read-only operation, no
+/// lock, in store order, carrying what a row needs and nothing about effective state.
+#[test]
+fn list_profiles_returns_the_store_in_order() {
+    let machine = Machine::new("sw-list");
+    machine.write_profiles(json!({
+        "providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic",
+                       "formats": ["anthropic_messages"], "enabled": true}],
+        "profiles": [
+            {"id": "glm", "name": "Z.ai GLM",
+             "tools": {"claude": {"provider": "zai", "slots": {"main": "glm-5.3"}}}},
+            {"id": "sys", "name": "System default", "tools": {}}
+        ]
+    }));
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "list_profiles", "params": {}}),
+    );
+
+    let rows = response["profiles"].as_array().expect("rows");
+    assert_eq!(rows.len(), 2, "{response}");
+    assert_eq!(rows[0]["id"], json!("glm"));
+    assert_eq!(rows[0]["name"], json!("Z.ai GLM"));
+    assert_eq!(rows[0]["tools"], json!(1));
+    assert_eq!(
+        rows[1]["tools"],
+        json!(0),
+        "an empty profile is still a row"
+    );
+}
