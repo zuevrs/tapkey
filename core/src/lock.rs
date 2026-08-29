@@ -60,7 +60,7 @@ fn take(file: &File) -> Result<(), Busy> {
     use windows_sys::Win32::Storage::FileSystem::{
         LOCKFILE_EXCLUSIVE_LOCK, LOCKFILE_FAIL_IMMEDIATELY, LockFileEx,
     };
-    use windows_sys::Win32::System::Threading::OVERLAPPED;
+    use windows_sys::Win32::System::IO::OVERLAPPED;
 
     // Exclusive and immediate, over the whole 64-bit range — the byte-range form of what `flock`
     // does on Unix. Like the descriptor there, the handle releases the lock when the process

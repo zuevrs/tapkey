@@ -104,17 +104,18 @@ fn persist(temp: &Path, target: &Path) -> io::Result<()> {
             .collect()
     };
     let (replaced, replacement) = (wide(target), wide(temp));
+    // BOOL: zero is failure, non-zero is success.
     let status = unsafe {
         ReplaceFileW(
             replaced.as_ptr(),
             replacement.as_ptr(),
             std::ptr::null(),
-            0 as REPLACE_FILE_FLAGS,
-            std::ptr::null_mut::<HANDLE>() as HANDLE,
-            std::ptr::null_mut::<HANDLE>() as HANDLE,
+            0,
+            std::ptr::null(),
+            std::ptr::null(),
         )
     };
-    if status == WAIT_OBJECT_0 {
+    if status != 0 {
         return Ok(());
     }
     Err(io::Error::last_os_error())
@@ -226,9 +227,9 @@ fn flush_directory(dir: &Path) -> io::Result<()> {
 #[cfg(windows)]
 fn flush_directory(dir: &Path) -> io::Result<()> {
     use std::os::windows::ffi::OsStrExt;
-    use windows_sys::Win32::Foundation::{GENERIC_READ, HANDLE, INVALID_HANDLE_VALUE};
+    use windows_sys::Win32::Foundation::{CloseHandle, GENERIC_READ, HANDLE, INVALID_HANDLE_VALUE};
     use windows_sys::Win32::Storage::FileSystem::{
-        CloseHandle, CreateFileW, FILE_FLAG_BACKUP_SEMANTICS, FILE_SHARE_READ, FILE_SHARE_WRITE,
+        CreateFileW, FILE_FLAG_BACKUP_SEMANTICS, FILE_SHARE_READ, FILE_SHARE_WRITE,
         FlushFileBuffers, OPEN_EXISTING,
     };
 
@@ -249,7 +250,7 @@ fn flush_directory(dir: &Path) -> io::Result<()> {
             std::ptr::null(),
             OPEN_EXISTING,
             FILE_FLAG_BACKUP_SEMANTICS,
-            0 as HANDLE,
+            std::ptr::null_mut(),
         )
     };
     if handle == INVALID_HANDLE_VALUE {
