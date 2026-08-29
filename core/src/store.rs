@@ -97,6 +97,7 @@ struct Entry {
 }
 
 const MANIFEST_VERSION: u32 = 1;
+#[cfg(unix)]
 const DIR_MODE: u32 = 0o700;
 const FILE_MODE: u32 = 0o600;
 

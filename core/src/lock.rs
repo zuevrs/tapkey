@@ -8,6 +8,7 @@
 //! would mean the profile applies after the person changed their mind.
 
 use std::fs::{File, OpenOptions};
+#[cfg(unix)]
 use std::io;
 use std::path::Path;
 
