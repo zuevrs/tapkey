@@ -12,6 +12,13 @@ build = "build.rs"
 [lib]
 name = "tapkey_core"
 
+# The credential helper, as its own executable: three of a managed tool's surfaces can call a
+# command and none can call a library, and on macOS it must also be the code identity that owns
+# every Keychain item (ADR-0007, ADR-0016).
+[[bin]]
+name = "tapkey-helper"
+path = "src/bin/tapkey-helper.rs"
+
 [dependencies]
 # The wire envelope only. Files belonging to the tools are read and spliced by `json`,
 # never by serde: serde would reorder and reformat what ADR-0010 requires be preserved.

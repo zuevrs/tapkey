@@ -13,6 +13,7 @@ pub mod atomic;
 pub mod env;
 pub mod fingerprint;
 pub mod fs;
+pub mod helper;
 pub mod instant;
 pub mod json;
 pub mod lock;
