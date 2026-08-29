@@ -42,6 +42,33 @@ jobs:
       - name: Doc tests
         run: cargo test --workspace --doc
 
+  msrv:
+    name: oldest supported Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # `rust-version` in Cargo.toml is a promise cargo enforces on whoever depends on this
+      # crate, and until this job existed nothing here ever compiled against it — the same
+      # shape as a fixture that passes locally while not being in the repository at all.
+      - name: Install the declared minimum
+        run: |
+          msrv=$(grep -m1 '^rust-version' Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
+          echo "declared MSRV: $msrv"
+          rustup toolchain install "$msrv" --profile minimal
+          rustup default "$msrv"
+          rustc --version
+
+      - uses: Swatinem/rust-cache@v2
+
+      # Build and test only: clippy and rustfmt move faster than the language, and holding an
+      # old toolchain to a new lint would fail for a reason that is not about portability.
+      - name: Build
+        run: cargo build --workspace --all-targets
+
+      - name: Test
+        run: cargo test --workspace --all-targets
+
   hygiene:
     name: repository hygiene
     runs-on: ubuntu-latest
