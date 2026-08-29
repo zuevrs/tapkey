@@ -199,6 +199,33 @@ fn dispatch(env: &Env, request: &str) -> Response {
             Ok(("provider", "set_enabled", id))
         }),
         Request::RemoveProvider { id } => remove_provider(env, &id),
+        Request::SetCredential {
+            provider_id,
+            secret,
+        } => set_credential(env, &provider_id, secret.as_bytes()),
+        Request::ListProviders {} => {
+            let profiles = profile::Profiles::read(&env.store().join("profiles.json")).unwrap_or(
+                profile::Profiles {
+                    providers: Vec::new(),
+                    profiles: Vec::new(),
+                },
+            );
+            Response::Providers {
+                ok: true,
+                providers: profiles
+                    .providers
+                    .iter()
+                    .map(|p| wire::ProviderCard {
+                        id: p.id.clone(),
+                        name: p.name.clone(),
+                        base_url: p.base_url.clone(),
+                        formats: p.formats.clone(),
+                        enabled: p.enabled,
+                        tested_at: p.tested_at.clone(),
+                    })
+                    .collect(),
+            }
+        }
         Request::Restore { target } => restore(env, target),
     }
 }
@@ -896,6 +923,25 @@ fn remove_provider(env: &Env, id: &str) -> Response {
         what: "provider",
         action: "removed",
         id: id.to_string(),
+    }
+}
+
+/// Store a credential through the helper, the only writer of secrets. The wire call is
+/// in-process, so the secret is one buffer handed to the helper's stdin — the same journey the
+/// harvest takes, from a different beginning.
+fn set_credential(env: &Env, provider_id: &str, secret: &[u8]) -> Response {
+    if secret.is_empty() {
+        return refuse("credential_unavailable", "the key is empty".into());
+    }
+    let _ = std::fs::create_dir_all(env.store());
+    match crate::credentials::store(env, provider_id, secret) {
+        Ok(()) => Response::Changed {
+            ok: true,
+            what: "provider",
+            action: "credential_stored",
+            id: provider_id.to_string(),
+        },
+        Err(why) => refuse("keychain_denied", why),
     }
 }
 

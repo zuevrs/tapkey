@@ -80,6 +80,14 @@ pub enum Request {
     RemoveProvider {
         id: String,
     },
+    /// Store a secret under a provider id, through the helper. The secret travels field →
+    /// invoke → core → helper stdin: memory of one process, no disk, no log.
+    SetCredential {
+        provider_id: String,
+        secret: String,
+    },
+    /// The store's providers, for the settings tab's cards. A read, no lock.
+    ListProviders {},
 }
 
 #[derive(Debug, Deserialize)]
@@ -131,6 +139,10 @@ pub enum Response {
     Profiles {
         ok: bool,
         profiles: Vec<ProfileRow>,
+    },
+    Providers {
+        ok: bool,
+        providers: Vec<ProviderCard>,
     },
     Harvested {
         ok: bool,
@@ -278,4 +290,16 @@ pub struct ProfileRow {
     pub name: String,
     /// How many tools this profile names. The row's scope line — `{count} of {total} tools`.
     pub tools: usize,
+}
+
+/// One settings card: what a provider is, never a secret's value.
+#[derive(Debug, Serialize)]
+pub struct ProviderCard {
+    pub id: String,
+    pub name: String,
+    pub base_url: String,
+    /// `None` is untested — the catalogue's `prov.apiFormat.unknown`, not an empty set.
+    pub formats: Option<Vec<String>>,
+    pub enabled: bool,
+    pub tested_at: Option<String>,
 }

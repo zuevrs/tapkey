@@ -8,7 +8,7 @@
 use serde_json::{Value, json};
 
 mod support;
-use support::{Machine, call};
+use support::{Machine, call, install_helper};
 
 fn switch(profile: &str) -> Value {
     json!({"version": 1, "op": "switch", "params": {"profile_id": profile}})
@@ -212,4 +212,65 @@ fn forget_removes_and_set_over_a_stored_secret_replaces_it() {
     assert_eq!(code, 0);
     let (code, _) = run_helper(&machine, &["has", "prov-x"], None);
     assert_eq!(code, 1, "gone means gone");
+}
+
+/// The settings form's key reaches the helper through the core: field → invoke → core → helper
+/// stdin, one buffer in one process. The operation refuses an empty secret — storing nothing
+/// under a name that looks stored would turn `has` into a lie.
+#[test]
+fn set_credential_stores_through_the_helper_and_refuses_an_empty_secret() {
+    let machine = Machine::new("cred-set-op");
+    install_helper(&machine);
+    machine.write_profiles(json!({
+        "providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/v1",
+                       "formats": None::<Vec<String>>, "enabled": true}],
+        "profiles": []
+    }));
+    // No TAPKEY_STORE here: the core scopes it to the child it spawns, as in the harvest tests.
+    let stored = call(
+        &machine,
+        json!({"version": 1, "op": "set_credential",
+               "params": {"provider_id": "zai", "secret": "sk-pasted"}}),
+    );
+    assert_eq!(stored["ok"], json!(true), "{stored}");
+    let path = machine.store().join("keys").join("zai");
+    assert_eq!(std::fs::read(&path).expect("stored"), b"sk-pasted");
+
+    let empty = call(
+        &machine,
+        json!({"version": 1, "op": "set_credential",
+               "params": {"provider_id": "zai", "secret": ""}}),
+    );
+    assert_eq!(
+        empty["failure"]["kind"],
+        json!("credential_unavailable"),
+        "{empty}"
+    );
+}
+
+/// The provider list is the core's to read, like the profile list: a read, no lock, the fields a
+/// card needs and never a secret.
+#[test]
+fn list_providers_returns_the_cards() {
+    let machine = Machine::new("cred-list");
+    machine.write_profiles(json!({
+        "providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/v1",
+                       "formats": ["openai_responses"], "enabled": true}],
+        "profiles": []
+    }));
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "list_providers", "params": {}}),
+    );
+
+    let card = response["providers"].as_array().expect("cards")[0].clone();
+    assert_eq!(card["id"], json!("zai"));
+    assert_eq!(card["base_url"], json!("https://api.z.ai/api/v1"));
+    assert_eq!(card["formats"], json!(["openai_responses"]));
+    let text = response.to_string();
+    assert!(
+        !text.to_lowercase().contains("secret") && !text.contains("sk-"),
+        "a card never carries a credential: {text}"
+    );
 }
