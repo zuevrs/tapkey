@@ -18,6 +18,7 @@ pub mod json;
 pub mod lock;
 pub mod profile;
 pub mod store;
+pub mod toml;
 pub mod transaction;
 pub mod wire;
 
