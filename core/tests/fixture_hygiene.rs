@@ -72,6 +72,15 @@ fn every_case_carries_a_request() {
                 "{} has no before/ tree",
                 case.display()
             );
+            // Git stores no empty directories, so a `before/` tree that holds only directories
+            // exists on the machine that wrote it and nowhere else — the same shape as a fixture
+            // that passes locally while not being in the repository at all. A case that needs a
+            // file to be *absent* must still put some other file in the tree.
+            assert!(
+                walk_files(&case.join("before")).next().is_some(),
+                "{}: before/ holds no files, so git cannot carry it",
+                case.display()
+            );
         }
     }
 }
@@ -152,4 +161,19 @@ fn every_fixture_file_is_tracked_by_git() {
         "fixtures on disk but not in the repository:\n  {}",
         untracked.join("\n  ")
     );
+}
+
+/// Every file under `root`, however deep.
+fn walk_files(root: &Path) -> Box<dyn Iterator<Item = PathBuf>> {
+    let Ok(entries) = std::fs::read_dir(root) else {
+        return Box::new(std::iter::empty());
+    };
+    Box::new(entries.flatten().flat_map(|e| {
+        let path = e.path();
+        if path.is_dir() {
+            walk_files(&path)
+        } else {
+            Box::new(std::iter::once(path))
+        }
+    }))
 }
