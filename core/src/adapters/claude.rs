@@ -315,7 +315,7 @@ pub fn owned_paths() -> Vec<Vec<&'static str>> {
 pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<String, String> {
     let mut out = std::collections::BTreeMap::new();
     for (slot, _, _) in OWNED {
-        if let Some(model) = assignment.slots.get(*slot).and_then(|v| v.as_ref()) {
+        if let Some(model) = assignment.slots.get(*slot).and_then(|a| a.model()) {
             out.insert((*slot).to_string(), crate::fingerprint::hash(model));
         }
     }
@@ -343,7 +343,7 @@ pub fn plan_switch(
     }
 
     for (slot, var, has_companion) in OWNED {
-        match assignment.slots.get(*slot).and_then(|v| v.as_ref()) {
+        match assignment.slots.get(*slot).and_then(|a| a.model()) {
             Some(model) => {
                 doc.set_string(&["env", var], model)?;
                 if *has_companion {

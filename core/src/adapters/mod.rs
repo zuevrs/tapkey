@@ -61,6 +61,17 @@ pub trait Adapter {
         provider: Option<&Provider>,
     ) -> Result<(Vec<Action>, Vec<Attention>), String>;
 
+    /// Whether a slot may name a provider of its own.
+    ///
+    /// Only OpenCode can: measured, three of its slots resolved to three different providers in one
+    /// config. Claude Code has one endpoint behind every slot and Codex one `model_provider` behind
+    /// all five, so for them such an assignment is an instruction the tool cannot carry out. The
+    /// default is `false` because that is the shape two tools out of three have, and a fourth
+    /// claiming otherwise should have to say so.
+    fn per_slot_providers(&self) -> bool {
+        false
+    }
+
     /// A hash per owned slot of what was just written, so drift has something to disagree with.
     /// Values never leave this function — the store keeps hashes, never what they were made from.
     fn fingerprint(&self, assignment: &ToolAssignment) -> BTreeMap<String, String>;

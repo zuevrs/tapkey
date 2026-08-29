@@ -42,6 +42,47 @@ fn yes() -> bool {
     true
 }
 
+/// What a profile says goes in one slot.
+///
+/// Measured on OpenCode 1.18.25: three slots named three different providers in one config, so a
+/// slot may carry its own. Claude Code has one endpoint behind every slot and Codex one
+/// `model_provider` behind all five, so for them a per-slot provider is an instruction the tool
+/// cannot carry out — reported rather than obeyed, because effective state is about what the tool
+/// will use.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum SlotAssignment {
+    /// `null`: no assignment, which is an instruction too.
+    None_(Option<Nothing>),
+    /// A bare model name, taking the tool's provider.
+    Model(String),
+    /// A model at a provider of this slot's own.
+    AtProvider { provider: String, model: String },
+}
+
+/// Serde needs a type to fail on for the `null` arm to be distinguishable from the others.
+#[derive(Debug, Deserialize)]
+pub enum Nothing {}
+
+impl SlotAssignment {
+    /// The model, or `None` for no assignment.
+    pub fn model(&self) -> Option<&str> {
+        match self {
+            SlotAssignment::None_(_) => None,
+            SlotAssignment::Model(m) => Some(m),
+            SlotAssignment::AtProvider { model, .. } => Some(model),
+        }
+    }
+
+    /// The provider this slot asked for, if it asked for one of its own.
+    pub fn provider(&self) -> Option<&str> {
+        match self {
+            SlotAssignment::AtProvider { provider, .. } => Some(provider),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Profile {
     pub id: String,
@@ -55,13 +96,13 @@ pub struct Profile {
 pub struct ToolAssignment {
     /// The **id** of a provider in the same file. Claude Code has one endpoint behind every slot
     /// and Codex one `model_provider` behind all five, so a provider is chosen once per tool.
-    /// Reported per tool on the wire for the same reason; OpenCode's per-slot providers are not
-    /// built, and shaping this around an unmeasured third case would be guessing.
+    /// It is the default for any slot that did not name one of its own, which only OpenCode can.
     pub provider: Option<String>,
     /// A slot names a model, or `null` for *no assignment* — an instruction in its own right,
-    /// and what it does to a file differs by tool.
+    /// and what it does to a file differs by tool. It may also name its own provider, which only
+    /// OpenCode can honour; see `SlotAssignment`.
     #[serde(default)]
-    pub slots: BTreeMap<String, Option<String>>,
+    pub slots: BTreeMap<String, SlotAssignment>,
 }
 
 impl Profiles {

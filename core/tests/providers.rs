@@ -81,3 +81,69 @@ fn a_profile_naming_a_provider_that_is_not_there_is_refused() {
         "a refusal must leave the file exactly as it was"
     );
 }
+
+/// OpenCode names a provider per slot — measured, three slots resolved to three different
+/// providers in one file — so a slot assignment may carry its own.
+///
+/// Claude Code and Codex have one endpoint behind every slot **physically**, so an assignment that
+/// names a provider for one slot is an instruction they cannot carry out. Effective state reports
+/// what the tool will use, not what was asked, so the slot shows the tool's endpoint and an
+/// attention says the per-slot provider was not honoured. Reporting the asked-for endpoint would be
+/// reporting intent, which is the one thing the invariant forbids.
+#[test]
+fn a_per_slot_provider_a_tool_cannot_honour_is_reported_not_obeyed() {
+    let machine = Machine::new("prov-per-slot-claude");
+    machine.write_profiles(json!({
+        "providers": [
+            {"id": "main", "name": "Main", "base_url": "https://main.test/v1",
+             "formats": ["anthropic_messages"], "enabled": true},
+            {"id": "cheap", "name": "Cheap", "base_url": "https://cheap.test/v1",
+             "formats": ["anthropic_messages"], "enabled": true}
+        ],
+        "profiles": [{
+            "id": "mixed",
+            "name": "Mixed",
+            "tools": {"claude": {
+                "provider": "main",
+                "slots": {
+                    "main": "big-model",
+                    "utility": {"provider": "cheap", "model": "small-model"}
+                }
+            }}
+        }]
+    }));
+    machine.write_user_settings_raw(b"{}");
+
+    let response = call(&machine, switch("mixed"));
+
+    assert_eq!(response["outcome"], json!("applied"), "{response}");
+    let claude = response["tools"]
+        .as_array()
+        .expect("tools")
+        .iter()
+        .find(|t| t["tool"] == json!("claude"))
+        .cloned()
+        .expect("claude");
+
+    // The model still lands: only the provider part was impossible.
+    let utility = claude["slots"]
+        .as_array()
+        .expect("slots")
+        .iter()
+        .find(|s| s["slot"] == json!("utility"))
+        .cloned()
+        .expect("a utility slot");
+    assert_eq!(utility["effective"], json!("small-model"), "{utility}");
+    assert_eq!(
+        claude["endpoint"]["effective"],
+        json!("https://main.test/v1"),
+        "one endpoint serves every slot here, and it is the tool's: {claude}"
+    );
+
+    let attention = claude["attentions"]
+        .as_array()
+        .and_then(|a| a.first().cloned())
+        .unwrap_or_else(|| panic!("the unhonoured provider must be said out loud: {claude}"));
+    assert_eq!(attention["kind"], json!("slot_provider_ignored"));
+    assert_eq!(attention["key"], json!("utility"));
+}

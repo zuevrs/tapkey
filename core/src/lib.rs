@@ -125,6 +125,24 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         let Some(adapter) = adapters.iter().find(|a| a.name() == *tool) else {
             continue;
         };
+        // A slot naming its own provider is an instruction only OpenCode can carry out. The check
+        // lives here rather than in each adapter, because it is one rule and two implementations of
+        // one rule eventually disagree; the *fact* it reads — can this tool do it — is the tool's.
+        if !adapter.per_slot_providers() {
+            for (slot, assigned) in &assignment.slots {
+                if assigned.provider().is_some() {
+                    attentions
+                        .entry(adapter.name())
+                        .or_default()
+                        .push(wire::Attention {
+                            kind: "slot_provider_ignored",
+                            file: None,
+                            key: Some(slot.clone()),
+                        });
+                }
+            }
+        }
+
         match adapter.plan_switch(env, assignment, *provider) {
             Ok((planned, attn)) => {
                 for action in &planned {

@@ -203,7 +203,7 @@ pub fn plan_switch(
         let Some(assigned) = assignment.slots.get(spec.name) else {
             continue;
         };
-        match assigned {
+        match assigned.model() {
             Some(model) => document.set_string(spec.path, model)?,
             // Nothing fires from the environment underneath in Codex, so deleting is enough —
             // unlike Claude Code, where ADR-0014 needs an empty value written over a shell export.
@@ -362,7 +362,7 @@ fn settle(mut chain: Vec<Link>) -> Resolved {
 pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<String, String> {
     let mut out = std::collections::BTreeMap::new();
     for spec in SLOTS.iter().filter(|s| s.owned) {
-        if let Some(Some(model)) = assignment.slots.get(spec.name) {
+        if let Some(model) = assignment.slots.get(spec.name).and_then(|a| a.model()) {
             out.insert(spec.name.to_string(), crate::fingerprint::hash(model));
         }
     }
