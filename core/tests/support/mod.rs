@@ -195,8 +195,11 @@ impl Machine {
         let path = self.home().join(".codex").join("config.toml");
         let mut bytes = std::fs::read(&path).unwrap_or_default();
         bytes.extend_from_slice(
+            // TOML literal strings: on Windows the path carries backslashes, which a basic
+            // string would read as escapes. Single quotes take the path verbatim on both
+            // platforms.
             format!(
-                "\n[projects.\"{}\"]\ntrust_level = \"trusted\"\n",
+                "\n[projects.'{}']\ntrust_level = \"trusted\"\n",
                 self.project().display()
             )
             .as_bytes(),
