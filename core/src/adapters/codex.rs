@@ -421,4 +421,37 @@ impl super::Adapter for Codex {
     ) -> std::collections::BTreeMap<String, String> {
         fingerprint(assignment)
     }
+
+    fn known_providers(&self, env: &Env) -> Vec<super::KnownProvider> {
+        known_providers(env)
+    }
+}
+
+/// The registry **is** the harvest: every `[model_providers.<id>]` the person wrote, at user level.
+fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
+    let bytes = match std::fs::read(config_path(env)) {
+        Ok(bytes) => bytes,
+        Err(_) => return Vec::new(),
+    };
+    let Ok(document) = Document::parse(&bytes) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for id in document.keys_at(&["model_providers"]) {
+        let Some(base_url) = document.get_string(&["model_providers", &id, "base_url"]) else {
+            continue;
+        };
+        // A key never lives in this file unencrypted by design; the env_key names a variable the
+        // person points their tool at, which is a reference and never read.
+        let credential = match document.get_string(&["model_providers", &id, "env_key"]) {
+            Some(_) => super::CredentialSource::Referenced,
+            None => super::CredentialSource::Absent,
+        };
+        out.push(super::KnownProvider {
+            id: id.clone(),
+            base_url: base_url.to_string(),
+            credential,
+        });
+    }
+    out
 }

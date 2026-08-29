@@ -10,6 +10,7 @@
 
 pub mod adapters;
 pub mod atomic;
+pub mod credentials;
 pub mod env;
 pub mod fingerprint;
 pub mod fs;
@@ -73,6 +74,9 @@ fn dispatch(env: &Env, request: &str) -> Response {
         },
         Request::Switch { profile_id } => switch(env, &profile_id),
         Request::Test { provider_id } => test(env, &provider_id),
+        Request::Harvest {} => harvest(env),
+        Request::AcceptHarvest { tool, id } => accept_harvest(env, &tool, &id),
+        Request::DeclineHarvest { tool, id } => decline_harvest(env, &tool, &id),
         Request::Restore { target } => restore(env, target),
     }
 }
@@ -428,6 +432,197 @@ fn test(env: &Env, provider_id: &str) -> Response {
         because,
         provider: provider_id.to_string(),
         tested_at,
+    }
+}
+
+/// The harvest offer: what the tools already know, minus everything secret.
+///
+/// Reads other people's files and changes nothing, so no lock. A declined candidate is still
+/// listed, marked — the person can change their mind, and a list that hides refusals is a list
+/// that curates itself.
+fn harvest(env: &Env) -> Response {
+    let declined = crate::profile::Profiles::declined(env.store());
+    let mut candidates = Vec::new();
+    for adapter in adapters::all() {
+        for known in adapter.known_providers(env) {
+            let existing = profile::Profiles::read(&env.store().join("profiles.json"))
+                .ok()
+                .and_then(|p| p.provider(&known.id).cloned());
+            candidates.push(wire::Candidate {
+                tool: adapter.name(),
+                id: known.id.clone(),
+                base_url: known.base_url,
+                credential: match known.credential {
+                    adapters::CredentialSource::Inline => "inline",
+                    adapters::CredentialSource::Referenced => "reference",
+                    adapters::CredentialSource::Absent => "absent",
+                },
+                name_conflict: existing.is_some(),
+                declined: declined
+                    .iter()
+                    .any(|(tool, id)| tool == adapter.name() && id == &known.id),
+            });
+        }
+    }
+
+    // The profile of what the tools hold now, derived from the one implementation of effective
+    // state rather than a second resolver.
+    let suggested = match adapters::effective_state(env) {
+        Ok(tools) if !tools.is_empty() => {
+            let mut suggested_tools = Vec::new();
+            for tool in &tools {
+                let endpoint = tool.endpoint.effective.clone().unwrap_or_default();
+                if endpoint.is_empty() {
+                    continue;
+                }
+                let provider = endpoint_host(&endpoint);
+                let slots: Vec<(&'static str, Option<String>)> = tool
+                    .slots
+                    .iter()
+                    .filter(|s| s.slot == "main" || s.slot == "utility")
+                    .map(|s| (s.slot, s.resolved.effective.clone()))
+                    .collect();
+                suggested_tools.push(wire::SuggestedTool {
+                    tool: tool.tool,
+                    provider,
+                    slots,
+                });
+            }
+            (!suggested_tools.is_empty()).then(|| wire::SuggestedProfile {
+                name: "As configured now".to_string(),
+                tools: suggested_tools,
+            })
+        }
+        _ => None,
+    };
+
+    Response::Harvested {
+        ok: true,
+        candidates,
+        suggested_profile: suggested,
+    }
+}
+
+/// The host of a URL, used as a provider name when a tool names none of its own.
+fn endpoint_host(url: &str) -> String {
+    url.split("://")
+        .nth(1)
+        .and_then(|rest| rest.split('/').next())
+        .unwrap_or(url)
+        .to_string()
+}
+
+/// Take one candidate.
+///
+/// The key is **re-read from the tool's file at this moment** and piped to the helper on stdin: it
+/// lives in one buffer for one call, and never enters a response, a log, or anything outliving the
+/// operation. What we store is what is there now, which is also the more correct answer if the key
+/// changed since the offer was made.
+fn accept_harvest(env: &Env, tool: &str, id: &str) -> Response {
+    // The store may not exist yet: adopting is often the first thing tapkey ever writes, and the
+    // helper needs somewhere to put the key.
+    let _ = std::fs::create_dir_all(env.store());
+    let adapter = match adapters::all().into_iter().find(|a| a.name() == tool) {
+        Some(a) => a,
+        None => return refuse("unknown_provider", format!("no tool named {tool:?}")),
+    };
+    let Some(known) = adapter
+        .known_providers(env)
+        .into_iter()
+        .find(|k| k.id == id)
+    else {
+        return refuse(
+            "unknown_provider",
+            format!("no candidate {id:?} from {tool:?}"),
+        );
+    };
+
+    // The secret travels file → buffer → helper stdin, and stops.
+    let secret = match known.credential {
+        adapters::CredentialSource::Inline => {
+            match crate::credentials::read_inline(env, tool, id) {
+                Some(secret) => secret,
+                None => {
+                    return refuse(
+                        "credential_unavailable",
+                        format!("the key in {tool:?} for {id:?} could not be re-read"),
+                    );
+                }
+            }
+        }
+        _ => Vec::new(),
+    };
+    if !secret.is_empty()
+        && let Err(why) = crate::credentials::store(env, id, &secret)
+    {
+        return refuse("keychain_denied", why);
+    }
+    drop(secret);
+
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    let store_path = env.store().join("profiles.json");
+    let mut profiles = profile::Profiles::read(&store_path).unwrap_or(profile::Profiles {
+        providers: Vec::new(),
+        profiles: Vec::new(),
+    });
+    profiles.providers.retain(|p| p.id != id);
+    profiles.providers.push(profile::Provider {
+        id: id.to_string(),
+        name: id.to_string(),
+        base_url: known.base_url,
+        formats: None,
+        enabled: true,
+        tested_at: None,
+    });
+    // The decline, if there was one, is undone by adopting.
+    profile::Profiles::forget_decline(env.store(), tool, id);
+    let bytes = serde_json::to_vec_pretty(&profiles).unwrap_or_default();
+    if let Err(e) = atomic::write_atomically(&store_path, &bytes, 0o600) {
+        return refuse("permission_denied", e.to_string());
+    }
+    drop(_lock);
+
+    // The original stays in place by ADR-0015's rule — which, measured for Claude Code, means the
+    // old key still outranks the helper until it is removed. That is the condition of the transfer
+    // having happened, so it is said now rather than discovered at the first switch.
+    let attentions = if known.credential == adapters::CredentialSource::Inline && tool == "claude" {
+        vec![wire::Attention {
+            kind: "credential_overrides_helper",
+            file: Some(
+                env.home()
+                    .join(".claude")
+                    .join("settings.json")
+                    .display()
+                    .to_string(),
+            ),
+            key: Some("ANTHROPIC_AUTH_TOKEN".to_string()),
+        }]
+    } else {
+        Vec::new()
+    };
+
+    Response::Accepted {
+        ok: true,
+        provider: id.to_string(),
+        attentions,
+    }
+}
+
+/// A decline is a store write like any other, and reversible.
+fn decline_harvest(env: &Env, tool: &str, id: &str) -> Response {
+    let _ = std::fs::create_dir_all(env.store());
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    profile::Profiles::record_decline(env.store(), tool, id);
+    Response::Accepted {
+        ok: true,
+        provider: id.to_string(),
+        attentions: Vec::new(),
     }
 }
 

@@ -1,0 +1,71 @@
+//! Reading and storing a secret, with the narrowest possible path between the two.
+//!
+//! The rule harvest obeys: a secret goes **file → buffer → helper stdin**, and stops. It never
+//! enters a response, a log, or a structure that outlives the call. The reading half is per tool,
+//! because each tool keeps its plaintext key in its own shape; the storing half is the helper's
+//! `set`, which is the only writer of secrets by decision.
+
+use crate::env::Env;
+use std::io::Write;
+use std::process::{Command, Stdio};
+
+/// Re-read the inline plaintext key for one candidate, from the tool's user-level file, now.
+pub fn read_inline(env: &Env, tool: &str, id: &str) -> Option<Vec<u8>> {
+    match tool {
+        "claude" => {
+            let bytes = std::fs::read(env.home().join(".claude").join("settings.json")).ok()?;
+            let document = crate::json::Document::parse(&bytes).ok()?;
+            document
+                .get_string(&["env", "ANTHROPIC_AUTH_TOKEN"])
+                .or_else(|| document.get_string(&["env", "ANTHROPIC_API_KEY"]))
+                .map(str::to_owned)
+                .map(Vec::from)
+        }
+        "opencode" => {
+            // The candidate was found by id, and the id names the provider in the tool's own file.
+            for name in crate::adapters::opencode::GLOBAL_FILES {
+                let path = env.home().join(".config").join("opencode").join(name);
+                let Ok(bytes) = std::fs::read(&path) else {
+                    continue;
+                };
+                let Ok(document) = crate::json::Document::parse_jsonc(&bytes) else {
+                    continue;
+                };
+                match document.get_string(&["provider", id, "options", "apiKey"]) {
+                    Some(key) if !key.starts_with("{env:") && !key.starts_with("{file:") => {
+                        return Some(Vec::from(key));
+                    }
+                    _ => continue,
+                }
+            }
+            None
+        }
+        // Codex keeps no plaintext key in `config.toml`, so there is nothing to re-read.
+        _ => None,
+    }
+}
+
+/// Store a secret through the helper's `set`, on stdin.
+pub fn store(env: &Env, id: &str, secret: &[u8]) -> Result<(), String> {
+    let mut child = Command::new(crate::env::helper_path(env.store()))
+        // Scoped to the child, so a test's store never becomes the process's store.
+        .env("TAPKEY_STORE", env.store())
+        .arg("set")
+        .arg(id)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| format!("could not run the credential helper: {e}"))?;
+    child
+        .stdin
+        .take()
+        .expect("piped")
+        .write_all(secret)
+        .map_err(|e| format!("could not hand the secret over: {e}"))?;
+    match child.wait() {
+        Ok(status) if status.success() => Ok(()),
+        Ok(_) => Err("the credential helper refused the secret".into()),
+        Err(e) => Err(format!("the credential helper failed: {e}")),
+    }
+}

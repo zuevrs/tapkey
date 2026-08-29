@@ -422,4 +422,45 @@ impl super::Adapter for Claude {
     ) -> std::collections::BTreeMap<String, String> {
         fingerprint(assignment)
     }
+
+    fn known_providers(&self, env: &Env) -> Vec<super::KnownProvider> {
+        known_providers(env)
+    }
+}
+
+/// No registry, so the harvest is the one endpoint the tool is pointed at — and the **host** is the
+/// only name the tool itself gives it. The user-level file only: a project's settings belong to a
+/// repository and often to somebody else, and harvesting them would adopt a repo's configuration as
+/// the person's own.
+fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
+    let Some(bytes) = std::fs::read(env.home().join(".claude").join("settings.json")).ok() else {
+        return Vec::new();
+    };
+    let Ok(document) = Document::parse(&bytes) else {
+        return Vec::new();
+    };
+    let Some(url) = document.get_string(&["env", ENDPOINT_VAR]) else {
+        return Vec::new();
+    };
+    // The id is the host, verbatim apart from the characters an id cannot carry. The token in the
+    // same block is plaintext if present — it is what the file holds, and the value is not taken
+    // here.
+    let host = url
+        .split("://")
+        .nth(1)
+        .and_then(|rest| rest.split('/').next())
+        .unwrap_or("claude")
+        .to_string();
+    let credential = match (
+        document.get_string(&["env", "ANTHROPIC_AUTH_TOKEN"]),
+        document.get_string(&["env", "ANTHROPIC_API_KEY"]),
+    ) {
+        (Some(_), _) | (_, Some(_)) => super::CredentialSource::Inline,
+        (None, None) => super::CredentialSource::Absent,
+    };
+    vec![super::KnownProvider {
+        id: host,
+        base_url: url.to_string(),
+        credential,
+    }]
 }

@@ -147,6 +147,19 @@ impl Document {
         item.as_str()
     }
 
+    /// The keys one level below `path`, for enumerating a table whose entries are named by the
+    /// person — a registry being the ordinary case.
+    pub fn keys_at(&self, path: &[&str]) -> Vec<String> {
+        let mut table = self.inner.as_table();
+        for step in path {
+            table = match table.get(step).and_then(|item| item.as_table()) {
+                Some(t) => t,
+                None => return Vec::new(),
+            };
+        }
+        table.iter().map(|(key, _)| key.to_string()).collect()
+    }
+
     /// Sets the string at `path`, creating the tables along the way.
     ///
     /// The value is replaced **in place, carrying its `decor`** — never by assigning a fresh item.

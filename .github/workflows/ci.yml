@@ -42,6 +42,26 @@ jobs:
       - name: Doc tests
         run: cargo test --workspace --doc
 
+  windows:
+    name: windows check
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustc --version
+
+      - uses: Swatinem/rust-cache@v2
+
+      # Check, not test: the Windows seam is decided but not built, and this job exists so the
+      # platform stays compiled — portability that is not compiled has already rotted (ADR-0016).
+      # It landed before any Windows-specific implementation, as the seam ticket required.
+      - name: Check
+        run: cargo check --workspace --all-targets
+
   msrv:
     name: oldest supported Rust
     runs-on: ubuntu-latest

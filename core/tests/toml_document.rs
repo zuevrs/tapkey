@@ -189,3 +189,18 @@ fn a_file_created_from_nothing_ends_with_a_newline() {
 
     assert_eq!(document.to_bytes(), b"model = \"glm-5.3\"\n");
 }
+
+/// Harvest enumerates the registry without knowing its keys in advance, exactly as the JSON reader
+/// already allows.
+#[test]
+fn the_keys_of_a_table_can_be_enumerated() {
+    let document = Document::parse(
+        b"[model_providers.a]\nbase_url = \"one\"\n\n[model_providers.b]\nbase_url = \"two\"\n",
+    )
+    .expect("parses");
+
+    let mut keys = document.keys_at(&["model_providers"]);
+    keys.sort();
+    assert_eq!(keys, vec!["a".to_string(), "b".to_string()]);
+    assert!(document.keys_at(&["nothing"]).is_empty());
+}

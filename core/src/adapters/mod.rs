@@ -73,9 +73,41 @@ pub trait Adapter {
         false
     }
 
+    /// The providers this tool already knows about, read from the user-level configuration.
+    ///
+    /// The second widening of this trait, and the one harvest exists for: Codex and OpenCode keep
+    /// registries holding many providers while selecting one, and the unselected ones are most of
+    /// the catch. It is a fact about a tool — it is literally the registry — and Claude Code, having
+    /// none, honestly returns one entry derived from its single endpoint. **Never a secret**: the
+    /// `credential` field says what kind of key was seen, and the value is re-read at accept time,
+    /// going from the file to the helper's stdin and nowhere else.
+    fn known_providers(&self, env: &Env) -> Vec<KnownProvider>;
+
     /// A hash per owned slot of what was just written, so drift has something to disagree with.
     /// Values never leave this function — the store keeps hashes, never what they were made from.
     fn fingerprint(&self, assignment: &ToolAssignment) -> BTreeMap<String, String>;
+}
+
+/// A provider a person configured in their tool before tapkey existed.
+#[derive(Debug)]
+pub struct KnownProvider {
+    /// The id it had in the tool. tapkey's prefix is the mark of an entry *we* created; this one
+    /// is somebody else's and stays theirs.
+    pub id: String,
+    pub base_url: String,
+    pub credential: CredentialSource,
+}
+
+/// What kind of key was seen, and nothing about its value.
+#[derive(Debug, PartialEq, Eq)]
+pub enum CredentialSource {
+    /// Plaintext in a file tapkey already parses. Re-readable at accept time.
+    Inline,
+    /// A reference — a variable or file the person pointed their **tool** at. Shown a path is not
+    /// being given permission; never read.
+    Referenced,
+    /// Nothing visible.
+    Absent,
 }
 
 /// Every adapter, in the order tools appear on the wire.

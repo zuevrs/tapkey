@@ -233,7 +233,7 @@ impl Credentials for HelperCredentials {
     fn check(&self, provider_id: &str) -> CredentialState {
         // `has` prints nothing and answers by exit code, so that asking whether a credential exists
         // never passes through the code that can print one.
-        match std::process::Command::new(helper_path())
+        match std::process::Command::new(helper_path(Env::real().store()))
             .arg("has")
             .arg(provider_id)
             .stdout(std::process::Stdio::null())
@@ -250,8 +250,8 @@ impl Credentials for HelperCredentials {
     }
 }
 
-fn helper_path() -> PathBuf {
-    Env::real().store().join("bin").join("tapkey-helper")
+pub fn helper_path(store: &Path) -> PathBuf {
+    store.join("bin").join("tapkey-helper")
 }
 
 /// Nothing answers. The default in tests, and the honest state offline.

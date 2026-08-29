@@ -356,6 +356,10 @@ impl super::Adapter for OpenCode {
         true
     }
 
+    fn known_providers(&self, env: &Env) -> Vec<super::KnownProvider> {
+        known_providers(env)
+    }
+
     fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
         effective_state(env).map_err(|e| format!("{e:?}"))
     }
@@ -391,6 +395,53 @@ pub fn owned_paths(provider_id: &str) -> Vec<Vec<String>> {
     ];
     for slot in SLOTS {
         out.push(slot.path.iter().map(|s| (*s).to_string()).collect());
+    }
+    out
+}
+
+/// The merged user-level files, project directories excluded: harvesting a repository's providers
+/// would adopt somebody else's configuration as the person's own.
+fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
+    let mut out = Vec::new();
+    let mut seen = std::collections::BTreeSet::new();
+    // Highest precedence last, so a duplicate id from a lower file cannot overwrite a higher one.
+    for scope in ["user", "install"] {
+        for name in GLOBAL_FILES {
+            let path = match scope {
+                "install" => env.home().join(".opencode").join(name),
+                _ => env.home().join(".config").join("opencode").join(name),
+            };
+            let Ok(bytes) = std::fs::read(&path) else {
+                continue;
+            };
+            let Ok(document) = Document::parse_jsonc(&bytes) else {
+                continue;
+            };
+            for id in document.keys_at(&["provider"]) {
+                if !seen.insert(id.clone()) {
+                    continue;
+                }
+                let Some(base_url) = document.get_string(&["provider", &id, "options", "baseURL"])
+                else {
+                    continue;
+                };
+                let credential = match document.get_string(&["provider", &id, "options", "apiKey"])
+                {
+                    // A reference the person pointed their **tool** at: shown a path is not being
+                    // given permission, and the value is never read.
+                    Some(key) if key.starts_with("{env:") || key.starts_with("{file:") => {
+                        super::CredentialSource::Referenced
+                    }
+                    Some(_) => super::CredentialSource::Inline,
+                    None => super::CredentialSource::Absent,
+                };
+                out.push(super::KnownProvider {
+                    id: id.clone(),
+                    base_url: base_url.to_string(),
+                    credential,
+                });
+            }
+        }
     }
     out
 }

@@ -20,7 +20,7 @@ pub struct Profiles {
 
 /// An endpoint that serves models, together with the credential used to reach it — an entity with
 /// an identifier, not a URL a profile carries.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Provider {
     pub id: String,
     #[serde(default)]
@@ -122,5 +122,45 @@ impl Profiles {
 
     pub fn provider(&self, id: &str) -> Option<&Provider> {
         self.providers.iter().find(|p| p.id == id)
+    }
+
+    // -- Declined harvest offers. A decline is tapkey's own bookkeeping, kept beside the state
+    // -- that already exists rather than in a new file for one list. Reversible by design: an
+    // -- offer that cannot be re-offered after a change of heart is a reminder, not an offer.
+
+    pub fn record_decline(store: &Path, tool: &str, id: &str) {
+        let mut declined = read_declines(store);
+        declined.retain(|(t, i)| !(t == tool && i == id));
+        declined.push((tool.to_string(), id.to_string()));
+        write_declines(store, &declined);
+    }
+
+    pub fn forget_decline(store: &Path, tool: &str, id: &str) {
+        let mut declined = read_declines(store);
+        declined.retain(|(t, i)| !(t == tool && i == id));
+        write_declines(store, &declined);
+    }
+
+    pub fn declined(store: &Path) -> Vec<(String, String)> {
+        read_declines(store)
+    }
+}
+
+/// Declines live in their own file at `0600`, written through the atomic seam: a list nobody
+/// should have to think about does not belong inside the file a person reads.
+fn declines_path(store: &Path) -> std::path::PathBuf {
+    store.join("declined-harvest.json")
+}
+
+fn read_declines(store: &Path) -> Vec<(String, String)> {
+    std::fs::read(declines_path(store))
+        .ok()
+        .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+        .unwrap_or_default()
+}
+
+fn write_declines(store: &Path, declined: &[(String, String)]) {
+    if let Ok(bytes) = serde_json::to_vec_pretty(declined) {
+        let _ = crate::atomic::write_atomically(&declines_path(store), &bytes, 0o600);
     }
 }

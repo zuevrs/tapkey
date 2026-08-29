@@ -28,6 +28,14 @@ pub enum Request {
     },
     /// Establish which formats a provider's endpoint answers. Reads the network, writes the store.
     Test { provider_id: String },
+    /// List what the tools already know: the harvest offer. Reads other people's files and changes
+    /// nothing, so it takes no lock.
+    Harvest {},
+    /// Take one candidate: the key is re-read from the tool's file at this moment and piped to the
+    /// helper on stdin, so it lives in one buffer for one call and nowhere else.
+    AcceptHarvest { tool: String, id: String },
+    /// Record that a candidate was declined, so an offer does not become a reminder. Reversible.
+    DeclineHarvest { tool: String, id: String },
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,6 +79,49 @@ pub enum Response {
         provider: String,
         tested_at: String,
     },
+    Harvested {
+        ok: bool,
+        candidates: Vec<Candidate>,
+        /// A profile describing what the tools hold now, so a first switch is reversible.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        suggested_profile: Option<SuggestedProfile>,
+    },
+    Accepted {
+        ok: bool,
+        provider: String,
+        /// Raised at accept rather than at the first switch: measured, a token in Claude Code's
+        /// `env` block outranks `apiKeyHelper`, so leaving the original in place is the condition
+        /// of the transfer having happened.
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        attentions: Vec<Attention>,
+    },
+}
+
+/// One harvest candidate. `credential` names the kind of key seen, never its value.
+#[derive(Debug, Serialize)]
+pub struct Candidate {
+    pub tool: &'static str,
+    pub id: String,
+    pub base_url: String,
+    pub credential: &'static str,
+    /// True when a provider with this id is already in the store. The person decides whether the
+    /// two are one; nothing is merged and nothing is silently renamed.
+    pub name_conflict: bool,
+    pub declined: bool,
+}
+
+/// What the tools hold now, by slot — the profile harvest offers alongside its candidates.
+#[derive(Debug, Serialize)]
+pub struct SuggestedProfile {
+    pub name: String,
+    pub tools: Vec<SuggestedTool>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SuggestedTool {
+    pub tool: &'static str,
+    pub provider: String,
+    pub slots: Vec<(&'static str, Option<String>)>,
 }
 
 /// One format's answer. The names are the canonical three, and every one of them is reported —
