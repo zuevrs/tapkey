@@ -14,8 +14,10 @@
 //! subdirectory's file. When it is shut, the project file is ignored in total silence.
 
 use crate::env::Env;
+use crate::profile::{Provider, ToolAssignment};
 use crate::toml::{Document, Error};
-use crate::wire::{Link, Resolved, SlotState, ToolState};
+use crate::transaction::Action;
+use crate::wire::{Attention, Link, Resolved, SlotState, ToolState};
 use std::path::PathBuf;
 
 /// The layers this adapter can see, highest precedence first. The managed tiers below user config
@@ -78,8 +80,13 @@ const SLOTS: &[SlotSpec] = &[
         owned: true,
         path: &["memories", "extract_model"],
     },
+    // The utility slot is one slot reached through two keys. Both are written whenever it is
+    // assigned, unconditionally on `features.memories`: left unset they fall back to hard-coded
+    // OpenAI slugs, which after a switch are requested from the new provider with the new key and
+    // fail in silence. Writing conditionally would make the feature flag an input to the switch and
+    // leave a leak acquirable later with no file change tapkey would ever see.
     SlotSpec {
-        name: "utility_consolidation",
+        name: "utility",
         owned: true,
         path: &["memories", "consolidation_model"],
     },
@@ -114,7 +121,97 @@ pub fn effective_state(env: &Env) -> Result<ToolState, Error> {
         tool: "codex",
         endpoint,
         slots,
+        attentions: Vec::new(),
     })
+}
+
+/// Every id tapkey writes is prefixed, **always**, not on collision.
+///
+/// Codex rejects its built-in provider ids as reserved — `model_providers` holding `openai` is a
+/// hard config-load error naming the collision. Prefixing only when the name clashes would tie our
+/// table's name to a list that can grow: OpenAI reserves one more id and a table already written on
+/// somebody's disk becomes illegal, a migration on live machines caused by another company's
+/// release. It also makes ownership visible to whoever opens the file by hand.
+pub const ID_PREFIX: &str = "tapkey-";
+
+pub fn table_id(provider_id: &str) -> String {
+    format!("{ID_PREFIX}{provider_id}")
+}
+
+/// The path to Codex's user config. tapkey creates it, and `~/.codex/` with it, when absent:
+/// measured, Codex does not create a config file it did not find, so an installed-but-unconfigured
+/// tool is an ordinary state — and it is exactly the case this app exists for. A missing *binary*
+/// is `tool_gone` and a skip; the two absences are different.
+pub fn config_path(env: &Env) -> PathBuf {
+    env.home().join(".codex").join("config.toml")
+}
+
+/// `wire_api` has exactly one legal value at 0.150.1: `"chat"` is a hard config-load error and
+/// there is no fallback, so Codex speaks the Responses API or nothing.
+const WIRE_API: &str = "responses";
+
+/// Turn one tool's assignment into the single write that applies it, or into a reason not to.
+///
+/// Nothing is written here; the transaction owns that, so the all-or-nothing guarantee lives in
+/// one place.
+pub fn plan_switch(
+    env: &Env,
+    assignment: &ToolAssignment,
+    provider: Option<&Provider>,
+) -> Result<(Vec<Action>, Vec<Attention>), Error> {
+    let path = config_path(env);
+    let existing = std::fs::read(&path).unwrap_or_default();
+    let mut document = Document::parse(&existing)?;
+
+    // A `profile` key anywhere in the merged config makes Codex refuse to start, before anything
+    // else runs. The file parses; it is fatal rather than broken. So the tool is skipped and the
+    // key is named — repairing it is forbidden by merge-never-own, and writing over it would make
+    // tapkey the last hand on a file that does not work.
+    if document.get_string(&["profile"]).is_some() {
+        return Ok((
+            Vec::new(),
+            vec![Attention {
+                kind: "tool_will_not_start",
+                file: Some(path.display().to_string()),
+                key: Some("profile".into()),
+            }],
+        ));
+    }
+
+    if let Some(provider) = provider {
+        let id = table_id(&provider.id);
+        document.set_string(&["model_provider"], &id)?;
+        document.set_string(&["model_providers", &id, "name"], &provider.name)?;
+        document.set_string(&["model_providers", &id, "base_url"], &provider.base_url)?;
+        document.set_string(&["model_providers", &id, "wire_api"], WIRE_API)?;
+    }
+
+    for spec in SLOTS.iter().filter(|s| s.owned) {
+        // Ownership is per assignment, not per key name: a slot the profile says nothing about is
+        // left alone. Two of Codex's four non-main slots inherit the session model when unset, and
+        // pinning them would freeze what moves along for free.
+        let Some(assigned) = assignment.slots.get(spec.name) else {
+            continue;
+        };
+        match assigned {
+            Some(model) => document.set_string(spec.path, model)?,
+            // Nothing fires from the environment underneath in Codex, so deleting is enough —
+            // unlike Claude Code, where ADR-0014 needs an empty value written over a shell export.
+            None => document.remove(spec.path)?,
+        }
+    }
+
+    Ok((
+        vec![Action::Write {
+            path,
+            bytes: document.to_bytes(),
+            // A file tapkey creates is created at 0600; an existing one keeps the mode it had.
+            // Codex tightens it to 0600 on every write of its own, and that is Codex's business:
+            // ADR-0018 preserves rather than predicts what another program will do.
+            mode: 0o600,
+        }],
+        Vec::new(),
+    ))
 }
 
 /// One layer that was found on disk, with whether it counts.

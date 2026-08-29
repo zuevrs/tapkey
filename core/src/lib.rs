@@ -93,31 +93,56 @@ fn switch(env: &Env, profile_id: &str) -> Response {
             format!("no profile named {profile_id:?}"),
         );
     };
-    let Some(assignment) = profile.tools.get("claude") else {
+    if profile.tools.is_empty() {
         return refuse(
             "unknown_profile",
             "the profile covers no managed tool".into(),
         );
-    };
+    }
 
     // A profile naming a provider the file does not hold is a broken instruction, not a condition
     // of the machine, and it is caught before anything is staged.
-    let provider = match &assignment.provider {
-        Some(id) => match profiles.provider(id) {
-            Some(p) => Some(p),
-            None => {
-                return refuse("unknown_provider", format!("no provider named {id:?}"));
-            }
-        },
-        None => None,
-    };
+    let mut assignments = Vec::new();
+    for (tool, assignment) in &profile.tools {
+        let provider = match &assignment.provider {
+            Some(id) => match profiles.provider(id) {
+                Some(p) => Some(p),
+                None => {
+                    return refuse("unknown_provider", format!("no provider named {id:?}"));
+                }
+            },
+            None => None,
+        };
+        assignments.push((tool.as_str(), assignment, provider));
+    }
 
     // Planned before anything is staged, so a file we cannot parse is a refusal rather than a
-    // rollback: nothing was touched.
-    let actions = match adapters::claude::plan_switch(env, assignment, provider) {
-        Ok(a) => a,
-        Err(e) => return refuse("unparsable", format!("{e:?}")),
-    };
+    // rollback: nothing was touched. A tool that cannot participate contributes an attention and
+    // no actions — it is left out of the transaction rather than allowed to cancel it, the same
+    // reasoning that makes a gone tool a skip.
+    let mut actions = Vec::new();
+    let mut attentions: std::collections::BTreeMap<&str, Vec<wire::Attention>> =
+        std::collections::BTreeMap::new();
+    for (tool, assignment, provider) in &assignments {
+        match *tool {
+            "claude" => match adapters::claude::plan_switch(env, assignment, *provider) {
+                Ok(a) => actions.extend(a),
+                Err(e) => return refuse("unparsable", format!("{e:?}")),
+            },
+            "codex" => match adapters::codex::plan_switch(env, assignment, *provider) {
+                Ok((a, attn)) => {
+                    actions.extend(a);
+                    if !attn.is_empty() {
+                        attentions.insert("codex", attn);
+                    }
+                }
+                Err(e) => return refuse("unparsable", format!("{e:?}")),
+            },
+            // A profile naming a tool this core does not manage is not a reason to refuse the
+            // tools it does; the row simply has nowhere to land.
+            _ => continue,
+        }
+    }
 
     let store = match store::Store::open(env.store()) {
         Ok(s) => s,
@@ -172,21 +197,37 @@ fn switch(env: &Env, profile_id: &str) -> Response {
 
     // Drift needs something to compare against, and it is written only after the change stuck.
     let mut owned = std::collections::BTreeMap::new();
-    owned.insert(
-        "claude".to_string(),
-        adapters::claude::fingerprint(assignment),
-    );
+    for (tool, assignment, _) in &assignments {
+        if *tool == "claude" {
+            owned.insert(
+                (*tool).to_string(),
+                adapters::claude::fingerprint(assignment),
+            );
+        }
+    }
     let _ = fingerprint::State::write(&env.store().join("state.json"), &profile.name, owned);
 
     // Read back rather than reporting what was written: the invariant forbids reporting intent,
     // and reading back is the only way a project config or a shell export that beat us shows up.
-    match adapters::claude::effective_state(env) {
-        Ok(tool) => Response::Ok {
-            ok: true,
-            outcome: Some("applied"),
-            tools: vec![tool],
-        },
-        Err(e) => refuse("unparsable", format!("{e:?}")),
+    let mut tools = Vec::new();
+    for read in [
+        adapters::claude::effective_state(env).map_err(|e| format!("{e:?}")),
+        adapters::codex::effective_state(env).map_err(|e| format!("{e:?}")),
+    ] {
+        match read {
+            Ok(mut tool) => {
+                if let Some(attn) = attentions.remove(tool.tool) {
+                    tool.attentions = attn;
+                }
+                tools.push(tool);
+            }
+            Err(e) => return refuse("unparsable", e),
+        }
+    }
+    Response::Ok {
+        ok: true,
+        outcome: Some("applied"),
+        tools,
     }
 }
 

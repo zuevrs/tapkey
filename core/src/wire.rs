@@ -71,6 +71,25 @@ pub struct ToolState {
     /// than per slot. It is not a Slot: the glossary reserves that word for where a model goes.
     pub endpoint: Resolved,
     pub slots: Vec<SlotState>,
+    /// Observations about this tool that coexist with a successful outcome. A switch can apply
+    /// while one tool shows drift or was skipped; merging these into the failure list would force
+    /// every consumer to read "it worked, but note this" as an error.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub attentions: Vec<Attention>,
+}
+
+/// A closed set, because the catalogue is the closed set of what a UI can render: an open code
+/// would let the core return something no string exists for. Placeholders are typed fields per
+/// variant rather than a map, so a consumer never discovers at runtime whether one is there.
+#[derive(Debug, Serialize)]
+pub struct Attention {
+    pub kind: &'static str,
+    /// The file the observation is about, where there is one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file: Option<String>,
+    /// The key that caused it, where there is one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
 }
 
 #[derive(Debug, Serialize)]

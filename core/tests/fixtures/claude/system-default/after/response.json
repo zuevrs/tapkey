@@ -395,6 +395,64 @@
         }
       ],
       "tool": "claude"
+    },
+    {
+      "endpoint": {
+        "chain": [],
+        "effective": null
+      },
+      "slots": [
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "review"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "effort"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "verbosity"
+        }
+      ],
+      "tool": "codex"
     }
   ]
 }

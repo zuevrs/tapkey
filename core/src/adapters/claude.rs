@@ -139,6 +139,7 @@ pub fn effective_state(env: &Env) -> Result<ToolState, crate::json::Error> {
         tool: "claude",
         endpoint,
         slots,
+        attentions: Vec::new(),
     })
 }
 
