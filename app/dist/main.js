@@ -19,6 +19,10 @@ if (label === "panel") {
   hud();
 } else if (label === "settings") {
   import("./settings.js").then((m) => m.settings());
+} else if (label === "onboarding") {
+  import("./onboarding.js").then((m) =>
+    m.onboarding(() => window.__TAURI__.core.invoke("onboarding_done"))
+  );
 }
 
 // -- The panel -------------------------------------------------------------------------

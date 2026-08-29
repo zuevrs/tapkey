@@ -27,6 +27,11 @@ fn undo(backup_id: String) -> String {
 /// Route one switch result to the HUD window: it drives itself from the query parameters, and
 /// the panel never touches another window's content.
 #[tauri::command]
+fn onboarding_done(app: tauri::AppHandle) {
+    crate::onboarding::mark_done(&app);
+}
+
+#[tauri::command]
 fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> tauri::Result<()> {
     let hud = app
         .get_webview_window("hud")
@@ -80,11 +85,50 @@ pub fn run() {
 
             tray::build(app.handle())?;
 
+            onboarding::maybe_show(app.handle());
+
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![invoke, undo, show_hud])
+        .invoke_handler(tauri::generate_handler![
+            invoke,
+            undo,
+            show_hud,
+            onboarding_done
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tapkey");
+}
+
+mod onboarding {
+    //! First run only: the flag lives in the app's own preferences — never in the core's store,
+    //! which ADR-0019 gave to the engine. "Set up later" sets the same flag with the catalogue's
+    //! honest consequence.
+
+    use tauri::Manager;
+    use tauri_plugin_store::StoreExt;
+
+    pub fn maybe_show(app: &tauri::AppHandle) {
+        let Ok(store) = app.store("prefs.json") else {
+            return;
+        };
+        if store.get("onboarded").is_some() {
+            return;
+        }
+        if let Some(window) = app.get_webview_window("onboarding") {
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+    }
+
+    pub fn mark_done(app: &tauri::AppHandle) {
+        let Ok(store) = app.store("prefs.json") else {
+            return;
+        };
+        store.set("onboarded", true);
+        if let Some(window) = app.get_webview_window("onboarding") {
+            let _ = window.close();
+        }
+    }
 }
 
 mod shortcuts {

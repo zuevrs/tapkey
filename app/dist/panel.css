@@ -81,3 +81,18 @@ button.act.danger { border-color: color-mix(in srgb, red 45%, transparent); }
   padding: 16px 18px; max-width: 340px; font-size: 13px;
 }
 #sheet .box .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+/* -- Onboarding: one screen, three sections, chips for presence. -- */
+#surface.onboarding { padding: 24px 28px; font-size: 13px; max-width: 420px; }
+#surface.onboarding h2 { font-size: 17px; margin: 0 0 4px; }
+#surface.onboarding h3 { font-size: 12px; margin: 16px 0 4px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.04em; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.chip b { font-weight: 500; opacity: 0.6; margin-left: 4px; }
+.chip.ok b { color: inherit; opacity: 0.9; }
+.candidates .row.declined { opacity: 0.45; }
+#surface.onboarding .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+button.primary { background: color-mix(in srgb, currentColor 15%, transparent); }

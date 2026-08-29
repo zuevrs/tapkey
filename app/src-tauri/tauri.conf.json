@@ -39,6 +39,15 @@
         "title": "tapkey",
         "width": 720,
         "height": 480
+      },
+      {
+        "label": "onboarding",
+        "url": "index.html",
+        "visible": false,
+        "title": "Welcome to tapkey",
+        "width": 480,
+        "height": 560,
+        "resizable": false
       }
     ],
     "security": {
