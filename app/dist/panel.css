@@ -1,0 +1,47 @@
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: transparent; }
+
+/* -- The row primitive: icon, title + description, one trailing element. The label never
+   shrinks below its own text; the value truncates instead. -- */
+.row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 8px; cursor: default;
+}
+.row:hover, .row.active { background: color-mix(in srgb, currentColor 8%, transparent); }
+.row .tile {
+  flex: none; width: 28px; height: 28px; border-radius: 6px;
+  display: grid; place-items: center; font-size: 13px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.row .label { flex: none; font-size: 13px; }
+.row .qualifier {
+  flex: none; font-size: 11px; opacity: 0.55;
+  /* The qualifier is inline dim text, not a mid-row chip. */
+}
+.row .value {
+  flex: 1 1 auto; text-align: right; font-size: 11px; opacity: 0.55;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+#search {
+  width: 100%; padding: 8px 12px; font-size: 13px; color: inherit;
+  background: transparent; border: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  outline: none;
+}
+#list { padding: 6px; overflow: hidden; }
+#footer {
+  padding: 6px 12px; font-size: 11px; opacity: 0.5;
+  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* -- The HUD: one line of result and, when there is a backup to undo, one control. -- */
+body.hud { display: grid; place-items: center; }
+#surface.hud {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+}
+#surface.hud .result { font-size: 13px; }
+#surface.hud button {
+  font-size: 12px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 6px; background: transparent; color: inherit; padding: 4px 10px;
+}

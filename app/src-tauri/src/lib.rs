@@ -24,6 +24,21 @@ fn undo(backup_id: String) -> String {
     tapkey_core::handle_with(&Env::real(), &request.to_string())
 }
 
+/// Route one switch result to the HUD window: it drives itself from the query parameters, and
+/// the panel never touches another window's content.
+#[tauri::command]
+fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> tauri::Result<()> {
+    let hud = app
+        .get_webview_window("hud")
+        .expect("the hud window exists");
+    let mut url = tauri::Url::parse("index.html").expect("static");
+    url.query_pairs_mut()
+        .append_pair("response", &response_json)
+        .append_pair("backup", &backup_id);
+    hud.eval(format!("location.replace({url:?})"))?;
+    hud.show()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     refresh_helper();
@@ -67,7 +82,7 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![invoke, undo])
+        .invoke_handler(tauri::generate_handler![invoke, undo, show_hud])
         .run(tauri::generate_context!())
         .expect("error while running tapkey");
 }
