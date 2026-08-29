@@ -42,6 +42,28 @@ jobs:
       - name: Doc tests
         run: cargo test --workspace --doc
 
+  app:
+    name: app bundle
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustc --version
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --locked --version '^2' || true
+
+      # The smoke build per ADR-0016: the bundle exists. The backend is already covered by the
+      # core's tests, and launching a GUI in CI is flake that would only re-prove them.
+      - name: Build the bundle
+        run: cargo tauri build
+
   windows:
     name: windows check
     runs-on: windows-latest

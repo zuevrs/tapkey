@@ -1,0 +1,22 @@
+[package]
+name = "tapkey-app"
+version = "0.0.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# The bridge: a direct path dependency and one command. ADR-0016's "static library, no C ABI"
+# was written for a Swift UI; Tauri's backend is Rust, so the ABI question never arises and the
+# decision — one call, no second implementation — is kept more cheaply than promised.
+tapkey-core = { path = "../../core" }
+tauri = { version = "2", features = [] }
+serde_json = "1"
+
+[lib]
+name = "tapkey_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]

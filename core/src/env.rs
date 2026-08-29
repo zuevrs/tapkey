@@ -92,13 +92,7 @@ pub struct Env {
 impl Env {
     /// The real machine.
     pub fn real() -> Self {
-        let home = std::env::var_os("HOME")
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from("/"));
-        let store = home
-            .join("Library")
-            .join("Application Support")
-            .join("tapkey");
+        let (home, store) = real_locations();
         Env {
             home,
             store,
@@ -283,5 +277,43 @@ impl Http for RealHttp {
             Err(ureq::Error::StatusCode(code)) => Ok(ProbeStatus::Answered(code)),
             Err(_) => Ok(ProbeStatus::NoAnswer),
         }
+    }
+}
+
+/// Where a real machine keeps its home and tapkey's store, per platform.
+///
+/// ADR-0019 fixed both: `~/Library/Application Support/tapkey` on macOS,
+/// `%LOCALAPPDATA%\tapkey` on Windows. `HOME` is Unix; on Windows the profile comes from
+/// `USERPROFILE`, and `%LOCALAPPDATA%` is the store's root in its own right.
+fn real_locations() -> (PathBuf, PathBuf) {
+    #[cfg(target_os = "macos")]
+    {
+        let home = std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("/"));
+        let store = home
+            .join("Library")
+            .join("Application Support")
+            .join("tapkey");
+        (home, store)
+    }
+    #[cfg(windows)]
+    {
+        let home = std::env::var_os("USERPROFILE")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("C:\\Users\\Public"));
+        let store = match std::env::var_os("LOCALAPPDATA") {
+            Some(local) => PathBuf::from(local).join("tapkey"),
+            None => home.join("AppData").join("Local").join("tapkey"),
+        };
+        (home, store)
+    }
+    #[cfg(not(any(target_os = "macos", windows)))]
+    {
+        let home = std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("/"));
+        let store = home.join(".local").join("share").join("tapkey");
+        (home, store)
     }
 }
