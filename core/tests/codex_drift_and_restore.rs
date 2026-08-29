@@ -214,5 +214,5 @@ fn a_restore_reports_every_tool() {
         .iter()
         .filter_map(|t| t["tool"].as_str())
         .collect();
-    assert_eq!(reported, vec!["claude", "codex"], "{response}");
+    assert_eq!(reported, vec!["claude", "codex", "opencode"], "{response}");
 }

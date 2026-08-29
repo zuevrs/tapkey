@@ -23,6 +23,7 @@
 
 pub mod claude;
 pub mod codex;
+pub mod opencode;
 
 use crate::env::Env;
 use crate::profile::{Provider, ToolAssignment};
@@ -82,7 +83,11 @@ pub trait Adapter {
 /// One list, so that adding a third tool is one edit rather than five. This is the function the
 /// missing seam cost: `restore` reported Claude Code alone for as long as Codex existed.
 pub fn all() -> Vec<Box<dyn Adapter>> {
-    vec![Box::new(claude::Claude), Box::new(codex::Codex)]
+    vec![
+        Box::new(claude::Claude),
+        Box::new(codex::Codex),
+        Box::new(opencode::OpenCode),
+    ]
 }
 
 /// Every file the managed tools own, and which tool owns it.

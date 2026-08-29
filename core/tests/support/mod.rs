@@ -134,6 +134,23 @@ impl Machine {
         std::fs::write(path, bytes).expect("write");
     }
 
+    // -- OpenCode. Raw bytes again: JSONC layout is what the splicer promises to keep.
+
+    /// One of the three global files, which the tool reads and merges rather than choosing between.
+    pub fn write_opencode_config(&self, name: &str, bytes: &[u8]) {
+        let path = self.home().join(".config").join("opencode").join(name);
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
+        std::fs::write(path, bytes).expect("write");
+    }
+
+    /// A project file, which OpenCode obeys with nothing to grant — unlike Codex's, which is
+    /// ignored in silence until the user's own config trusts the repository root.
+    pub fn write_opencode_project_config(&self, bytes: &[u8]) {
+        let path = self.project().join("opencode.jsonc");
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
+        std::fs::write(path, bytes).expect("write");
+    }
+
     /// Measured: the gate keys on the **repo root**, and the entry lives in the *user's* config.
     /// Without it the project file is ignored entirely, and Codex says nothing about it.
     pub fn trust_codex_project(&self) {

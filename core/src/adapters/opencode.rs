@@ -1,0 +1,271 @@
+//! OpenCode.
+//!
+//! The third shape, and the one that tests the trait. Where Claude Code has no registry and one
+//! endpoint behind every slot, and Codex has a provider map with reserved ids, OpenCode has a
+//! registry with **no** reserved ids, namespaced model ids, and slots that genuinely name different
+//! providers — measured, three of them resolved to three different providers in one config.
+//!
+//! Three things about reading it were measured and two contradicted the note this was designed
+//! from. All three global config files are **read and merged**, `.jsonc` highest, so an adapter
+//! reading one of them reports the absence of keys that are plainly there. The project layer applies
+//! with **no gate at all**, the opposite of Codex, so a repository somebody cloned can redirect
+//! their requests from the moment the tool starts in it. And the model picker's choice lives in the
+//! tool's own **SQLite database**, not the JSON file the research named — so it is reported as
+//! unreadable rather than guessed at, because another program's schema is a coupling with no
+//! contract, inside a read that is supposed to be honest.
+
+use crate::env::Env;
+use crate::json::{Document, Error};
+use crate::wire::{Link, Resolved, SlotState, ToolState};
+use std::path::PathBuf;
+
+/// The three global files, **highest precedence first**. All are read; a write picks the first that
+/// exists. That asymmetry is the tool's, not an awkwardness of ours.
+pub const GLOBAL_FILES: [&str; 3] = ["opencode.jsonc", "opencode.json", "config.json"];
+
+/// The one key whose absence makes the tool rewrite the file on a plain read — stripping a BOM and
+/// inserting an LF into a CRLF file on the way. Measured: with it present, no write at all.
+pub const SCHEMA_KEY: &str = "$schema";
+pub const SCHEMA_URL: &str = "https://opencode.ai/config.json";
+
+struct SlotSpec {
+    name: &'static str,
+    owned: bool,
+    path: &'static [&'static str],
+}
+
+/// `model` and `small_model` are owned outright: measured, `/models` writes to the tool's own state
+/// rather than to config, so OpenCode is the only one of the three that never contests them.
+/// Per-agent and per-command slots are owned **only where no markdown file defines them** — a file
+/// beats the config key and nothing beats the file — and that is decided per agent at read time.
+const SLOTS: &[SlotSpec] = &[
+    SlotSpec {
+        name: "main",
+        owned: true,
+        path: &["model"],
+    },
+    SlotSpec {
+        name: "utility",
+        owned: true,
+        path: &["small_model"],
+    },
+];
+
+/// A scope tapkey cannot look into. Named rather than omitted: saying nothing would claim knowledge
+/// we do not have, which is the failure "effective state over intent" exists to prevent.
+struct Unseen {
+    scope: &'static str,
+    why: &'static str,
+}
+
+/// Highest first. The picker outranks every file because it is what the person last chose, and the
+/// console tier sits above even the project layer — so it can overrule what somebody wrote in their
+/// own repository, and they will not learn that from any file.
+const UNSEEN: &[Unseen] = &[
+    Unseen {
+        scope: "picker",
+        why: "the tool's own database, not a config file",
+    },
+    Unseen {
+        scope: "console",
+        why: "fetched over the network from your organisation",
+    },
+];
+
+pub fn effective_state(env: &Env) -> Result<ToolState, Error> {
+    let files = read_all(env)?;
+    let state = crate::fingerprint::State::read(&env.store().join("state.json"));
+
+    let slots = SLOTS
+        .iter()
+        .map(|spec| {
+            let resolved = resolve(&files, spec.path);
+            SlotState {
+                slot: spec.name,
+                owned: spec.owned,
+                drifted: spec.owned
+                    && state.drifted("opencode", spec.name, resolved.effective.as_deref()),
+                resolved,
+            }
+        })
+        .collect();
+
+    Ok(ToolState {
+        tool: "opencode",
+        endpoint: endpoint(&files),
+        slots,
+        attentions: Vec::new(),
+    })
+}
+
+struct Layer {
+    scope: &'static str,
+    path: PathBuf,
+    document: Document,
+}
+
+struct Files(Vec<Layer>);
+
+/// Every config file that exists, highest precedence first.
+///
+/// The project layer comes first and needs nothing granted, which is the whole difference from
+/// Codex. `~/.opencode` is a live configuration directory the tool creates beside its own binary,
+/// and it outranks every project directory — an enumeration that omits it lies.
+fn read_all(env: &Env) -> Result<Files, Error> {
+    let mut out = Vec::new();
+    let push = |scope: &'static str, path: PathBuf, out: &mut Vec<Layer>| -> Result<(), Error> {
+        if let Ok(bytes) = std::fs::read(&path) {
+            // JSONC for every one of them: measured, the tolerance belongs to the tool rather than
+            // to the file's extension, and a comment in `opencode.json` resolves fine.
+            out.push(Layer {
+                scope,
+                path,
+                document: Document::parse_jsonc(&bytes)?,
+            });
+        }
+        Ok(())
+    };
+
+    if let Some(project) = env.project() {
+        for name in GLOBAL_FILES {
+            push("project", project.join(name), &mut out)?;
+        }
+    }
+    for name in GLOBAL_FILES {
+        push("install", env.home().join(".opencode").join(name), &mut out)?;
+    }
+    for name in GLOBAL_FILES {
+        push(
+            "user",
+            env.home().join(".config").join("opencode").join(name),
+            &mut out,
+        )?;
+    }
+    Ok(Files(out))
+}
+
+/// The file tapkey writes: the first of the three that exists, at user level, and `.jsonc` when
+/// none does. Writing where the tool writes means the question of precedence between us never
+/// arises; writing anywhere else would create a second file the person did not have.
+pub fn config_path(env: &Env) -> PathBuf {
+    let dir = env.home().join(".config").join("opencode");
+    for name in GLOBAL_FILES {
+        let candidate = dir.join(name);
+        if candidate.exists() {
+            return candidate;
+        }
+    }
+    dir.join(GLOBAL_FILES[0])
+}
+
+fn endpoint(files: &Files) -> Resolved {
+    // The endpoint belongs to a provider entry, and which provider a slot uses comes from the
+    // namespaced model id — so the tool-level endpoint is the one the main model resolves through.
+    let selected = files
+        .0
+        .iter()
+        .find_map(|l| l.document.get_string(&["model"]))
+        .and_then(|id| id.split('/').next().map(str::to_owned));
+
+    let mut chain = Vec::new();
+    for layer in &files.0 {
+        let value = selected.as_ref().and_then(|id| {
+            layer
+                .document
+                .get_string(&["provider", id, "options", "baseURL"])
+                .map(str::to_owned)
+        });
+        chain.push(Link {
+            source: layer.path.display().to_string(),
+            scope: layer.scope,
+            key: "provider.<id>.options.baseURL".to_string(),
+            value,
+            observable: true,
+            trusted: None,
+            wins: false,
+        });
+    }
+    settle(chain)
+}
+
+fn resolve(files: &Files, path: &[&str]) -> Resolved {
+    let mut chain: Vec<Link> = UNSEEN
+        .iter()
+        .map(|u| Link {
+            source: u.why.to_string(),
+            scope: u.scope,
+            key: String::new(),
+            value: None,
+            observable: false,
+            trusted: None,
+            wins: false,
+        })
+        .collect();
+
+    for layer in &files.0 {
+        chain.push(Link {
+            source: layer.path.display().to_string(),
+            scope: layer.scope,
+            key: path.join("."),
+            value: layer.document.get_string(path).map(str::to_owned),
+            observable: true,
+            trusted: None,
+            wins: false,
+        });
+    }
+    settle(chain)
+}
+
+/// The first link with a value wins. An unobservable scope can never win: it has no value to offer,
+/// only a statement that we could not look.
+fn settle(mut chain: Vec<Link>) -> Resolved {
+    let mut effective = None;
+    for link in chain.iter_mut() {
+        if effective.is_none()
+            && let Some(value) = &link.value
+        {
+            link.wins = true;
+            effective = Some(value.clone());
+        }
+    }
+    Resolved { effective, chain }
+}
+
+/// The adapter, as the core sees it.
+pub struct OpenCode;
+
+impl super::Adapter for OpenCode {
+    fn name(&self) -> &'static str {
+        "opencode"
+    }
+
+    fn config_path(&self, env: &Env) -> PathBuf {
+        config_path(env)
+    }
+
+    fn per_slot_providers(&self) -> bool {
+        true
+    }
+
+    fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
+        effective_state(env).map_err(|e| format!("{e:?}"))
+    }
+
+    fn plan_switch(
+        &self,
+        _env: &Env,
+        _assignment: &crate::profile::ToolAssignment,
+        _provider: Option<&crate::profile::Provider>,
+    ) -> Result<(Vec<crate::transaction::Action>, Vec<crate::wire::Attention>), String> {
+        // The write lands in its own slice; reading comes first so the verification it will need
+        // exists before there is anything to verify.
+        Ok((Vec::new(), Vec::new()))
+    }
+
+    fn fingerprint(
+        &self,
+        _assignment: &crate::profile::ToolAssignment,
+    ) -> std::collections::BTreeMap<String, String> {
+        std::collections::BTreeMap::new()
+    }
+}
