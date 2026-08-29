@@ -101,7 +101,7 @@ fn helper_binary() -> std::path::PathBuf {
     if path.ends_with("deps") {
         path.pop();
     }
-    path.join("tapkey-helper")
+    path.join(format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX))
 }
 
 fn run_helper(machine: &Machine, args: &[&str], stdin: Option<&str>) -> (i32, Vec<u8>) {

@@ -251,7 +251,9 @@ impl Credentials for HelperCredentials {
 }
 
 pub fn helper_path(store: &Path) -> PathBuf {
-    store.join("bin").join("tapkey-helper")
+    store
+        .join("bin")
+        .join(format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX))
 }
 
 /// Nothing answers. The default in tests, and the honest state offline.

@@ -293,8 +293,9 @@ pub fn install_helper(machine: &Machine) {
     if path.ends_with("deps") {
         path.pop();
     }
-    let built = path.join("tapkey-helper");
+    let exe = format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX);
+    let built = path.join(&exe);
     let dir = machine.store().join("bin");
     std::fs::create_dir_all(&dir).expect("bin dir");
-    std::fs::copy(built, dir.join("tapkey-helper")).expect("copy the helper");
+    std::fs::copy(built, dir.join(&exe)).expect("copy the helper");
 }
