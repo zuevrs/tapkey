@@ -7,7 +7,7 @@
 
 use crate::env::{Env, ShellVar};
 use crate::json::Document;
-use crate::wire::{Link, Resolved, SlotState, ToolState};
+use crate::wire::{Attention, Link, Resolved, SlotState, ToolState};
 use std::path::{Path, PathBuf};
 
 /// One place a value can come from, in the order a slot consults them.
@@ -383,4 +383,43 @@ fn clear(doc: &mut Document, env: &Env, var: &str) -> Result<(), JsonError> {
         doc.set_string(&["env", var], "")?;
     }
     Ok(())
+}
+
+/// The adapter, as the core sees it. The free functions above stay: the golden harness reaches for
+/// `owned_paths` directly, and a trait method nobody but a test calls is interface nobody needs.
+pub struct Claude;
+
+impl super::Adapter for Claude {
+    fn name(&self) -> &'static str {
+        "claude"
+    }
+
+    fn config_path(&self, env: &Env) -> PathBuf {
+        env.home().join(".claude").join("settings.json")
+    }
+
+    fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
+        effective_state(env).map_err(|e| format!("{e:?}"))
+    }
+
+    fn plan_switch(
+        &self,
+        env: &Env,
+        assignment: &ToolAssignment,
+        provider: Option<&Provider>,
+    ) -> Result<(Vec<Action>, Vec<Attention>), String> {
+        // Claude Code has nothing to report alongside a successful switch yet, so the attention
+        // list is always empty here. It is in the signature because Codex has one and the core
+        // must not care which is which.
+        plan_switch(env, assignment, provider)
+            .map(|actions| (actions, Vec::new()))
+            .map_err(|e| format!("{e:?}"))
+    }
+
+    fn fingerprint(
+        &self,
+        assignment: &ToolAssignment,
+    ) -> std::collections::BTreeMap<String, String> {
+        fingerprint(assignment)
+    }
 }

@@ -389,3 +389,36 @@ pub fn owned_paths(provider_id: Option<&str>) -> Vec<Vec<String>> {
     out.push(vec!["memories".to_string()]);
     out
 }
+
+/// The adapter, as the core sees it.
+pub struct Codex;
+
+impl super::Adapter for Codex {
+    fn name(&self) -> &'static str {
+        "codex"
+    }
+
+    fn config_path(&self, env: &Env) -> PathBuf {
+        config_path(env)
+    }
+
+    fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
+        effective_state(env).map_err(|e| format!("{e:?}"))
+    }
+
+    fn plan_switch(
+        &self,
+        env: &Env,
+        assignment: &ToolAssignment,
+        provider: Option<&Provider>,
+    ) -> Result<(Vec<Action>, Vec<Attention>), String> {
+        plan_switch(env, assignment, provider).map_err(|e| format!("{e:?}"))
+    }
+
+    fn fingerprint(
+        &self,
+        assignment: &ToolAssignment,
+    ) -> std::collections::BTreeMap<String, String> {
+        fingerprint(assignment)
+    }
+}

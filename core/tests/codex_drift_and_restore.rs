@@ -191,3 +191,28 @@ fn the_snapshot_covers_a_tool_the_first_switch_did_not_touch() {
         "the snapshot did not record a file the first switch left alone"
     );
 }
+
+/// A restore reports every managed tool, like every other operation. It did not: the core
+/// enumerated its tools in five separate places and one of them was written before Codex existed.
+/// That omission is the evidence the adapter seam is real — the cost of not having one is a list
+/// somebody eventually forgets to extend.
+#[test]
+fn a_restore_reports_every_tool() {
+    let machine = Machine::new("cx-restore-reports");
+    machine.write_profiles(profiles());
+    machine.write_codex_config(b"model = \"gpt-5.6\"\n");
+    call(&machine, switch("glm"));
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "restore", "params": {"target": "snapshot"}}),
+    );
+
+    let reported: Vec<&str> = response["tools"]
+        .as_array()
+        .expect("tools")
+        .iter()
+        .filter_map(|t| t["tool"].as_str())
+        .collect();
+    assert_eq!(reported, vec!["claude", "codex"], "{response}");
+}

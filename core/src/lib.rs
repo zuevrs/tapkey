@@ -61,21 +61,14 @@ fn dispatch(env: &Env, request: &str) -> Response {
         );
     }
     match envelope.request {
-        Request::EffectiveState {} => {
-            let claude = match adapters::claude::effective_state(env) {
-                Ok(tool) => tool,
-                Err(e) => return refuse("unparsable", format!("{e:?}")),
-            };
-            let codex = match adapters::codex::effective_state(env) {
-                Ok(tool) => tool,
-                Err(e) => return refuse("unparsable", format!("{e:?}")),
-            };
-            Response::Ok {
+        Request::EffectiveState {} => match adapters::effective_state(env) {
+            Ok(tools) => Response::Ok {
                 ok: true,
                 outcome: None,
-                tools: vec![claude, codex],
-            }
-        }
+                tools,
+            },
+            Err(e) => refuse("unparsable", e),
+        },
         Request::Switch { profile_id } => switch(env, &profile_id),
         Request::Restore { target } => restore(env, target),
     }
@@ -125,32 +118,24 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         std::collections::BTreeMap::new();
     let mut attentions: std::collections::BTreeMap<&str, Vec<wire::Attention>> =
         std::collections::BTreeMap::new();
+    let adapters = adapters::all();
     for (tool, assignment, provider) in &assignments {
-        match *tool {
-            "claude" => match adapters::claude::plan_switch(env, assignment, *provider) {
-                Ok(a) => {
-                    for action in &a {
-                        tool_of.insert(action.path().clone(), "claude");
-                    }
-                    actions.extend(a);
+        // A profile naming a tool this core does not manage is not a reason to refuse the tools it
+        // does; the row simply has nowhere to land.
+        let Some(adapter) = adapters.iter().find(|a| a.name() == *tool) else {
+            continue;
+        };
+        match adapter.plan_switch(env, assignment, *provider) {
+            Ok((planned, attn)) => {
+                for action in &planned {
+                    tool_of.insert(action.path().clone(), adapter.name());
                 }
-                Err(e) => return refuse("unparsable", format!("{e:?}")),
-            },
-            "codex" => match adapters::codex::plan_switch(env, assignment, *provider) {
-                Ok((a, attn)) => {
-                    for action in &a {
-                        tool_of.insert(action.path().clone(), "codex");
-                    }
-                    actions.extend(a);
-                    if !attn.is_empty() {
-                        attentions.insert("codex", attn);
-                    }
+                actions.extend(planned);
+                if !attn.is_empty() {
+                    attentions.insert(adapter.name(), attn);
                 }
-                Err(e) => return refuse("unparsable", format!("{e:?}")),
-            },
-            // A profile naming a tool this core does not manage is not a reason to refuse the
-            // tools it does; the row simply has nowhere to land.
-            _ => continue,
+            }
+            Err(e) => return refuse("unparsable", e),
         }
     }
 
@@ -175,12 +160,12 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     // rather than only the touched ones: full restoration is its job. With one tool the two sets
     // were the same and this read as an ordinary capture; with two they part, and a snapshot of
     // only the touched file would leave the other tool nothing to come back to.
-    let snapshot_actions: Vec<transaction::Action> = managed_files(env)
+    let snapshot_actions: Vec<transaction::Action> = adapters::managed_files(env)
         .keys()
         .map(|path| transaction::Action::Delete { path: path.clone() })
         .collect();
     let everything = transaction::Transaction::new(snapshot_actions);
-    let all_managed = match everything.capture(&**disk, &managed_files(env)) {
+    let all_managed = match everything.capture(&**disk, &adapters::managed_files(env)) {
         Ok(c) => c,
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
@@ -219,30 +204,22 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     // Drift needs something to compare against, and it is written only after the change stuck.
     let mut owned = std::collections::BTreeMap::new();
     for (tool, assignment, _) in &assignments {
-        let per_slot = match *tool {
-            "claude" => adapters::claude::fingerprint(assignment),
-            "codex" => adapters::codex::fingerprint(assignment),
-            _ => continue,
+        let Some(adapter) = adapters.iter().find(|a| a.name() == *tool) else {
+            continue;
         };
-        owned.insert((*tool).to_string(), per_slot);
+        owned.insert((*tool).to_string(), adapter.fingerprint(assignment));
     }
     let _ = fingerprint::State::write(&env.store().join("state.json"), &profile.name, owned);
 
     // Read back rather than reporting what was written: the invariant forbids reporting intent,
     // and reading back is the only way a project config or a shell export that beat us shows up.
-    let mut tools = Vec::new();
-    for read in [
-        adapters::claude::effective_state(env).map_err(|e| format!("{e:?}")),
-        adapters::codex::effective_state(env).map_err(|e| format!("{e:?}")),
-    ] {
-        match read {
-            Ok(mut tool) => {
-                if let Some(attn) = attentions.remove(tool.tool) {
-                    tool.attentions = attn;
-                }
-                tools.push(tool);
-            }
-            Err(e) => return refuse("unparsable", e),
+    let mut tools = match adapters::effective_state(env) {
+        Ok(tools) => tools,
+        Err(e) => return refuse("unparsable", e),
+    };
+    for tool in tools.iter_mut() {
+        if let Some(attn) = attentions.remove(tool.tool) {
+            tool.attentions = attn;
         }
     }
     Response::Ok {
@@ -288,7 +265,7 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
     let mut disk = env.filesystem();
     // A restore touches whatever the snapshot held, so which tool each file belongs to is read
     // back from the paths the adapters own rather than assumed.
-    let tool_of = managed_files(env);
+    let tool_of = adapters::managed_files(env);
     let captured = match transaction.capture(&**disk, &tool_of) {
         Ok(c) => c,
         Err(e) => return refuse("permission_denied", e.to_string()),
@@ -324,13 +301,13 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
         );
     }
 
-    match adapters::claude::effective_state(env) {
-        Ok(tool) => Response::Ok {
+    match adapters::effective_state(env) {
+        Ok(tools) => Response::Ok {
             ok: true,
             outcome: Some("applied"),
-            tools: vec![tool],
+            tools,
         },
-        Err(e) => refuse("unparsable", format!("{e:?}")),
+        Err(e) => refuse("unparsable", e),
     }
 }
 
@@ -339,15 +316,6 @@ fn refuse(kind: &'static str, detail: String) -> Response {
         ok: false,
         failure: Failure { kind, detail },
     }
-}
-
-/// Every file the managed tools own, and which tool owns it. The snapshot goes over all of them
-/// rather than only the ones a switch touched: full restoration is its job.
-fn managed_files(env: &Env) -> std::collections::BTreeMap<std::path::PathBuf, &'static str> {
-    let mut out = std::collections::BTreeMap::new();
-    out.insert(env.home().join(".claude").join("settings.json"), "claude");
-    out.insert(adapters::codex::config_path(env), "codex");
-    out
 }
 
 #[cfg(test)]
