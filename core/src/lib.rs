@@ -339,7 +339,7 @@ fn switch(env: &Env, profile_id: &str) -> Response {
                 kind: "write_failed",
                 detail: format!(
                     "{}: {} — {} file(s) restored",
-                    rolled_back.failed_at.display(),
+                    adapters::wire_path(&rolled_back.failed_at),
                     rolled_back.reason,
                     rolled_back.restored
                 ),
@@ -432,7 +432,7 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
                 kind: "write_failed",
                 detail: format!(
                     "{}: {}",
-                    rolled_back.failed_at.display(),
+                    adapters::wire_path(&rolled_back.failed_at),
                     rolled_back.reason
                 ),
             },
@@ -845,7 +845,7 @@ fn remove_provider(env: &Env, id: &str) -> Response {
                 kind: "write_failed",
                 detail: format!(
                     "{}: {} — {} file(s) restored",
-                    rolled_back.failed_at.display(),
+                    adapters::wire_path(&rolled_back.failed_at),
                     rolled_back.reason,
                     rolled_back.restored
                 ),
