@@ -119,6 +119,37 @@ impl Machine {
         std::fs::write(path, bytes).expect("write");
     }
 
+    // -- Codex. Always raw bytes: TOML's layout is the thing the editor promises to keep, so a
+    // -- helper that serialised a structure would be testing something other than the file.
+
+    pub fn write_codex_config(&self, bytes: &[u8]) {
+        let path = self.home().join(".codex").join("config.toml");
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
+        std::fs::write(path, bytes).expect("write");
+    }
+
+    pub fn write_codex_project_config(&self, bytes: &[u8]) {
+        let path = self.project().join(".codex").join("config.toml");
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
+        std::fs::write(path, bytes).expect("write");
+    }
+
+    /// Measured: the gate keys on the **repo root**, and the entry lives in the *user's* config.
+    /// Without it the project file is ignored entirely, and Codex says nothing about it.
+    pub fn trust_codex_project(&self) {
+        let path = self.home().join(".codex").join("config.toml");
+        let mut bytes = std::fs::read(&path).unwrap_or_default();
+        bytes.extend_from_slice(
+            format!(
+                "\n[projects.\"{}\"]\ntrust_level = \"trusted\"\n",
+                self.project().display()
+            )
+            .as_bytes(),
+        );
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
+        std::fs::write(path, bytes).expect("write");
+    }
+
     pub fn env(&self) -> Env {
         // A fixed clock, so a backup's name is the same on every run.
         let env = Env::for_test(self.home(), self.store())

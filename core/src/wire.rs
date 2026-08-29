@@ -107,5 +107,13 @@ pub struct Link {
     /// session it has no access to. Such a scope is named rather than omitted, and can never
     /// be said to win.
     pub observable: bool,
+    /// Present only where a gate decides whether the scope counts at all, and `false` when it is
+    /// shut. Codex's project layer is read only if the *user's* config trusts the repository root,
+    /// and when it does not, the tool ignores the file **and says nothing** — so this is the one
+    /// place where a file that lost is worth showing, because the person can open the gate.
+    /// A scope the tool simply never consults for a key is omitted instead; showing it as having
+    /// lost would invite editing a file that was never involved.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trusted: Option<bool>,
     pub wins: bool,
 }

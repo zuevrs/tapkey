@@ -173,6 +173,7 @@ fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
                         key: path.join("."),
                         value: doc.get_string(path).map(str::to_owned),
                         observable: true,
+                        trusted: None,
                         wins: false,
                     });
                 }
@@ -185,6 +186,7 @@ fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
                         key: name.to_string(),
                         value: doc.get_string(&["env", name]).map(str::to_owned),
                         observable: true,
+                        trusted: None,
                         wins: false,
                     });
                 }
@@ -200,6 +202,7 @@ fn resolve(env: &Env, files: &Files, sources: &[Source]) -> Resolved {
                         Some(ShellVar::SetButWithheld) | None => None,
                     },
                     observable: true,
+                    trusted: None,
                     wins: false,
                 });
             }
@@ -221,6 +224,7 @@ fn unseen(scope: &'static str, why: &str, key: &str) -> Link {
         key: key.to_string(),
         value: None,
         observable: false,
+        trusted: None,
         wins: false,
     }
 }

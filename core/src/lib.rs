@@ -61,14 +61,21 @@ fn dispatch(env: &Env, request: &str) -> Response {
         );
     }
     match envelope.request {
-        Request::EffectiveState {} => match adapters::claude::effective_state(env) {
-            Ok(tool) => Response::Ok {
+        Request::EffectiveState {} => {
+            let claude = match adapters::claude::effective_state(env) {
+                Ok(tool) => tool,
+                Err(e) => return refuse("unparsable", format!("{e:?}")),
+            };
+            let codex = match adapters::codex::effective_state(env) {
+                Ok(tool) => tool,
+                Err(e) => return refuse("unparsable", format!("{e:?}")),
+            };
+            Response::Ok {
                 ok: true,
                 outcome: None,
-                tools: vec![tool],
-            },
-            Err(e) => refuse("unparsable", format!("{e:?}")),
-        },
+                tools: vec![claude, codex],
+            }
+        }
         Request::Switch { profile_id } => switch(env, &profile_id),
         Request::Restore { target } => restore(env, target),
     }

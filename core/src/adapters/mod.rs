@@ -2,3 +2,4 @@
 //! be tested against two shapes rather than guessed from one.
 
 pub mod claude;
+pub mod codex;
