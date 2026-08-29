@@ -69,6 +69,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
                 ok: true,
                 outcome: None,
                 tools,
+                backup: None,
             },
             Err(e) => refuse("unparsable", e),
         },
@@ -330,6 +331,10 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     {
         return refuse("permission_denied", "could not record a backup".into());
     }
+    // The newest entry is the one just written (ADR-0019: named by UTC instant, ordered by the
+    // manifest; the instant is this run's, and the clock is the caller's). Named here so Undo can
+    // restore exactly this backup without browsing the store.
+    let backup_id = store::newest_backup(env.store());
 
     if let Err(rolled_back) = transaction.apply(&mut **disk) {
         return Response::Failed {
@@ -375,6 +380,7 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         ok: true,
         outcome: Some("applied"),
         tools,
+        backup: backup_id,
     }
 }
 
@@ -455,6 +461,7 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
             ok: true,
             outcome: Some("applied"),
             tools,
+            backup: None,
         },
         Err(e) => refuse("unparsable", e),
     }

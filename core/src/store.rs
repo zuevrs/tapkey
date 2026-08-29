@@ -339,3 +339,15 @@ fn file_name(path: &Path) -> String {
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_default()
 }
+
+/// The id of the newest backup, or `None` when the store holds none. The manifest orders them and
+/// the instant names them; both are this module's business, so "which one did I just take" is too.
+pub fn newest_backup(root: &Path) -> Option<String> {
+    let mut ids: Vec<_> = fs::read_dir(root.join("backups"))
+        .ok()?
+        .flatten()
+        .map(|e| e.file_name().to_string_lossy().into_owned())
+        .collect();
+    ids.sort();
+    ids.pop()
+}

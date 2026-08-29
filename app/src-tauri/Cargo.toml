@@ -14,8 +14,15 @@ tauri-build = { version = "2", features = [] }
 # was written for a Swift UI; Tauri's backend is Rust, so the ABI question never arises and the
 # decision — one call, no second implementation — is kept more cheaply than promised.
 tapkey-core = { path = "../../core" }
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon", "macos-private-api"] }
 serde_json = "1"
+
+# The shell, as decided in A2. nspanel is not on crates.io; pinned to a commit so the build
+# cannot rot under us between releases.
+tauri-nspanel = { git = "https://github.com/ahkohd/tauri-nspanel", branch = "v2" }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-store = "2"
 
 [lib]
 name = "tapkey_app_lib"

@@ -96,6 +96,11 @@ pub enum Response {
         #[serde(skip_serializing_if = "Option::is_none")]
         outcome: Option<&'static str>,
         tools: Vec<ToolState>,
+        /// The id of the backup a successful switch took, so Undo can name it without browsing
+        /// the store. Absent for a read, a refusal, and a rollback — the last changed nothing
+        /// that survived to be undone.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        backup: Option<String>,
     },
     /// A rollback undid work already done, which a refusal did not — the difference matters to
     /// the person reading it, so it is named rather than inferred from an error.

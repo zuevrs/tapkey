@@ -255,3 +255,28 @@ fn a_failing_write_rolls_back_and_says_so() {
         "the file the switch failed on must be exactly as it was"
     );
 }
+
+/// Undo is one click and has no room for guessing: the response names the backup the switch took,
+/// so the app can restore *that* backup without reading the store — which is the core's, not its
+/// to browse.
+#[test]
+fn a_switch_names_the_backup_it_took() {
+    let machine = Machine::new("sw-names-backup");
+    machine.write_profiles(json!({"providers": [
+        {"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic",
+         "formats": ["anthropic_messages"], "enabled": true}
+    ], "profiles": [{
+        "id": "glm", "name": "Z.ai GLM",
+        "tools": {"claude": {"provider": "zai", "slots": {"main": "glm-5.3"}}}
+    }]}));
+    machine.write_user_settings_raw(b"{\n  \"theme\": \"dark\"\n}\n");
+
+    let response = call(&machine, switch("glm"));
+
+    assert_eq!(response["outcome"], json!("applied"), "{response}");
+    let backup = response["backup"].as_str().expect("the backup is named");
+    assert!(
+        machine.store().join("backups").join(backup).exists(),
+        "the named backup exists in the store: {backup}"
+    );
+}

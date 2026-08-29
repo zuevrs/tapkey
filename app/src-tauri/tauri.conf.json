@@ -7,16 +7,53 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [],
+    "windows": [
+      {
+        "label": "panel",
+        "url": "index.html",
+        "visible": false,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "skipTaskbar": true,
+        "hiddenTitle": true,
+        "width": 380,
+        "height": 320
+      },
+      {
+        "label": "hud",
+        "url": "index.html",
+        "visible": false,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "skipTaskbar": true,
+        "hiddenTitle": true,
+        "width": 260,
+        "height": 64
+      },
+      {
+        "label": "settings",
+        "url": "index.html",
+        "visible": false,
+        "title": "tapkey",
+        "width": 720,
+        "height": 480
+      }
+    ],
     "security": {
       "csp": null
-    }
+    },
+    "macOSPrivateApi": true
   },
   "bundle": {
     "active": true,
     "targets": "all",
     "icon": [
       "icons/icon.png"
-    ]
+    ],
+    "macOS": {
+      "info-plist": "Info.plist"
+    }
   }
 }
