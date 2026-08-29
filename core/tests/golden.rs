@@ -196,7 +196,7 @@ fn visible(bytes: &[u8]) -> String {
 fn check_properties(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
     no_stray_files(case);
     idempotent(case, produced);
-    untouched_bytes_survive(case);
+    untouched_bytes_survive(case, produced);
     restore_returns_the_original(case);
 }
 
@@ -241,26 +241,108 @@ fn idempotent(case: &Case, first: &BTreeMap<String, Vec<u8>>) {
 
 /// The one `CLAUDE.md` calls the test that matters most, phrased so a machine checks it: with
 /// the keys tapkey may write cut out of both, what is left has to be identical.
-fn untouched_bytes_survive(case: &Case) {
-    for relative in settings_files(&case.dir.join("before")) {
+fn untouched_bytes_survive(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
+    let mut checked = 0usize;
+    let files = settings_files(&case.dir.join("before"));
+    for relative in &files {
+        let relative = relative.clone();
         let before = std::fs::read(case.dir.join("before").join(&relative)).expect("before");
         let Ok(after) = std::fs::read(case.work.path().join(&relative)) else {
             continue; // the case is about the file going away
         };
-        let (Ok(b), Ok(a)) = (
-            tapkey_core::json::Document::parse(&before),
-            tapkey_core::json::Document::parse(&after),
-        ) else {
-            continue; // an unparsable case has its own expectation
+        // Two formats, two readers, one property. They are not behind an interface: one preserves
+        // bytes by construction and the other by restoration, and an interface fitted to both
+        // would make each side worse. What is shared is the sentence, not the code.
+        let cut = match relative.extension().and_then(|e| e.to_str()) {
+            Some("toml") => excise_toml(&before, &after),
+            _ => excise_json(&before, &after),
         };
+        let Some((left, right)) = cut else {
+            // A skip is allowed only where the case is *about* a file we could not read, and the
+            // response says so. Left as a bare `continue`, a reader that stopped working would
+            // take this property down with it in silence — measured: disabling the TOML half
+            // outright left all seventeen cases green.
+            assert!(
+                refused(produced),
+                "{}: {} could not be read, and the response does not say the switch was refused — \
+                 a property that skips itself is not a property",
+                case.name,
+                relative.display()
+            );
+            continue;
+        };
+        checked += 1;
         assert_eq!(
-            excise(&before, &b),
-            excise(&after, &a),
+            left,
+            right,
             "{}: {} changed outside the keys tapkey owns",
             case.name,
             relative.display()
         );
     }
+
+    // And the count is asserted, so a property that stopped running for a whole format shows up
+    // as a failure rather than as a suspiciously quick pass.
+    assert!(
+        checked > 0 || files.is_empty() || refused(produced),
+        "{}: the merge-never-own property compared nothing",
+        case.name
+    );
+}
+
+/// Whether the response reports a refusal, which is the only licence to skip a file.
+fn refused(produced: &BTreeMap<String, Vec<u8>>) -> bool {
+    produced
+        .get("response.json")
+        .and_then(|b| serde_json::from_slice::<serde_json::Value>(b).ok())
+        .map(|v| v["ok"] == serde_json::json!(false))
+        .unwrap_or(false)
+}
+
+fn excise_json(before: &[u8], after: &[u8]) -> Option<(String, String)> {
+    let b = tapkey_core::json::Document::parse(before).ok()?;
+    let a = tapkey_core::json::Document::parse(after).ok()?;
+    Some((excise(before, &b), excise(after, &a)))
+}
+
+/// The TOML half of the same sentence. `toml_edit`'s **editable** document carries no spans at all
+/// — not merely after an edit, but ever — so the spans come from a read-only type, and they are
+/// mapped back to the coordinates of the original bytes, which a BOM shifts by three and each CRLF
+/// by one more.
+fn excise_toml(before: &[u8], after: &[u8]) -> Option<(String, String)> {
+    let b = tapkey_core::toml::Spans::of(before).ok()?;
+    let a = tapkey_core::toml::Spans::of(after).ok()?;
+    let owned = tapkey_core::adapters::codex::owned_paths(Some("zai"));
+    Some((cut_spans(before, &b, &owned), cut_spans(after, &a, &owned)))
+}
+
+fn cut_spans(bytes: &[u8], spans: &tapkey_core::toml::Spans, owned: &[Vec<String>]) -> String {
+    let mut cuts: Vec<std::ops::Range<usize>> = owned
+        .iter()
+        .filter_map(|path| {
+            let steps: Vec<&str> = path.iter().map(String::as_str).collect();
+            // A table tapkey created is cut whole, header line included: a member's span covers a
+            // key and its value, which for a table is only the `[header]`, and leaving the body
+            // behind would compare our own keys against nothing.
+            spans.table(&steps).or_else(|| spans.member(&steps))
+        })
+        .collect();
+    cuts.sort_by_key(|r| r.start);
+
+    let mut kept = Vec::new();
+    let mut cursor = 0;
+    for cut in cuts {
+        if cut.start < cursor {
+            continue;
+        }
+        kept.extend_from_slice(&bytes[cursor..cut.start]);
+        cursor = cut.end;
+    }
+    kept.extend_from_slice(&bytes[cursor..]);
+    String::from_utf8_lossy(&kept)
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 /// Everything but the members tapkey may write, with the separators around them collapsed so

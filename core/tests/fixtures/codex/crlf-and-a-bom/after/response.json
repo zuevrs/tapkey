@@ -1,0 +1,434 @@
+{
+  "ok": true,
+  "outcome": "applied",
+  "tools": [
+    {
+      "endpoint": {
+        "chain": [
+          {
+            "key": "",
+            "observable": false,
+            "scope": "command line",
+            "source": "--settings or a per-key flag",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "ANTHROPIC_BASE_URL",
+            "observable": true,
+            "scope": "shell",
+            "source": "login shell",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "",
+            "observable": false,
+            "scope": "cloud session",
+            "source": "reads neither user settings nor the shell",
+            "value": null,
+            "wins": false
+          }
+        ],
+        "effective": null
+      },
+      "slots": [
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "session",
+              "source": "/model during a session",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_SMALL_FAST_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "CLAUDE_CODE_SUBAGENT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "opus"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "sonnet"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_FABLE_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "fable"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "advisor"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "fallback"
+        }
+      ],
+      "tool": "claude"
+    },
+    {
+      "endpoint": {
+        "chain": [
+          {
+            "key": "model_providers.<id>.base_url",
+            "observable": true,
+            "scope": "user",
+            "source": "<home>/.codex/config.toml",
+            "value": "https://api.z.ai/api/v1",
+            "wins": true
+          }
+        ],
+        "effective": "https://api.z.ai/api/v1"
+      },
+      "slots": [
+        {
+          "chain": [
+            {
+              "key": "model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": "glm-5.3",
+              "wins": true
+            }
+          ],
+          "drifted": false,
+          "effective": "glm-5.3",
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [
+            {
+              "key": "review_model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "review"
+        },
+        {
+          "chain": [
+            {
+              "key": "agents.default_subagent_model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [
+            {
+              "key": "memories.extract_model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": "glm-4.6-air",
+              "wins": true
+            }
+          ],
+          "drifted": false,
+          "effective": "glm-4.6-air",
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [
+            {
+              "key": "memories.consolidation_model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": "glm-4.6-air",
+              "wins": true
+            }
+          ],
+          "drifted": false,
+          "effective": "glm-4.6-air",
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [
+            {
+              "key": "model_reasoning_effort",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "effort"
+        },
+        {
+          "chain": [
+            {
+              "key": "model_verbosity",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.codex/config.toml",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "verbosity"
+        }
+      ],
+      "tool": "codex"
+    }
+  ]
+}

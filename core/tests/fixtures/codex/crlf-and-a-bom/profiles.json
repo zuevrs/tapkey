@@ -1,0 +1,23 @@
+{
+  "providers": [
+    {
+      "id": "zai",
+      "name": "Z.ai",
+      "base_url": "https://api.z.ai/api/v1",
+      "formats": ["openai_responses"],
+      "enabled": true
+    }
+  ],
+  "profiles": [
+    {
+      "id": "zai",
+      "name": "Z.ai GLM",
+      "tools": {
+        "codex": {
+          "provider": "zai",
+          "slots": { "main": "glm-5.3", "utility": "glm-4.6-air" }
+        }
+      }
+    }
+  ]
+}

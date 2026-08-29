@@ -67,7 +67,10 @@ impl Envelope {
             body.to_vec()
         };
 
-        let final_newline = unified.last() == Some(&b'\n');
+        // An empty input is not a file that lacks a trailing newline; it is a file with no
+        // envelope at all. A file tapkey creates should look like every other file on the disk,
+        // and Codex writes a final newline too.
+        let final_newline = unified.is_empty() || unified.last() == Some(&b'\n');
         let newlines = unified
             .iter()
             .enumerate()
@@ -154,9 +157,15 @@ impl Document {
 
         let mut table = self.inner.as_table_mut();
         for step in parents {
-            let entry = table
-                .entry(step)
-                .or_insert_with(|| toml_edit::Item::Table(toml_edit::Table::new()));
+            let entry = table.entry(step).or_insert_with(|| {
+                let mut created = toml_edit::Table::new();
+                // Implicit, so `[model_providers]` is not rendered as an empty section above
+                // `[model_providers.tapkey-zai]`. Codex would not have written that header, and a
+                // section that appears in somebody's file because tapkey needed a parent is
+                // exactly the kind of visible change ADR-0004 exists to prevent.
+                created.set_implicit(true);
+                toml_edit::Item::Table(created)
+            });
             table = match entry.as_table_mut() {
                 Some(t) => t,
                 None => return Err(Error::NotATable(step.to_string())),
@@ -221,6 +230,39 @@ impl Spans {
     /// the bytes handed in. `toml_edit` reports over the body, which has had its envelope stripped,
     /// so every offset is short by the BOM and by one more for each CRLF before it. An unmapped
     /// span would excise the wrong bytes and leave the property passing while checking nothing.
+    /// The byte range of a whole **table**: its `[header]` line and everything under it.
+    ///
+    /// A member's span covers a key and its value, which for a table is only the header — the body
+    /// sits outside it. The harness needs the whole thing, because a table tapkey created is ours
+    /// entirely while every key in it is ours, and cutting only the header would leave our own
+    /// keys behind on one side of the comparison.
+    pub fn table(&self, path: &[&str]) -> Option<std::ops::Range<usize>> {
+        let mut item = self.inner.as_item();
+        for step in path {
+            item = item.get(step)?;
+        }
+        let table = item.as_table()?;
+
+        // Walk back from the header key to the start of its line, so the `[` and any indentation
+        // go with it.
+        let header = item.span()?.start;
+        let body = self.inner.raw().as_bytes();
+        let line_start = body[..header]
+            .iter()
+            .rposition(|b| *b == b'\n')
+            .map_or(0, |i| i + 1);
+
+        let end = table
+            .iter()
+            .filter_map(|(key, _)| table.get_key_value(key))
+            .filter_map(|(_, value)| value.span())
+            .map(|s| s.end)
+            .max()
+            .unwrap_or(item.span()?.end);
+
+        Some(self.envelope.to_original(line_start)..self.envelope.to_original(end))
+    }
+
     pub fn member(&self, path: &[&str]) -> Option<std::ops::Range<usize>> {
         let (last, parents) = path.split_last()?;
 

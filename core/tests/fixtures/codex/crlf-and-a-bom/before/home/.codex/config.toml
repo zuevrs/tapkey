@@ -1,0 +1,5 @@
+﻿# a windows checkout
+model = "gpt-5.6"
+
+[mcp_servers.notes]
+command = "/usr/local/bin/notes-mcp"

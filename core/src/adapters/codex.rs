@@ -368,3 +368,24 @@ pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<St
     }
     out
 }
+
+/// Every path tapkey may write, for the golden harness's mechanical statement of
+/// `merge-never-own`: `before` minus these, cut out, must equal `after` minus the same.
+///
+/// The provider entry is included as a whole table. A table tapkey created is ours entirely while
+/// every key in it is ours — the rule stage one settled for a created `env` block — and the harness
+/// decides that per case rather than trusting an edit log.
+pub fn owned_paths(provider_id: Option<&str>) -> Vec<Vec<String>> {
+    let mut out: Vec<Vec<String>> = vec![vec!["model_provider".to_string()]];
+    for spec in SLOTS.iter().filter(|s| s.owned) {
+        out.push(spec.path.iter().map(|s| (*s).to_string()).collect());
+    }
+    if let Some(id) = provider_id {
+        out.push(vec!["model_providers".to_string(), table_id(id)]);
+    }
+    // The tables our slots live in are ours too when we created them, and the harness cuts a
+    // created table whole. `[memories]` holds only keys tapkey writes; `[agents]` does not
+    // necessarily, so it is left to be cut key by key.
+    out.push(vec!["memories".to_string()]);
+    out
+}

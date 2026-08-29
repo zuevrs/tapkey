@@ -1,0 +1,7 @@
+# Written by hand, months ago.
+model = "gpt-5.6"
+approval_policy   = "on-request"   # deliberately aligned
+
+[mcp_servers.notes]
+command = "/usr/local/bin/notes-mcp"
+args    = ["--stdio"]

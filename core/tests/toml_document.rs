@@ -178,3 +178,14 @@ fn a_span_covers_the_key_as_well_as_the_value() {
 
     assert_eq!(&source[span], b"model = \"gpt-5.6\"");
 }
+
+/// An empty input is not a file without a trailing newline — it is a file with no envelope at all,
+/// and a created file should look like every other file on the disk. Codex writes one; so do we.
+#[test]
+fn a_file_created_from_nothing_ends_with_a_newline() {
+    let mut document = Document::parse(b"").expect("an absent file parses as an empty one");
+
+    document.set_string(&["model"], "glm-5.3").expect("sets");
+
+    assert_eq!(document.to_bytes(), b"model = \"glm-5.3\"\n");
+}

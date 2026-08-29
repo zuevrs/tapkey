@@ -1,0 +1,7 @@
+{
+  "failure": {
+    "detail": "Syntax(\"TOML parse error at line 2, column 1\")",
+    "kind": "unparsable"
+  },
+  "ok": false
+}

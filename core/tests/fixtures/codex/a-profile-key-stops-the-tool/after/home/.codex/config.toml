@@ -1,0 +1,3 @@
+# A leftover from before 0.134: Codex refuses to start while this is here.
+profile = "work"
+model = "gpt-5.6"

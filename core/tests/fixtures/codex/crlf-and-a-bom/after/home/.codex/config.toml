@@ -1,0 +1,15 @@
+﻿# a windows checkout
+model = "glm-5.3"
+model_provider = "tapkey-zai"
+
+[mcp_servers.notes]
+command = "/usr/local/bin/notes-mcp"
+
+[model_providers.tapkey-zai]
+name = "Z.ai"
+base_url = "https://api.z.ai/api/v1"
+wire_api = "responses"
+
+[memories]
+extract_model = "glm-4.6-air"
+consolidation_model = "glm-4.6-air"
