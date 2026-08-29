@@ -250,8 +250,8 @@ fn scope_path(env: &Env, scope: &str) -> Option<PathBuf> {
 /// Paths are reported as the person would type them, so a chain reads like their filesystem.
 fn display_path(path: &Path, env: &Env) -> String {
     match path.strip_prefix(env.home()) {
-        Ok(rest) => format!("~/{}", rest.display()),
-        Err(_) => path.display().to_string(),
+        Ok(rest) => format!("~/{}", super::wire_path(rest)),
+        Err(_) => super::wire_path(path),
     }
 }
 

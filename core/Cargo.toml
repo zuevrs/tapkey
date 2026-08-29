@@ -51,6 +51,16 @@ keyring = "4"
 [target.'cfg(windows)'.dependencies]
 keyring = "4"
 
+# LockFileEx, ReplaceFileW, FlushFileBuffers — the Windows half of the platform seams (ADR-0018,
+# the advisory lock). Same major the keyring store already pulls, so no second copy of the world.
+[target.'cfg(windows)'.dependencies.windows-sys]
+version = "0.61"
+features = [
+    "Win32_Foundation",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+]
+
 [target.'cfg(unix)'.dependencies]
 # For `flock`, and on Darwin for `fcntl(fd, F_FULLFSYNC)`: there a plain `fsync` returns once the
 # data reaches the drive's cache rather than the platter, and the standard library offers no way

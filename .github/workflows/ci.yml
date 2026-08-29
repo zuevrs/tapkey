@@ -56,11 +56,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      # Check, not test: the Windows seam is decided but not built, and this job exists so the
-      # platform stays compiled — portability that is not compiled has already rotted (ADR-0016).
-      # It landed before any Windows-specific implementation, as the seam ticket required.
-      - name: Check
-        run: cargo check --workspace --all-targets
+      # Tests, not just a check: the seam is now implemented, and the tests are the measurement
+      # the seam ticket said Windows deserved. A check alone would let a lying stub stay green.
+      - name: Test
+        run: cargo test --workspace --all-targets
 
   msrv:
     name: oldest supported Rust

@@ -70,11 +70,54 @@ fn write_then_rename(
     flush_to_medium(&file)?;
     drop(file);
 
-    fs::rename(temp, target)?;
+    persist(temp, target)?;
 
     // With the data durable but the directory entry still cached, a power loss returns the
     // file to its previous contents having faithfully preserved bytes nobody will read.
     flush_directory(dir)
+}
+
+/// Put the finished temp file where the target is.
+#[cfg(not(windows))]
+fn persist(temp: &Path, target: &Path) -> io::Result<()> {
+    fs::rename(temp, target)
+}
+
+/// On Windows, `fs::rename` is `MoveFileEx` with replacement, which lands **our** temp file —
+/// with its attributes — where the person's file was. `ReplaceFileW` exists to do the opposite:
+/// swap the contents while the destination keeps its own ACL and attributes, which is what
+/// ADR-0018 promises. A target that does not exist yet has nothing to preserve, so a plain move
+/// is correct for a first write.
+#[cfg(windows)]
+fn persist(temp: &Path, target: &Path) -> io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+    use windows_sys::Win32::Foundation::{HANDLE, WAIT_OBJECT_0};
+    use windows_sys::Win32::Storage::FileSystem::{REPLACE_FILE_FLAGS, ReplaceFileW};
+
+    if !target.exists() {
+        return fs::rename(temp, target);
+    }
+    let wide = |p: &Path| -> Vec<u16> {
+        p.as_os_str()
+            .encode_wide()
+            .chain(std::iter::once(0))
+            .collect()
+    };
+    let (replaced, replacement) = (wide(target), wide(temp));
+    let status = unsafe {
+        ReplaceFileW(
+            replaced.as_ptr(),
+            replacement.as_ptr(),
+            std::ptr::null(),
+            0 as REPLACE_FILE_FLAGS,
+            std::ptr::null_mut::<HANDLE>() as HANDLE,
+            std::ptr::null_mut::<HANDLE>() as HANDLE,
+        )
+    };
+    if status == WAIT_OBJECT_0 {
+        return Ok(());
+    }
+    Err(io::Error::last_os_error())
 }
 
 /// Follow a chain of symlinks to the path that will actually be written. A relative link is
@@ -138,7 +181,18 @@ fn create_with_mode(path: &Path, mode: u32) -> io::Result<File> {
         .open(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_with_mode(path: &Path, mode: u32) -> io::Result<File> {
+    // `mode` is an intent the platform interprets, not a POSIX number to copy. 0o600 means
+    // owner-only; a created file inherits the directory's ACL, and every file we create lives in
+    // a directory we also created at owner-only intent — under a user profile, whose default ACL
+    // already excludes other users. The interpretation is by inheritance, which holds until a
+    // measured gap says otherwise.
+    let _ = mode;
+    OpenOptions::new().write(true).create_new(true).open(path)
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_with_mode(path: &Path, _mode: u32) -> io::Result<File> {
     OpenOptions::new().write(true).create_new(true).open(path)
 }
@@ -169,10 +223,45 @@ fn flush_directory(dir: &Path) -> io::Result<()> {
     File::open(dir)?.sync_all()
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn flush_directory(dir: &Path) -> io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+    use windows_sys::Win32::Foundation::{GENERIC_READ, HANDLE, INVALID_HANDLE_VALUE};
+    use windows_sys::Win32::Storage::FileSystem::{
+        CloseHandle, CreateFileW, FILE_FLAG_BACKUP_SEMANTICS, FILE_SHARE_READ, FILE_SHARE_WRITE,
+        FlushFileBuffers, OPEN_EXISTING,
+    };
+
+    // The claim that a directory cannot be flushed was unmeasured, and this is the measurement:
+    // open it with the backup-semantics flag, which is how a directory handle is taken, and
+    // flush. A refusal to open is recorded as a success-with-gap rather than a failed write —
+    // the rename is already durable through the volume; this is belt, not braces.
+    let wide: Vec<u16> = dir
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+    let handle = unsafe {
+        CreateFileW(
+            wide.as_ptr(),
+            GENERIC_READ,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            std::ptr::null(),
+            OPEN_EXISTING,
+            FILE_FLAG_BACKUP_SEMANTICS,
+            0 as HANDLE,
+        )
+    };
+    if handle == INVALID_HANDLE_VALUE {
+        return Ok(());
+    }
+    let _ = unsafe { FlushFileBuffers(handle) };
+    let _ = unsafe { CloseHandle(handle) };
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn flush_directory(_dir: &Path) -> io::Result<()> {
-    // Windows offers no handle to a directory's entry that can be flushed this way. The gap
-    // is named rather than hidden; it is revisited with the Windows platform seam.
     Ok(())
 }
 

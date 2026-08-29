@@ -178,7 +178,7 @@ fn endpoint(files: &Files) -> Resolved {
                 .map(str::to_owned)
         });
         chain.push(Link {
-            source: layer.path.display().to_string(),
+            source: super::wire_path(&layer.path),
             scope: layer.scope,
             key: "provider.<id>.options.baseURL".to_string(),
             value,
@@ -206,7 +206,7 @@ fn resolve(files: &Files, path: &[&str]) -> Resolved {
 
     for layer in &files.0 {
         chain.push(Link {
-            source: layer.path.display().to_string(),
+            source: super::wire_path(&layer.path),
             scope: layer.scope,
             key: path.join("."),
             value: layer.document.get_string(path).map(str::to_owned),
@@ -284,7 +284,10 @@ pub fn plan_switch(
         // credential leaks and a reference discloses a path instead.
         document.set_string(
             &["provider", &id, "options", "apiKey"],
-            &format!("{{file:{}}}", credential_path(env, &provider.id).display()),
+            &format!(
+                "{{file:{}}}",
+                super::wire_path(&credential_path(env, &provider.id))
+            ),
         )?;
         // Appended only where the list already exists: creating one would turn "no restriction"
         // into "exactly one" and disable every provider not named in it.

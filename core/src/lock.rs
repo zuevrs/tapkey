@@ -54,9 +54,38 @@ fn take(file: &File) -> Result<(), Busy> {
     Err(Busy(io::Error::last_os_error().to_string()))
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn take(file: &File) -> Result<(), Busy> {
+    use std::os::windows::io::AsRawHandle;
+    use windows_sys::Win32::Storage::FileSystem::{
+        LOCKFILE_EXCLUSIVE_LOCK, LOCKFILE_FAIL_IMMEDIATELY, LockFileEx,
+    };
+    use windows_sys::Win32::System::Threading::OVERLAPPED;
+
+    // Exclusive and immediate, over the whole 64-bit range — the byte-range form of what `flock`
+    // does on Unix. Like the descriptor there, the handle releases the lock when the process
+    // exits, which is why a dead process cannot hold one: the property locking.rs asserts.
+    let mut overlapped: OVERLAPPED = unsafe { std::mem::zeroed() };
+    let taken = unsafe {
+        LockFileEx(
+            file.as_raw_handle(),
+            LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY,
+            0,
+            u32::MAX,
+            u32::MAX,
+            &mut overlapped,
+        )
+    };
+    if taken != 0 {
+        return Ok(());
+    }
+    Err(Busy(std::io::Error::last_os_error().to_string()))
+}
+
+#[cfg(not(any(unix, windows)))]
 fn take(_file: &File) -> Result<(), Busy> {
-    // Windows has LockFileEx and no runner yet to prove it against. Named rather than silently
-    // succeeding, so the gap is collected along with the rest of the Windows seam.
-    Ok(())
+    // No platform seam on this target. Refusing rather than succeeding: "we cannot lock" is
+    // nearer to "busy" than to "free", and the side to be wrong on is the one where two processes
+    // do not write the same file.
+    Err(Busy("locking is not implemented on this platform".into()))
 }

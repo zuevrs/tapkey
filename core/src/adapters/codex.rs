@@ -182,7 +182,7 @@ pub fn plan_switch(
             Vec::new(),
             vec![Attention {
                 kind: "tool_will_not_start",
-                file: Some(path.display().to_string()),
+                file: Some(super::wire_path(&path)),
                 key: Some("profile".into()),
             }],
         ));
@@ -302,7 +302,7 @@ fn endpoint(files: &Files) -> Resolved {
             })
             .map(str::to_owned);
         chain.push(Link {
-            source: layer.path.display().to_string(),
+            source: super::wire_path(&layer.path),
             scope: scope_name(layer.scope),
             key: "model_providers.<id>.base_url".to_string(),
             value,
@@ -318,7 +318,7 @@ fn resolve(files: &Files, path: &[&str]) -> Resolved {
     let mut chain = Vec::new();
     for layer in files.0.iter().filter(|l| consulted(l, path[0])) {
         chain.push(Link {
-            source: layer.path.display().to_string(),
+            source: super::wire_path(&layer.path),
             scope: scope_name(layer.scope),
             key: path.join("."),
             value: layer.document.get_string(path).map(str::to_owned),

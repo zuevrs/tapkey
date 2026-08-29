@@ -116,6 +116,16 @@ pub enum CredentialSource {
     Absent,
 }
 
+/// A path as it appears on the wire: forward slashes, always.
+///
+/// Windows spells paths with `\`, and every path tapkey emits — chain sources, attention files,
+/// credential references — lands in a response the app and the golden fixtures compare across
+/// platforms. Normalising at birth means responses never contain a backslash, so no
+/// post-serialisation substitution can corrupt the JSON's own escapes.
+pub(crate) fn wire_path(path: &std::path::Path) -> String {
+    path.display().to_string().replace('\\', "/")
+}
+
 /// Every adapter, in the order tools appear on the wire.
 ///
 /// One list, so that adding a third tool is one edit rather than five. This is the function the
@@ -140,4 +150,23 @@ pub fn managed_files(env: &Env) -> BTreeMap<PathBuf, &'static str> {
 /// picture presented as a complete one is the thing "effective state over intent" forbids.
 pub fn effective_state(env: &Env) -> Result<Vec<ToolState>, String> {
     all().iter().map(|a| a.effective_state(env)).collect()
+}
+
+#[cfg(test)]
+mod wire_path_tests {
+    use super::wire_path;
+
+    #[test]
+    fn a_windows_spelled_path_comes_out_forward_slashed() {
+        let path = std::path::Path::new("C:\\Users\\me\\.codex\\config.toml");
+        assert_eq!(wire_path(path), "C:/Users/me/.codex/config.toml");
+    }
+
+    #[test]
+    fn a_unix_path_is_unchanged() {
+        assert_eq!(
+            wire_path(std::path::Path::new("/home/me/.codex/config.toml")),
+            "/home/me/.codex/config.toml"
+        );
+    }
 }
