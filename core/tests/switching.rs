@@ -11,11 +11,11 @@ fn switch(profile: &str) -> Value {
 }
 
 fn zai() -> Value {
-    json!({"profiles": [{
+    json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}, {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api/v1", "formats": ["anthropic_messages"], "enabled": true}, {"id": "x", "name": "X", "base_url": "https://x.test", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "zai",
         "name": "Z.ai GLM",
         "tools": {"claude": {
-            "endpoint": "https://api.z.ai/api/anthropic",
+            "provider": "zai",
             "slots": {"main": "glm-5.3", "utility": "glm-4.6-air"}
         }}
     }]})
@@ -121,9 +121,9 @@ fn the_deprecated_variable_is_not_created_where_it_was_absent() {
 #[test]
 fn a_pin_carries_its_display_name() {
     let machine = Machine::new("sw-pin");
-    machine.write_profiles(json!({"profiles": [{
+    machine.write_profiles(json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}, {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api/v1", "formats": ["anthropic_messages"], "enabled": true}, {"id": "x", "name": "X", "base_url": "https://x.test", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "or", "name": "OpenRouter",
-        "tools": {"claude": {"endpoint": "https://openrouter.ai/api/v1",
+        "tools": {"claude": {"provider": "openrouter",
                              "slots": {"opus": "deepseek/deepseek-v3.2"}}}
     }]}));
     machine.write_user_settings_raw(b"{}");
@@ -144,9 +144,9 @@ fn a_pin_carries_its_display_name() {
 #[test]
 fn no_assignment_removes_the_key_tapkey_wrote() {
     let machine = Machine::new("sw-remove");
-    machine.write_profiles(json!({"profiles": [{
+    machine.write_profiles(json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}, {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api/v1", "formats": ["anthropic_messages"], "enabled": true}, {"id": "x", "name": "X", "base_url": "https://x.test", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "bare", "name": "Bare",
-        "tools": {"claude": {"endpoint": "https://x.test", "slots": {"main": null}}}
+        "tools": {"claude": {"provider": "x", "slots": {"main": null}}}
     }]}));
     machine.write_user_settings_raw(br#"{"env":{"ANTHROPIC_MODEL":"was-here"}}"#);
 
@@ -160,9 +160,9 @@ fn no_assignment_removes_the_key_tapkey_wrote() {
 /// fingerprints in a file it claims to have cleaned.
 #[test]
 fn no_assignment_writes_an_empty_value_only_when_a_shell_export_exists() {
-    let profiles = json!({"profiles": [{
+    let profiles = json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}, {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api/v1", "formats": ["anthropic_messages"], "enabled": true}, {"id": "x", "name": "X", "base_url": "https://x.test", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "bare", "name": "Bare",
-        "tools": {"claude": {"endpoint": "https://x.test", "slots": {"main": null}}}
+        "tools": {"claude": {"provider": "x", "slots": {"main": null}}}
     }]});
 
     let quiet = Machine::new("sw-empty-none");

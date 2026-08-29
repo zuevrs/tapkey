@@ -93,9 +93,21 @@ fn switch(env: &Env, profile_id: &str) -> Response {
         );
     };
 
+    // A profile naming a provider the file does not hold is a broken instruction, not a condition
+    // of the machine, and it is caught before anything is staged.
+    let provider = match &assignment.provider {
+        Some(id) => match profiles.provider(id) {
+            Some(p) => Some(p),
+            None => {
+                return refuse("unknown_provider", format!("no provider named {id:?}"));
+            }
+        },
+        None => None,
+    };
+
     // Planned before anything is staged, so a file we cannot parse is a refusal rather than a
     // rollback: nothing was touched.
-    let actions = match adapters::claude::plan_switch(env, assignment) {
+    let actions = match adapters::claude::plan_switch(env, assignment, provider) {
         Ok(a) => a,
         Err(e) => return refuse("unparsable", format!("{e:?}")),
     };

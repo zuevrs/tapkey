@@ -6,9 +6,9 @@ mod support;
 use support::{Machine, call};
 
 fn zai() -> Value {
-    json!({"profiles": [{
+    json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "zai", "name": "Z.ai GLM",
-        "tools": {"claude": {"endpoint": "https://api.z.ai/api/anthropic",
+        "tools": {"claude": {"provider": "zai",
                              "slots": {"main": "glm-5.3"}}}
     }]})
 }

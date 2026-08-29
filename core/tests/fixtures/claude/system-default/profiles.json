@@ -1,9 +1,17 @@
 {
+  "providers": [],
   "profiles": [
     {
       "id": "system",
       "name": "System default",
-      "tools": { "claude": { "endpoint": null, "slots": { "main": null, "utility": null } } }
+      "tools": {
+        "claude": {
+          "slots": {
+            "main": null,
+            "utility": null
+          }
+        }
+      }
     }
   ]
 }

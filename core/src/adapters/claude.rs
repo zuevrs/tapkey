@@ -268,7 +268,7 @@ fn winning_value(chain: &[Link]) -> Option<String> {
 // -------------------------------------------------------------------------------------------
 
 use crate::json::Error as JsonError;
-use crate::profile::ToolAssignment;
+use crate::profile::{Provider, ToolAssignment};
 use crate::transaction::Action;
 
 /// Which environment variable each owned slot writes to, and whether it carries a display
@@ -321,13 +321,19 @@ pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<St
 ///
 /// Nothing is written here; the transaction owns that, so the all-or-nothing guarantee lives
 /// in one place.
-pub fn plan_switch(env: &Env, assignment: &ToolAssignment) -> Result<Vec<Action>, JsonError> {
+pub fn plan_switch(
+    env: &Env,
+    assignment: &ToolAssignment,
+    provider: Option<&Provider>,
+) -> Result<Vec<Action>, JsonError> {
     let path = env.home().join(".claude").join("settings.json");
     let existing = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
     let mut doc = Document::parse(&existing)?;
 
-    match &assignment.endpoint {
-        Some(url) => doc.set_string(&["env", ENDPOINT_VAR], url)?,
+    // The endpoint comes from the provider record. An assignment naming no provider is the System
+    // default shape: remove what we wrote, and neutralise a shell export if there is one.
+    match provider {
+        Some(p) => doc.set_string(&["env", ENDPOINT_VAR], &p.base_url)?,
         None => clear(&mut doc, env, ENDPOINT_VAR)?,
     }
 

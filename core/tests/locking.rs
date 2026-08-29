@@ -25,9 +25,9 @@ fn a_second_holder_is_refused_rather_than_made_to_wait() {
 #[test]
 fn a_switch_while_another_holds_the_lock_is_refused_and_changes_nothing() {
     let machine = Machine::new("lock-switch");
-    machine.write_profiles(json!({"profiles": [{
+    machine.write_profiles(json!({"providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic", "formats": ["anthropic_messages"], "enabled": true}], "profiles": [{
         "id": "zai", "name": "Z.ai",
-        "tools": {"claude": {"endpoint": "https://api.z.ai/api/anthropic", "slots": {}}}
+        "tools": {"claude": {"provider": "zai", "slots": {}}}
     }]}));
     machine.write_user_settings_raw(b"{}");
     std::fs::create_dir_all(machine.store()).expect("store");
