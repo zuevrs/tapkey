@@ -1,0 +1,9 @@
+{
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": { "baseURL": "http://localhost:11434/v1" }
+    }
+  },
+  "model": "ollama/qwen3"
+}

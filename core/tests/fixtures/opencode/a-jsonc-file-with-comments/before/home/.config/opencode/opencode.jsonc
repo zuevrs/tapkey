@@ -1,0 +1,7 @@
+{
+  // The theme I settled on months ago.
+  "theme": "dark",
+
+  /* Block comments are content here too, and a trailing comma is legal. */
+  "autoupdate": false,
+}

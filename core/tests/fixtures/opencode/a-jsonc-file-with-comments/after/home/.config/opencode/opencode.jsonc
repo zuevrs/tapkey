@@ -1,0 +1,24 @@
+{
+  // The theme I settled on months ago.
+  "theme": "dark",
+
+  /* Block comments are content here too, and a trailing comma is legal. */
+  "autoupdate": false,
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "tapkey-zai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Z.ai",
+      "options": {
+        "baseURL": "https://api.z.ai/api/v1",
+        "apiKey": "{file:<store>/keys/zai}"
+      },
+      "models": {
+        "glm-5.3": {},
+        "glm-4.6-air": {}
+      }
+    }
+  },
+  "model": "tapkey-zai/glm-5.3",
+  "small_model": "tapkey-zai/glm-4.6-air",
+}

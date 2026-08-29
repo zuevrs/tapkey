@@ -313,6 +313,33 @@ pub fn plan_switch(
     ))
 }
 
+/// What tapkey has just written, so drift has something to disagree with.
+///
+/// Hashed on the **namespaced** value, because that is what the file holds and what a comparison
+/// reads back: a slot moved to another provider is a change even when the model name is the same.
+pub fn fingerprint(
+    assignment: &crate::profile::ToolAssignment,
+) -> std::collections::BTreeMap<String, String> {
+    let mut out = std::collections::BTreeMap::new();
+    for slot in SLOTS.iter().filter(|s| s.owned) {
+        let Some(model) = assignment.slots.get(slot.name).and_then(|a| a.model()) else {
+            continue;
+        };
+        let provider = assignment
+            .slots
+            .get(slot.name)
+            .and_then(|a| a.provider())
+            .or(assignment.provider.as_deref());
+        if let Some(provider) = provider {
+            out.insert(
+                slot.name.to_string(),
+                crate::fingerprint::hash(&format!("{}/{model}", table_id(provider))),
+            );
+        }
+    }
+    out
+}
+
 /// The adapter, as the core sees it.
 pub struct OpenCode;
 
@@ -344,8 +371,26 @@ impl super::Adapter for OpenCode {
 
     fn fingerprint(
         &self,
-        _assignment: &crate::profile::ToolAssignment,
+        assignment: &crate::profile::ToolAssignment,
     ) -> std::collections::BTreeMap<String, String> {
-        std::collections::BTreeMap::new()
+        fingerprint(assignment)
     }
+}
+
+/// Every path tapkey may write, for the golden harness's statement of `merge-never-own`.
+///
+/// The provider entry is listed whole: an entry we created is ours entirely while every key in it
+/// is ours, and the harness decides that per case rather than trusting an edit log. `$schema` is
+/// listed too — tapkey writes it, so it is ours by the same rule that makes `wire_api` ours in a
+/// Codex entry we created.
+pub fn owned_paths(provider_id: &str) -> Vec<Vec<String>> {
+    let mut out: Vec<Vec<String>> = vec![
+        vec![SCHEMA_KEY.to_string()],
+        vec!["provider".to_string(), table_id(provider_id)],
+        vec!["enabled_providers".to_string()],
+    ];
+    for slot in SLOTS {
+        out.push(slot.path.iter().map(|s| (*s).to_string()).collect());
+    }
+    out
 }

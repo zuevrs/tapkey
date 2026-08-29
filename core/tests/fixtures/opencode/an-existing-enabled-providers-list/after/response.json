@@ -1,0 +1,444 @@
+{
+  "ok": true,
+  "outcome": "applied",
+  "tools": [
+    {
+      "endpoint": {
+        "chain": [
+          {
+            "key": "",
+            "observable": false,
+            "scope": "command line",
+            "source": "--settings or a per-key flag",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "ANTHROPIC_BASE_URL",
+            "observable": true,
+            "scope": "shell",
+            "source": "login shell",
+            "value": null,
+            "wins": false
+          },
+          {
+            "key": "",
+            "observable": false,
+            "scope": "cloud session",
+            "source": "reads neither user settings nor the shell",
+            "value": null,
+            "wins": false
+          }
+        ],
+        "effective": null
+      },
+      "slots": [
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "session",
+              "source": "/model during a session",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_SMALL_FAST_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "CLAUDE_CODE_SUBAGENT_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "opus"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "sonnet"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "ANTHROPIC_DEFAULT_FABLE_MODEL",
+              "observable": true,
+              "scope": "shell",
+              "source": "login shell",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "fable"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "advisor"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "command line",
+              "source": "--settings or a per-key flag",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "cloud session",
+              "source": "reads neither user settings nor the shell",
+              "value": null,
+              "wins": false
+            }
+          ],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "fallback"
+        }
+      ],
+      "tool": "claude"
+    },
+    {
+      "endpoint": {
+        "chain": [],
+        "effective": null
+      },
+      "slots": [
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "review"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "subagent"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "utility"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": true,
+          "slot": "effort"
+        },
+        {
+          "chain": [],
+          "drifted": false,
+          "effective": null,
+          "owned": false,
+          "slot": "verbosity"
+        }
+      ],
+      "tool": "codex"
+    },
+    {
+      "endpoint": {
+        "chain": [
+          {
+            "key": "provider.<id>.options.baseURL",
+            "observable": true,
+            "scope": "user",
+            "source": "<home>/.config/opencode/opencode.jsonc",
+            "value": "https://api.z.ai/api/v1",
+            "wins": true
+          }
+        ],
+        "effective": "https://api.z.ai/api/v1"
+      },
+      "slots": [
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "picker",
+              "source": "the tool's own database, not a config file",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "console",
+              "source": "fetched over the network from your organisation",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.config/opencode/opencode.jsonc",
+              "value": "tapkey-zai/glm-5.3",
+              "wins": true
+            }
+          ],
+          "drifted": false,
+          "effective": "tapkey-zai/glm-5.3",
+          "owned": true,
+          "slot": "main"
+        },
+        {
+          "chain": [
+            {
+              "key": "",
+              "observable": false,
+              "scope": "picker",
+              "source": "the tool's own database, not a config file",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "",
+              "observable": false,
+              "scope": "console",
+              "source": "fetched over the network from your organisation",
+              "value": null,
+              "wins": false
+            },
+            {
+              "key": "small_model",
+              "observable": true,
+              "scope": "user",
+              "source": "<home>/.config/opencode/opencode.jsonc",
+              "value": "tapkey-zai/glm-4.6-air",
+              "wins": true
+            }
+          ],
+          "drifted": false,
+          "effective": "tapkey-zai/glm-4.6-air",
+          "owned": true,
+          "slot": "utility"
+        }
+      ],
+      "tool": "opencode"
+    }
+  ]
+}

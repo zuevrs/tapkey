@@ -106,7 +106,24 @@ fn collect(case: &Case, response: &str) -> BTreeMap<String, Vec<u8>> {
         gather(case.work.path(), case.work.path(), &mut out, &[]);
     }
     out.insert("response.json".into(), pretty(case, response));
+    // A config file can contain an absolute path too, and legitimately: OpenCode's credential is a
+    // `{file:...}` reference rather than a key, which is what turns a leaked config into a leaked
+    // path instead of a leaked secret. The same roots are replaced, and only those — a path that
+    // escapes past them still fails the comparison, which is the point.
+    for bytes in out.values_mut() {
+        *bytes = normalise_roots(case, bytes);
+    }
     out
+}
+
+fn normalise_roots(case: &Case, bytes: &[u8]) -> Vec<u8> {
+    let Ok(text) = std::str::from_utf8(bytes) else {
+        return bytes.to_vec();
+    };
+    text.replace(&case.store().to_string_lossy().into_owned(), "<store>")
+        .replace(&case.home().to_string_lossy().into_owned(), "<home>")
+        .replace(&case.work.path().to_string_lossy().into_owned(), "<work>")
+        .into_bytes()
 }
 
 fn check_expectations(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
@@ -253,9 +270,18 @@ fn untouched_bytes_survive(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
         // Two formats, two readers, one property. They are not behind an interface: one preserves
         // bytes by construction and the other by restoration, and an interface fitted to both
         // would make each side worse. What is shared is the sentence, not the code.
-        let cut = match relative.extension().and_then(|e| e.to_str()) {
-            Some("toml") => excise_toml(&before, &after),
-            _ => excise_json(&before, &after),
+        // Three formats now, and the dispatch is on the file rather than on the tool: a `.jsonc`
+        // is read tolerantly and cut against OpenCode's owned paths, a `.toml` against Codex's,
+        // and everything else strictly against Claude Code's. The property is one sentence in
+        // three dialects, which is the shape ticket 18 chose over an interface fitted to all of
+        // them.
+        let name = relative.file_name().and_then(|n| n.to_str()).unwrap_or("");
+        let cut = if relative.extension().and_then(|e| e.to_str()) == Some("toml") {
+            excise_toml(&before, &after)
+        } else if name.starts_with("opencode.") || name == "config.json" {
+            excise_jsonc(&before, &after)
+        } else {
+            excise_json(&before, &after)
         };
         let Some((left, right)) = cut else {
             // A skip is allowed only where the case is *about* a file we could not read, and the
@@ -297,6 +323,62 @@ fn refused(produced: &BTreeMap<String, Vec<u8>>) -> bool {
         .and_then(|b| serde_json::from_slice::<serde_json::Value>(b).ok())
         .map(|v| v["ok"] == serde_json::json!(false))
         .unwrap_or(false)
+}
+
+/// OpenCode's files, read the way the tool reads them: tolerantly, because the tolerance was
+/// measured to belong to the tool rather than to the extension.
+fn excise_jsonc(before: &[u8], after: &[u8]) -> Option<(String, String)> {
+    let b = tapkey_core::json::Document::parse_jsonc(before).ok()?;
+    let a = tapkey_core::json::Document::parse_jsonc(after).ok()?;
+    Some((cut_members(before, &b), cut_members(after, &a)))
+}
+
+/// Everything but the members named, with the separators around them collapsed.
+/// Everything but the members tapkey may write.
+fn cut_members(bytes: &[u8], doc: &tapkey_core::json::Document) -> String {
+    let owned = tapkey_core::adapters::opencode::owned_paths("zai");
+    let mut cuts: Vec<std::ops::Range<usize>> = owned
+        .iter()
+        .filter_map(|path| {
+            let steps: Vec<&str> = path.iter().map(String::as_str).collect();
+            doc.member_span(&steps)
+        })
+        .collect();
+
+    // A switch can create the `provider` map itself, and then the map is ours as much as the entry
+    // in it — the same rule the Claude Code half applies to a created `env` block. It stops being
+    // ours the moment it holds one entry we did not write, which is the ordinary case on a machine
+    // somebody has configured by hand.
+    let inside = doc.keys_at(&["provider"]);
+    let all_ours = !inside.is_empty()
+        && inside
+            .iter()
+            .all(|k| k.starts_with(tapkey_core::adapters::opencode::ID_PREFIX));
+    if (inside.is_empty() || all_ours)
+        && let Some(span) = doc.member_span(&["provider"])
+    {
+        cuts.push(span);
+    }
+    cuts.sort_by_key(|r| r.start);
+
+    let mut kept = Vec::new();
+    let mut cursor = 0;
+    for cut in cuts {
+        if cut.start < cursor {
+            continue;
+        }
+        kept.extend_from_slice(&bytes[cursor..cut.start]);
+        cursor = cut.end;
+    }
+    kept.extend_from_slice(&bytes[cursor..]);
+
+    // Whitespace and separators around the removed members are not evidence of anything — the same
+    // ending the Claude Code half uses, and the reason a copied mechanism still needs its ending
+    // copied too: mine kept the commas and every added key read as a difference.
+    String::from_utf8_lossy(&kept)
+        .chars()
+        .filter(|c| !c.is_whitespace() && *c != ',')
+        .collect()
 }
 
 fn excise_json(before: &[u8], after: &[u8]) -> Option<(String, String)> {

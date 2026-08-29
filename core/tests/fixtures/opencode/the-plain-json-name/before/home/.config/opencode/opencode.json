@@ -1,0 +1,4 @@
+{
+  // Kept in the plain-JSON name, which OpenCode's parser accepts anyway.
+  "theme": "dark"
+}

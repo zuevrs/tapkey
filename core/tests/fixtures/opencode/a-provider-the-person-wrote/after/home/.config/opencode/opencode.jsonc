@@ -1,0 +1,23 @@
+{
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": { "baseURL": "http://localhost:11434/v1" }
+    },
+    "tapkey-zai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Z.ai",
+      "options": {
+        "baseURL": "https://api.z.ai/api/v1",
+        "apiKey": "{file:<store>/keys/zai}"
+      },
+      "models": {
+        "glm-5.3": {},
+        "glm-4.6-air": {}
+      }
+    }
+  },
+  "model": "tapkey-zai/glm-5.3",
+  "$schema": "https://opencode.ai/config.json",
+  "small_model": "tapkey-zai/glm-4.6-air"
+}

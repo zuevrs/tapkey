@@ -1,0 +1,7 @@
+{
+  "failure": {
+    "detail": "Syntax { offset: 29, message: \"an unterminated string\" }",
+    "kind": "unparsable"
+  },
+  "ok": false
+}
