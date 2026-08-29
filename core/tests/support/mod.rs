@@ -46,6 +46,9 @@ pub struct Machine {
     shell: BTreeMap<String, ShellVar>,
     fail_after: Option<usize>,
     credentials: Credentials,
+    /// A factory, because every `call` builds a fresh `Env` and a seam cannot be handed out
+    /// twice.
+    http: Option<Box<dyn Fn() -> Box<dyn tapkey_core::env::Http> + Send + Sync>>,
 }
 
 /// What the credential seam answers in this test. The default is *everything stored*, so the
@@ -67,6 +70,7 @@ impl Machine {
             shell: BTreeMap::new(),
             fail_after: None,
             credentials: Credentials::All,
+            http: None,
         }
     }
 
@@ -79,6 +83,15 @@ impl Machine {
             .path()
             .join("managed")
             .join("managed-settings.json")
+    }
+
+    /// Substitute the HTTP seam. Nothing by default, which is the offline state.
+    pub fn http(
+        mut self,
+        http: impl Fn() -> Box<dyn tapkey_core::env::Http> + Send + Sync + 'static,
+    ) -> Self {
+        self.http = Some(Box::new(http));
+        self
     }
 
     /// Declare which providers have a credential stored.
@@ -199,6 +212,10 @@ impl Machine {
             .with_project(self.project())
             .with_managed(self.managed())
             .with_shell(self.shell.clone())
+            .with_http(match &self.http {
+                Some(build) => build(),
+                None => Box::new(OfflineHttp),
+            })
             .with_credentials(match &self.credentials {
                 Credentials::All => {
                     Box::new(AllCredentials) as Box<dyn tapkey_core::env::Credentials>
@@ -250,5 +267,17 @@ struct DenyingCredentials;
 impl tapkey_core::env::Credentials for DenyingCredentials {
     fn check(&self, _provider_id: &str) -> tapkey_core::env::CredentialState {
         tapkey_core::env::CredentialState::Denied
+    }
+}
+
+/// Nothing answers. The machine's default seam, and the honest state offline.
+struct OfflineHttp;
+
+impl tapkey_core::env::Http for OfflineHttp {
+    fn post(
+        &self,
+        _url: &str,
+    ) -> Result<tapkey_core::env::ProbeStatus, tapkey_core::env::NetworkUnreachable> {
+        Ok(tapkey_core::env::ProbeStatus::NoAnswer)
     }
 }

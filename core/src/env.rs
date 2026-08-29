@@ -50,9 +50,33 @@ pub enum ShellVar {
     SetButWithheld,
 }
 
+/// Asking the network one narrow question: is there a route here?
+///
+/// HTTP is one of the five platform seams, and this is the only thing the core ever asks of it.
+/// A Test probes a format's own path and reads the **status**, never the body and never a real
+/// completion — those cost tokens and need a credential, and a format was measured to be
+/// establishable without either: an absent path answers 404 and a present one 401.
+pub trait Http {
+    fn post(&self, url: &str) -> Result<ProbeStatus, NetworkUnreachable>;
+}
+
+/// What came back, reduced to what a Test can use. A body would be a secret-carrying surface and
+/// a parser; neither belongs here.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProbeStatus {
+    Answered(u16),
+    /// No HTTP answer at all — connection refused, DNS failure, timeout. Not an answer, and never
+    /// to be recorded as one: a network failure is our outage, not a verdict on the endpoint.
+    NoAnswer,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct NetworkUnreachable;
+
 /// The world the core acts in.
 pub struct Env {
     credentials: Box<dyn Credentials>,
+    http: Box<dyn Http>,
     home: PathBuf,
     store: PathBuf,
     project: Option<PathBuf>,
@@ -84,6 +108,7 @@ impl Env {
             now: std::time::SystemTime::now(),
             filesystem: RefCell::new(Box::new(RealFs)),
             credentials: Box::new(HelperCredentials),
+            http: Box::new(RealHttp),
         }
     }
 
@@ -100,7 +125,20 @@ impl Env {
             // Nothing is stored, which is the safe default for a test: every switch needing a
             // credential refuses rather than proceeding on one nobody put there.
             credentials: Box::new(NoCredentials),
+            // The safe default for a test: the network does not exist, so a Test comes back
+            // *untested* rather than reaching for anything.
+            http: Box::new(NoNetwork),
         }
+    }
+
+    /// Substitute the HTTP seam. Tests do this; nothing else needs to.
+    pub fn with_http(mut self, http: Box<dyn Http>) -> Self {
+        self.http = http;
+        self
+    }
+
+    pub fn http(&self) -> &dyn Http {
+        &*self.http
     }
 
     /// Substitute the credential seam. Tests do this; nothing else needs to.
@@ -214,4 +252,34 @@ impl Credentials for HelperCredentials {
 
 fn helper_path() -> PathBuf {
     Env::real().store().join("bin").join("tapkey-helper")
+}
+
+/// Nothing answers. The default in tests, and the honest state offline.
+pub struct NoNetwork;
+
+impl Http for NoNetwork {
+    fn post(&self, _url: &str) -> Result<ProbeStatus, NetworkUnreachable> {
+        Err(NetworkUnreachable)
+    }
+}
+
+/// The real one, through `ureq` with the platform's own trust store: a bundled CA list would go
+/// stale, and this tool's requests are credential-adjacent. Five seconds, because a Test runs
+/// while somebody watches, and a status code is all it wants.
+pub struct RealHttp;
+
+impl Http for RealHttp {
+    fn post(&self, url: &str) -> Result<ProbeStatus, NetworkUnreachable> {
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(std::time::Duration::from_secs(5)))
+            .build()
+            .into();
+        // A non-2xx status is an *answer* here, not an error: 404 is exactly what a Test is asking
+        // about, so the error carrying a status is unpacked rather than failed on.
+        match agent.post(url).send(&b"{}"[..]) {
+            Ok(response) => Ok(ProbeStatus::Answered(response.status().as_u16())),
+            Err(ureq::Error::StatusCode(code)) => Ok(ProbeStatus::Answered(code)),
+            Err(_) => Ok(ProbeStatus::NoAnswer),
+        }
+    }
 }

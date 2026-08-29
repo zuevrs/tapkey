@@ -3,11 +3,11 @@
 //! Managing them — rename, duplicate, delete, and what happens to the one currently switched
 //! to — is its own surface with its own decisions, and belongs to a later stage.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::Path;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Profiles {
     /// Providers live beside profiles rather than in a file of their own: their retention is the
     /// same, neither holds a secret, both are read on every switch, and a profile referring to a
@@ -20,7 +20,7 @@ pub struct Profiles {
 
 /// An endpoint that serves models, together with the credential used to reach it — an entity with
 /// an identifier, not a URL a profile carries.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Provider {
     pub id: String,
     #[serde(default)]
@@ -36,6 +36,11 @@ pub struct Provider {
     /// core needs to see the ones no profile mentions.
     #[serde(default = "yes")]
     pub enabled: bool,
+    /// When Test last ran, as the store formats instants. Never interpreted: a result does not
+    /// expire on its own, because expiry would move a provider from permitted to refused with
+    /// nobody acting.
+    #[serde(default)]
+    pub tested_at: Option<String>,
 }
 
 fn yes() -> bool {
@@ -49,7 +54,7 @@ fn yes() -> bool {
 /// `model_provider` behind all five, so for them a per-slot provider is an instruction the tool
 /// cannot carry out — reported rather than obeyed, because effective state is about what the tool
 /// will use.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum SlotAssignment {
     /// `null`: no assignment, which is an instruction too.
@@ -61,7 +66,7 @@ pub enum SlotAssignment {
 }
 
 /// Serde needs a type to fail on for the `null` arm to be distinguishable from the others.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Nothing {}
 
 impl SlotAssignment {
@@ -83,7 +88,7 @@ impl SlotAssignment {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Profile {
     pub id: String,
     #[serde(default)]
@@ -92,7 +97,7 @@ pub struct Profile {
     pub tools: BTreeMap<String, ToolAssignment>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ToolAssignment {
     /// The **id** of a provider in the same file. Claude Code has one endpoint behind every slot
     /// and Codex one `model_provider` behind all five, so a provider is chosen once per tool.

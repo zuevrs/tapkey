@@ -17,6 +17,7 @@ pub mod helper;
 pub mod instant;
 pub mod json;
 pub mod lock;
+pub mod probe;
 pub mod profile;
 pub mod store;
 pub mod toml;
@@ -71,6 +72,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
             Err(e) => refuse("unparsable", e),
         },
         Request::Switch { profile_id } => switch(env, &profile_id),
+        Request::Test { provider_id } => test(env, &provider_id),
         Request::Restore { target } => restore(env, target),
     }
 }
@@ -357,6 +359,75 @@ fn refuse(kind: &'static str, detail: String) -> Response {
     Response::Refused {
         ok: false,
         failure: Failure { kind, detail },
+    }
+}
+
+/// Establish which formats a provider answers, and record it.
+///
+/// A write to the store, so it takes the lock — ticket 29's rule is *any write to the store*, not
+/// a list of operations, which is how the next writing operation would otherwise end up outside
+/// it. The lock is taken **after** the probes, because a network round-trip while holding the
+/// lock would block a switch behind somebody's slow endpoint for no reason: the probes change
+/// nothing, and only the write needs mutual exclusion.
+fn test(env: &Env, provider_id: &str) -> Response {
+    let store_path = env.store().join("profiles.json");
+    let mut profiles = match profile::Profiles::read(&store_path) {
+        Ok(p) => p,
+        Err(e) => return refuse("unknown_provider", e),
+    };
+    let Some(record) = profiles.providers.iter_mut().find(|p| p.id == provider_id) else {
+        return refuse(
+            "unknown_provider",
+            format!("no provider named {provider_id:?}"),
+        );
+    };
+
+    let verdict = probe::run(record, env);
+    let tested_at = instant::format_utc(env.now());
+
+    let (knowable, formats, because) = match &verdict {
+        probe::Verdict::Served(served) => (
+            true,
+            Some(
+                served
+                    .iter()
+                    .map(|(format, served)| wire::FormatProbe {
+                        format,
+                        served: *served,
+                    })
+                    .collect::<Vec<_>>(),
+            ),
+            None,
+        ),
+        probe::Verdict::CannotTell(why) => (false, None, Some(*why)),
+    };
+
+    // Held only across the write.
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    if let probe::Verdict::Served(served) = &verdict {
+        let answered: Vec<String> = served
+            .iter()
+            .filter(|(_, served)| *served)
+            .map(|(format, _)| (*format).to_string())
+            .collect();
+        record.formats = Some(answered);
+    }
+    record.tested_at = Some(tested_at.clone());
+    let bytes = serde_json::to_vec_pretty(&profiles).unwrap_or_else(|_| Vec::new());
+    if let Err(e) = atomic::write_atomically(&store_path, &bytes, 0o600) {
+        return refuse("permission_denied", e.to_string());
+    }
+
+    Response::Tested {
+        ok: true,
+        knowable,
+        formats,
+        because,
+        provider: provider_id.to_string(),
+        tested_at,
     }
 }
 

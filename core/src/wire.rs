@@ -26,6 +26,8 @@ pub enum Request {
         #[serde(flatten)]
         target: RestoreTarget,
     },
+    /// Establish which formats a provider's endpoint answers. Reads the network, writes the store.
+    Test { provider_id: String },
 }
 
 #[derive(Debug, Deserialize)]
@@ -56,6 +58,27 @@ pub enum Response {
         ok: bool,
         failure: Failure,
     },
+    Tested {
+        ok: bool,
+        /// False when the method could not tell — and then `formats` is absent, because recording
+        /// a verdict we cannot support is the failure the invariant names.
+        knowable: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        formats: Option<Vec<FormatProbe>>,
+        /// The reason nothing was recorded, when there is one.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        because: Option<&'static str>,
+        provider: String,
+        tested_at: String,
+    },
+}
+
+/// One format's answer. The names are the canonical three, and every one of them is reported —
+/// an absent format is an answer too, and the useful one.
+#[derive(Debug, Serialize)]
+pub struct FormatProbe {
+    pub format: &'static str,
+    pub served: bool,
 }
 
 #[derive(Debug, Serialize)]
