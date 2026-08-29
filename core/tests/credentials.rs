@@ -155,27 +155,31 @@ fn get_prints_the_secret_and_nothing_else() {
     assert_eq!(out, b"secret-value");
 
     // Owner-only at both levels, and set **at creation**: correcting afterwards leaves a window in
-    // which the secret sat at a wider mode.
-    use std::os::unix::fs::PermissionsExt;
-    let stored = machine.store().join("keys").join("prov-x");
-    assert_eq!(
-        std::fs::metadata(&stored)
-            .expect("stored")
-            .permissions()
-            .mode()
-            & 0o777,
-        0o600,
-        "the secret's file is owner-only"
-    );
-    assert_eq!(
-        std::fs::metadata(stored.parent().expect("keys dir"))
-            .expect("keys dir")
-            .permissions()
-            .mode()
-            & 0o777,
-        0o700,
-        "the directory holding it is too"
-    );
+    // which the secret sat at a wider mode. POSIX modes are a Unix fact; the Windows seam ticket
+    // owns what "owner-only" becomes there.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let stored = machine.store().join("keys").join("prov-x");
+        assert_eq!(
+            std::fs::metadata(&stored)
+                .expect("stored")
+                .permissions()
+                .mode()
+                & 0o777,
+            0o600,
+            "the secret's file is owner-only"
+        );
+        assert_eq!(
+            std::fs::metadata(stored.parent().expect("keys dir"))
+                .expect("keys dir")
+                .permissions()
+                .mode()
+                & 0o777,
+            0o700,
+            "the directory holding it is too"
+        );
+    }
 }
 
 #[test]
