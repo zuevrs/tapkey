@@ -151,7 +151,9 @@ fn every_fixture_file_is_tracked_by_git() {
         let relative = file
             .strip_prefix(root.canonicalize().unwrap_or(root.clone()))
             .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_else(|_| file.to_string_lossy().into_owned());
+            .unwrap_or_else(|_| file.to_string_lossy().into_owned())
+            // git reports `/`; Windows walks with `\`. Same comparison, either spelling.
+            .replace('\\', "/");
         if !tracked.iter().any(|t| relative.ends_with(t.as_str())) {
             untracked.push(relative);
         }
