@@ -124,10 +124,18 @@ fn normalise_roots(case: &Case, bytes: &[u8]) -> Vec<u8> {
     let Ok(text) = std::str::from_utf8(bytes) else {
         return bytes.to_vec();
     };
-    text.replace(&case.store().to_string_lossy().into_owned(), "<store>")
-        .replace(&case.home().to_string_lossy().into_owned(), "<home>")
-        .replace(&case.work.path().to_string_lossy().into_owned(), "<work>")
+    // The wire emits forward slashes even where the platform spells backslashes, so the roots are
+    // slashed before substitution — otherwise Windows produces `C:/...` text that a backslashed
+    // root never matches.
+    text.replace(&slashed(case.store()), "<store>")
+        .replace(&slashed(case.home()), "<home>")
+        .replace(&slashed(case.work.path().to_path_buf()), "<work>")
         .into_bytes()
+}
+
+/// A root as the wire spells it, forward slashes and all.
+fn slashed(path: PathBuf) -> String {
+    path.display().to_string().replace('\\', "/")
 }
 
 fn check_expectations(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
@@ -571,9 +579,9 @@ fn pretty(case: &Case, response: &str) -> Vec<u8> {
     let value: serde_json::Value = serde_json::from_str(response).expect("response is JSON");
     let text = serde_json::to_string_pretty(&value).expect("serialise");
     let text = text
-        .replace(&case.store().to_string_lossy().into_owned(), "<store>")
-        .replace(&case.home().to_string_lossy().into_owned(), "<home>")
-        .replace(&case.work.path().to_string_lossy().into_owned(), "<work>");
+        .replace(&slashed(case.store()), "<store>")
+        .replace(&slashed(case.home()), "<home>")
+        .replace(&slashed(case.work.path().to_path_buf()), "<work>");
     let mut bytes = text.into_bytes();
     bytes.push(b'\n');
     bytes
