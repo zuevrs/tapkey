@@ -113,13 +113,19 @@ fn capturing_records_contents_and_absence_alike() {
     std::fs::write(&a, "original a").expect("seed");
     let fs = RealFs;
 
+    // Which tool a file belongs to is looked up by path now that a switch spans several: tagging
+    // one tool's file with another's would file it under the wrong heading in a manifest, and a
+    // restore reads that manifest.
+    let tools = std::collections::BTreeMap::from([(a.clone(), "claude"), (b.clone(), "codex")]);
     let captured = Transaction::new(vec![write(&a, "new a"), write(&b, "new b")])
-        .capture(&fs, "claude")
+        .capture(&fs, &tools)
         .expect("capture");
 
     assert_eq!(captured.len(), 2);
     assert_eq!(captured[0].content.as_deref(), Some(&b"original a"[..]));
+    assert_eq!(captured[0].tool, "claude");
     assert_eq!(captured[1].content, None, "b did not exist");
+    assert_eq!(captured[1].tool, "codex", "each file keeps its own tool");
 }
 
 /// The other half of the story: when the filesystem is genuinely broken rather than one file

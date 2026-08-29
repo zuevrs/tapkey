@@ -121,16 +121,26 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     // no actions — it is left out of the transaction rather than allowed to cancel it, the same
     // reasoning that makes a gone tool a skip.
     let mut actions = Vec::new();
+    let mut tool_of: std::collections::BTreeMap<std::path::PathBuf, &'static str> =
+        std::collections::BTreeMap::new();
     let mut attentions: std::collections::BTreeMap<&str, Vec<wire::Attention>> =
         std::collections::BTreeMap::new();
     for (tool, assignment, provider) in &assignments {
         match *tool {
             "claude" => match adapters::claude::plan_switch(env, assignment, *provider) {
-                Ok(a) => actions.extend(a),
+                Ok(a) => {
+                    for action in &a {
+                        tool_of.insert(action.path().clone(), "claude");
+                    }
+                    actions.extend(a);
+                }
                 Err(e) => return refuse("unparsable", format!("{e:?}")),
             },
             "codex" => match adapters::codex::plan_switch(env, assignment, *provider) {
                 Ok((a, attn)) => {
+                    for action in &a {
+                        tool_of.insert(action.path().clone(), "codex");
+                    }
                     actions.extend(a);
                     if !attn.is_empty() {
                         attentions.insert("codex", attn);
@@ -156,14 +166,25 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     };
     let transaction = transaction::Transaction::new(actions);
     let mut disk = env.filesystem();
-    let captured = match transaction.capture(&**disk, "claude") {
+    let captured = match transaction.capture(&**disk, &tool_of) {
         Ok(c) => c,
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
 
-    // The floor under every restore goes down before the first change, over every managed
-    // file rather than only the touched ones: full restoration is its job.
-    if !store.has_snapshot() && store.take_snapshot(&captured, env.now()).is_err() {
+    // The floor under every restore goes down before the first change, over **every managed file**
+    // rather than only the touched ones: full restoration is its job. With one tool the two sets
+    // were the same and this read as an ordinary capture; with two they part, and a snapshot of
+    // only the touched file would leave the other tool nothing to come back to.
+    let snapshot_actions: Vec<transaction::Action> = managed_files(env)
+        .keys()
+        .map(|path| transaction::Action::Delete { path: path.clone() })
+        .collect();
+    let everything = transaction::Transaction::new(snapshot_actions);
+    let all_managed = match everything.capture(&**disk, &managed_files(env)) {
+        Ok(c) => c,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    if !store.has_snapshot() && store.take_snapshot(&all_managed, env.now()).is_err() {
         return refuse(
             "permission_denied",
             "could not record the first-run snapshot".into(),
@@ -198,12 +219,12 @@ fn switch(env: &Env, profile_id: &str) -> Response {
     // Drift needs something to compare against, and it is written only after the change stuck.
     let mut owned = std::collections::BTreeMap::new();
     for (tool, assignment, _) in &assignments {
-        if *tool == "claude" {
-            owned.insert(
-                (*tool).to_string(),
-                adapters::claude::fingerprint(assignment),
-            );
-        }
+        let per_slot = match *tool {
+            "claude" => adapters::claude::fingerprint(assignment),
+            "codex" => adapters::codex::fingerprint(assignment),
+            _ => continue,
+        };
+        owned.insert((*tool).to_string(), per_slot);
     }
     let _ = fingerprint::State::write(&env.store().join("state.json"), &profile.name, owned);
 
@@ -265,7 +286,10 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
 
     let transaction = transaction::Transaction::new(actions);
     let mut disk = env.filesystem();
-    let captured = match transaction.capture(&**disk, "claude") {
+    // A restore touches whatever the snapshot held, so which tool each file belongs to is read
+    // back from the paths the adapters own rather than assumed.
+    let tool_of = managed_files(env);
+    let captured = match transaction.capture(&**disk, &tool_of) {
         Ok(c) => c,
         Err(e) => return refuse("permission_denied", e.to_string()),
     };
@@ -315,6 +339,15 @@ fn refuse(kind: &'static str, detail: String) -> Response {
         ok: false,
         failure: Failure { kind, detail },
     }
+}
+
+/// Every file the managed tools own, and which tool owns it. The snapshot goes over all of them
+/// rather than only the ones a switch touched: full restoration is its job.
+fn managed_files(env: &Env) -> std::collections::BTreeMap<std::path::PathBuf, &'static str> {
+    let mut out = std::collections::BTreeMap::new();
+    out.insert(env.home().join(".claude").join("settings.json"), "claude");
+    out.insert(adapters::codex::config_path(env), "codex");
+    out
 }
 
 #[cfg(test)]

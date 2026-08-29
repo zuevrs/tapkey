@@ -56,13 +56,25 @@ impl Transaction {
     }
 
     /// Read every file this transaction would touch, as it stands now.
-    pub fn capture(&self, fs: &dyn FileSystem, tool: &str) -> io::Result<Vec<Captured>> {
+    /// A switch now spans several tools, so which tool a file belongs to is looked up by path
+    /// rather than passed as one name for all of them. Tagging Codex's `config.toml` as Claude
+    /// Code's would put it under the wrong heading in a backup's manifest, and a restore reads
+    /// that manifest.
+    pub fn capture(
+        &self,
+        fs: &dyn FileSystem,
+        tool_of: &std::collections::BTreeMap<PathBuf, &'static str>,
+    ) -> io::Result<Vec<Captured>> {
         self.before(fs).map(|before| {
             before
                 .into_iter()
                 .map(|b| Captured {
+                    tool: tool_of
+                        .get(&b.path)
+                        .copied()
+                        .unwrap_or("unknown")
+                        .to_string(),
                     path: b.path,
-                    tool: tool.to_string(),
                     content: b.content,
                     mode: b.mode,
                 })

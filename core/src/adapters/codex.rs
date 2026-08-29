@@ -106,14 +106,24 @@ const SLOTS: &[SlotSpec] = &[
 pub fn effective_state(env: &Env) -> Result<ToolState, Error> {
     let files = read_all(env)?;
 
+    let state = crate::fingerprint::State::read(&env.store().join("state.json"));
+
     let endpoint = endpoint(&files);
     let slots = SLOTS
         .iter()
-        .map(|spec| SlotState {
-            slot: spec.name,
-            owned: spec.owned,
-            drifted: false,
-            resolved: resolve(&files, spec.path),
+        .map(|spec| {
+            let resolved = resolve(&files, spec.path);
+            SlotState {
+                slot: spec.name,
+                owned: spec.owned,
+                // Per slot, not per file — for the opposite reason to Claude Code's. Codex keeps
+                // the file's bytes across its own writes, but it writes the very keys tapkey owns,
+                // so a file-level signal would fire on an unrelated `mcp add`. Its inode and mtime
+                // change on every write including a repeat, so neither is a signal either.
+                drifted: spec.owned
+                    && state.drifted("codex", spec.name, resolved.effective.as_deref()),
+                resolved,
+            }
         })
         .collect();
 
@@ -343,4 +353,18 @@ fn settle(mut chain: Vec<Link>) -> Resolved {
         }
     }
     Resolved { effective, chain }
+}
+
+/// What tapkey has just written, ready to be recorded so drift has something to compare to.
+///
+/// One slot reaches two keys, so the fingerprint is keyed on the **slot** and both writes settle to
+/// the same hash — which is what makes "the utility model was changed" one fact rather than two.
+pub fn fingerprint(assignment: &ToolAssignment) -> std::collections::BTreeMap<String, String> {
+    let mut out = std::collections::BTreeMap::new();
+    for spec in SLOTS.iter().filter(|s| s.owned) {
+        if let Some(Some(model)) = assignment.slots.get(spec.name) {
+            out.insert(spec.name.to_string(), crate::fingerprint::hash(model));
+        }
+    }
+    out
 }

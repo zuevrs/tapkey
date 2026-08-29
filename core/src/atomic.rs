@@ -17,6 +17,21 @@ static TEMP_COUNTER: AtomicU32 = AtomicU32::new(0);
 /// existing file keeps the mode it had: tapkey does not own the tools' files, and tightening
 /// what it does not own is a surprise rather than a service.
 pub fn write_atomically(path: &Path, bytes: &[u8], mode: u32) -> io::Result<()> {
+    // The destination directory may not exist: Codex does not create `~/.codex/config.toml` if it
+    // did not find one, so an installed-but-unconfigured tool is an ordinary state and the file we
+    // write is the first one there. 0700, because a directory we create is ours until somebody
+    // else's file lands in it.
+    if let Some(parent) = path.parent()
+        && !parent.exists()
+    {
+        std::fs::create_dir_all(parent)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700))?;
+        }
+    }
+
     // Dotfile managers make config files symlinks routinely, and `rename` over a link replaces
     // the link itself with a regular file. So the link is resolved and its target is written —
     // which also keeps the temp file on the target's filesystem rather than the link's.
