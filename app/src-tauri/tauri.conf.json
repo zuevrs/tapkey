@@ -51,9 +51,6 @@
     "targets": "all",
     "icon": [
       "icons/icon.png"
-    ],
-    "macOS": {
-      "info-plist": "Info.plist"
-    }
+    ]
   }
 }

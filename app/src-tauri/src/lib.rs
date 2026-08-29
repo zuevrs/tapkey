@@ -39,6 +39,11 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_nspanel::init())
         .setup(|app| {
+            // An accessory app: menu bar, no dock tile — the design-rules Surfaces section in
+            // one line, at runtime, because the v2 bundler carries no plist-extension config.
+            #[cfg(target_os = "macos")]
+            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
             #[cfg(target_os = "macos")]
             {
                 use tauri_nspanel::WebviewWindowExt;
