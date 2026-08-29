@@ -91,8 +91,7 @@ fn persist(temp: &Path, target: &Path) -> io::Result<()> {
 #[cfg(windows)]
 fn persist(temp: &Path, target: &Path) -> io::Result<()> {
     use std::os::windows::ffi::OsStrExt;
-    use windows_sys::Win32::Foundation::{HANDLE, WAIT_OBJECT_0};
-    use windows_sys::Win32::Storage::FileSystem::{REPLACE_FILE_FLAGS, ReplaceFileW};
+    use windows_sys::Win32::Storage::FileSystem::ReplaceFileW;
 
     if !target.exists() {
         return fs::rename(temp, target);
