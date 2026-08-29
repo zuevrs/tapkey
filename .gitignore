@@ -18,7 +18,10 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 build/
-dist/
+# Build output, not source. The app's `dist/` holds its checked-in frontend — a static index
+# today — so the rule stays unanchored everywhere except where source lives.
+/dist/
+/internal/prototype/dist/
 *.dmg
 *.p12
 *.cer
