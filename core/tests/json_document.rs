@@ -422,3 +422,57 @@ fn a_nested_object_created_in_a_minified_file_stays_inline() {
         &br#"{"theme":"dark","env":{"ANTHROPIC_BASE_URL":"https://x.test"}}"#[..]
     );
 }
+
+/// Tolerance is a property of the format the adapter declares, not of the reader — ADR-0010 settled
+/// that after measuring what Claude Code does with a comment. The same measurement condemns a
+/// trailing comma: strict JSON does not permit one, and Claude Code reports a Settings Error and
+/// ignores the whole file. A reader that accepts one lets tapkey splice a file the tool will never
+/// read, and then report success — the "intent instead of effective state" failure the product
+/// exists to prevent.
+#[test]
+fn strict_json_refuses_a_trailing_comma() {
+    let result = Document::parse(b"{\n  \"a\": 1,\n}\n");
+
+    assert!(
+        matches!(
+            result.as_ref().err(),
+            Some(tapkey_core::json::Error::Syntax { .. })
+        ),
+        "a trailing comma is not strict JSON: {:?}",
+        result.err()
+    );
+}
+
+/// And JSONC accepts both of the things strict JSON refuses, because refusing there would punish
+/// somebody for using a documented feature of their tool's own format.
+#[test]
+fn jsonc_accepts_what_the_format_allows() {
+    for source in [
+        &b"{\n  // a note\n  \"a\": 1\n}\n"[..],
+        &b"{\n  /* a note */\n  \"a\": 1\n}\n"[..],
+        &b"{\n  \"a\": 1,\n}\n"[..],
+    ] {
+        let parsed = Document::parse_jsonc(source);
+        assert!(
+            parsed.is_ok(),
+            "JSONC must accept this: {}",
+            String::from_utf8_lossy(source)
+        );
+    }
+}
+
+/// The tolerance a document was opened with has to survive an edit, or the second write to a JSONC
+/// file would trip over the comments the first one carefully preserved.
+#[test]
+fn a_jsonc_document_stays_jsonc_across_an_edit() {
+    let mut document =
+        Document::parse_jsonc(b"{\n  // keep me\n  \"a\": \"one\",\n}\n").expect("parses");
+
+    document.set_string(&["a"], "two").expect("first edit");
+    document.set_string(&["a"], "three").expect("second edit");
+
+    assert_eq!(
+        String::from_utf8(document.to_bytes()).unwrap(),
+        "{\n  // keep me\n  \"a\": \"three\",\n}\n"
+    );
+}

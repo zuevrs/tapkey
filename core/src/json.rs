@@ -14,6 +14,8 @@ pub struct Document {
     original: Vec<u8>,
     bytes: Vec<u8>,
     root: Node,
+    /// The format this file was opened as, so an edit reparses the way it was read.
+    tolerance: Tolerance,
 }
 
 /// Why a document could not be parsed, or an edit could not be made.
@@ -54,12 +56,24 @@ struct Member {
 
 impl Document {
     /// Parse `bytes` as strict JSON.
+    /// Strict JSON. Comments and a trailing comma are refused, because the tools whose files are
+    /// strict refuse them too, and a file we spliced but the tool ignores is worse than a refusal.
     pub fn parse(bytes: &[u8]) -> Result<Self, Error> {
-        let root = parse_root(bytes)?;
+        Self::parse_with(bytes, Tolerance::Strict)
+    }
+
+    /// JSONC. Comments and a trailing comma are content, not errors.
+    pub fn parse_jsonc(bytes: &[u8]) -> Result<Self, Error> {
+        Self::parse_with(bytes, Tolerance::Jsonc)
+    }
+
+    fn parse_with(bytes: &[u8], tolerance: Tolerance) -> Result<Self, Error> {
+        let root = parse_root(bytes, tolerance)?;
         Ok(Document {
             original: bytes.to_vec(),
             bytes: bytes.to_vec(),
             root,
+            tolerance,
         })
     }
 
@@ -143,7 +157,9 @@ impl Document {
         next.extend_from_slice(&self.bytes[..range.start]);
         next.extend_from_slice(replacement);
         next.extend_from_slice(&self.bytes[range.end..]);
-        self.root = parse_root(&next)?;
+        // Reparsed with the tolerance it was opened with. Reparsing a JSONC document strictly
+        // would turn its own comments into an error on the second edit.
+        self.root = parse_root(&next, self.tolerance)?;
         self.bytes = next;
         Ok(())
     }
@@ -330,13 +346,17 @@ fn document_step(bytes: &[u8], root: &Node) -> String {
     }
 }
 
-fn parse_root(bytes: &[u8]) -> Result<Node, Error> {
+fn parse_root(bytes: &[u8], tolerance: Tolerance) -> Result<Node, Error> {
     let start = if bytes.starts_with(b"\xEF\xBB\xBF") {
         3
     } else {
         0
     };
-    let mut parser = Parser { b: bytes, i: start };
+    let mut parser = Parser {
+        b: bytes,
+        i: start,
+        tolerance,
+    };
     parser.skip_whitespace();
     let root = parser.value()?;
     parser.skip_whitespace();
@@ -408,9 +428,25 @@ fn encode_string(value: &str) -> Vec<u8> {
     out
 }
 
+/// What this file's format allows, declared by the adapter that owns the file.
+///
+/// ADR-0010 settles that tolerance belongs to the format rather than to the reader, and the reason
+/// is measured: a `//` or a trailing comma in Claude Code's `settings.json` makes that tool report a
+/// Settings Error and ignore the file entirely. A reader that accepted them there would let tapkey
+/// splice something the tool never reads and then report success.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum Tolerance {
+    /// Strict JSON: no comments, no trailing comma. Claude Code's `settings.json`.
+    Strict,
+    /// JSONC: line and block comments and a trailing comma. Every one of OpenCode's config files —
+    /// measured, the tolerance there belongs to the tool and not to the file's extension.
+    Jsonc,
+}
+
 struct Parser<'a> {
     b: &'a [u8],
     i: usize,
+    tolerance: Tolerance,
 }
 
 impl<'a> Parser<'a> {
@@ -422,8 +458,34 @@ impl<'a> Parser<'a> {
     }
 
     fn skip_whitespace(&mut self) {
-        while matches!(self.b.get(self.i), Some(b' ' | b'\t' | b'\n' | b'\r')) {
-            self.i += 1;
+        loop {
+            while matches!(self.b.get(self.i), Some(b' ' | b'\t' | b'\n' | b'\r')) {
+                self.i += 1;
+            }
+            if self.tolerance != Tolerance::Jsonc || self.b.get(self.i) != Some(&b'/') {
+                return;
+            }
+            match self.b.get(self.i + 1) {
+                Some(b'/') => {
+                    self.i += 2;
+                    while !matches!(self.b.get(self.i), None | Some(b'\n')) {
+                        self.i += 1;
+                    }
+                }
+                Some(b'*') => {
+                    self.i += 2;
+                    while self.b.get(self.i).is_some()
+                        && !(self.b.get(self.i) == Some(&b'*')
+                            && self.b.get(self.i + 1) == Some(&b'/'))
+                    {
+                        self.i += 1;
+                    }
+                    // An unterminated block comment runs to the end, and the value that was being
+                    // read is then missing — reported where it is missing rather than here.
+                    self.i = (self.i + 2).min(self.b.len());
+                }
+                _ => return,
+            }
         }
     }
 
@@ -455,10 +517,14 @@ impl<'a> Parser<'a> {
         let start = self.i;
         self.i += 1; // '{'
         let mut members = Vec::new();
+        let mut after_comma = false;
         loop {
             self.skip_whitespace();
             match self.b.get(self.i) {
                 Some(b'}') => {
+                    if after_comma && self.tolerance == Tolerance::Strict {
+                        return Err(self.error("strict JSON has no trailing comma"));
+                    }
                     self.i += 1;
                     return Ok(Node::Object {
                         members,
@@ -498,8 +564,11 @@ impl<'a> Parser<'a> {
 
             self.skip_whitespace();
             match self.b.get(self.i) {
-                Some(b',') => self.i += 1,
-                Some(b'}') => {}
+                Some(b',') => {
+                    self.i += 1;
+                    after_comma = true;
+                }
+                Some(b'}') => after_comma = false,
                 _ => return Err(self.error("a comma or a closing brace was expected")),
             }
         }
