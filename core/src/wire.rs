@@ -88,6 +88,8 @@ pub enum Request {
     },
     /// The store's providers, for the settings tab's cards. A read, no lock.
     ListProviders {},
+    /// Which managed tools are on this machine, and which are configured. A read, no lock.
+    ToolPresence {},
 }
 
 #[derive(Debug, Deserialize)]
@@ -143,6 +145,10 @@ pub enum Response {
     Providers {
         ok: bool,
         providers: Vec<ProviderCard>,
+    },
+    Presence {
+        ok: bool,
+        tools: Vec<ToolPresence>,
     },
     Harvested {
         ok: bool,
@@ -302,4 +308,15 @@ pub struct ProviderCard {
     pub formats: Option<Vec<String>>,
     pub enabled: bool,
     pub tested_at: Option<String>,
+}
+
+/// One tool's presence: installed-ness is a fact about the machine, configured-ness about its
+/// files, and onboarding shows them as separate chips.
+#[derive(Debug, Serialize)]
+pub struct ToolPresence {
+    pub tool: &'static str,
+    /// The binary is discoverable the way a shell would find it.
+    pub installed: bool,
+    /// tapkey found a config file of this tool's on the machine.
+    pub configured: bool,
 }

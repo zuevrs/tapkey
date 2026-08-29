@@ -32,6 +32,22 @@ use crate::wire::{Attention, ToolState};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
+/// Whether a binary is discoverable the way a person's shell would find it: on the PATH, or in
+/// one of the install locations the adapter recorded. Never a network call.
+pub fn installed(adapter: &dyn Adapter) -> bool {
+    let binary = adapter.binary();
+    let path = std::env::var_os("PATH").unwrap_or_default();
+    let on_path = std::env::split_paths(&path).any(|dir| {
+        let candidate = dir.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX));
+        candidate.is_file()
+    });
+    on_path
+        || adapter.install_paths().iter().any(|dir| {
+            dir.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX))
+                .is_file()
+        })
+}
+
 /// What every managed tool owes the core.
 ///
 /// Errors arrive as a rendered string rather than a shared error type: the two adapters read
@@ -88,6 +104,26 @@ pub trait Adapter {
     /// would break the tool outright. Not a third widening of the *facts* half — it is a sibling
     /// of `plan_switch`, an operation rather than an observation.
     fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String>;
+
+    /// Where this tool's binary lives beyond the PATH — the install locations its own research
+    /// recorded. A fact about the tool, like its slots; empty where PATH is the whole answer.
+    fn install_paths(&self) -> Vec<std::path::PathBuf> {
+        Vec::new()
+    }
+
+    /// The binary name, defaulting to the canonical tool name.
+    fn binary(&self) -> &'static str {
+        self.name()
+    }
+
+    /// Whether a config file of this tool's exists — "installed but unconfigured" is its own fact.
+    fn configured(&self, env: &Env) -> bool {
+        env.filesystem()
+            .read(&self.config_path(env))
+            .ok()
+            .flatten()
+            .is_some()
+    }
 
     /// A hash per owned slot of what was just written, so drift has something to disagree with.
     /// Values never leave this function — the store keeps hashes, never what they were made from.

@@ -369,6 +369,11 @@ impl super::Adapter for OpenCode {
         plan_removal(env, provider)
     }
 
+    fn install_paths(&self) -> Vec<std::path::PathBuf> {
+        // Measured on this machine: the installer puts the binary here, not on the PATH.
+        vec![dirs_home().join(".opencode").join("bin")]
+    }
+
     fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
         effective_state(env).map_err(|e| format!("{e:?}"))
     }
@@ -477,4 +482,11 @@ fn plan_removal(env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
         bytes: document.to_bytes(),
         mode: 0o600,
     }])
+}
+
+/// `$HOME`, without a dependency for one lookup.
+fn dirs_home() -> std::path::PathBuf {
+    std::env::var_os("HOME")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_default()
 }

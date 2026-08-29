@@ -274,3 +274,31 @@ fn list_providers_returns_the_cards() {
         "a card never carries a credential: {text}"
     );
 }
+
+/// Onboarding shows three chips per tool, and "not installed" and "installed, unconfigured" are
+/// different facts leading to different sentences. The core owns installed-ness: two ways of
+/// learning one fact is the path to disagreeing about it.
+#[test]
+fn tool_presence_reports_the_three_tools_with_configured() {
+    let machine = Machine::new("presence");
+    machine.write_codex_config(b"model = \"gpt-5.6\"\n");
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "tool_presence", "params": {}}),
+    );
+
+    let tools = response["tools"].as_array().expect("tools");
+    let by_tool = |name: &str| {
+        tools
+            .iter()
+            .find(|t| t["tool"] == json!(name))
+            .cloned()
+            .unwrap_or_else(|| panic!("no {name} in {response}"))
+    };
+    assert_eq!(by_tool("codex")["configured"], json!(true));
+    assert_eq!(by_tool("claude")["configured"], json!(false));
+    // Installed-ness is about this machine; on CI the binary may or may not exist, so the fact
+    // under test is that the answer exists and is a boolean, not which boolean.
+    assert!(by_tool("opencode")["installed"].is_boolean());
+}

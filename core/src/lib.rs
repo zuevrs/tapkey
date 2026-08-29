@@ -203,6 +203,17 @@ fn dispatch(env: &Env, request: &str) -> Response {
             provider_id,
             secret,
         } => set_credential(env, &provider_id, secret.as_bytes()),
+        Request::ToolPresence {} => Response::Presence {
+            ok: true,
+            tools: adapters::all()
+                .iter()
+                .map(|adapter| wire::ToolPresence {
+                    tool: adapter.name(),
+                    installed: adapters::installed(adapter.as_ref()),
+                    configured: adapter.configured(env),
+                })
+                .collect(),
+        },
         Request::ListProviders {} => {
             let profiles = profile::Profiles::read(&env.store().join("profiles.json")).unwrap_or(
                 profile::Profiles {
