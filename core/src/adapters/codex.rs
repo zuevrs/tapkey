@@ -425,6 +425,10 @@ impl super::Adapter for Codex {
     fn known_providers(&self, env: &Env) -> Vec<super::KnownProvider> {
         known_providers(env)
     }
+
+    fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+        plan_removal(env, provider)
+    }
 }
 
 /// The registry **is** the harvest: every `[model_providers.<id>]` the person wrote, at user level.
@@ -454,4 +458,24 @@ fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
         });
     }
     out
+}
+
+/// Selected means `model_provider` names our table. Removal takes the table out; a person's own
+/// entry is never touched, because removal only ever targets ids we namespaced.
+fn plan_removal(env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+    let path = config_path(env);
+    let existing = std::fs::read(&path).unwrap_or_default();
+    let mut document = Document::parse(&existing).map_err(|e| format!("{e:?}"))?;
+    if document.get_string(&["model_provider"]) == Some(table_id(&provider.id).as_str()) {
+        return Err("Codex".to_string());
+    }
+    document
+        .remove(&["model_providers", &table_id(&provider.id)])
+        .map_err(|e| format!("{e:?}"))?;
+    Ok(vec![Action::Write {
+        path,
+        bytes: document.to_bytes(),
+        // An existing file keeps its mode; the transaction records what it captured.
+        mode: 0o600,
+    }])
 }

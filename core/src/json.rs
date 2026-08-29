@@ -119,6 +119,39 @@ impl Document {
         self.splice(range, &replacement)
     }
 
+    /// Remove one string from an array that exists at `path`.
+    ///
+    /// Removal only ever targets an id tapkey wrote, and a missing array or a missing element is
+    /// the same as nothing to do. Appending has its own rule — never create the list — and this is
+    /// the leaving half of the same courtesy.
+    pub fn remove_from_array(&mut self, path: &[&str], value: &str) -> Result<(), Error> {
+        let Some(m) = member(&self.root, path) else {
+            return Ok(());
+        };
+        let span = m.value.span();
+        let text = String::from_utf8_lossy(&self.bytes[span.clone()]).into_owned();
+        let needle = format!("\"{value}\"");
+        let Some(at) = text.find(&needle) else {
+            return Ok(());
+        };
+        let mut start = span.start + at;
+        let end = start + needle.len();
+        // The separator before the element goes with it, so removing then appending does not
+        // leave a doubled comma behind — the idempotence rule from ADR-0010, one level down.
+        while start > span.start {
+            let previous = self.bytes[start - 1];
+            if previous == b' ' || previous == b'\t' || previous == b'\n' || previous == b'\r' {
+                start -= 1;
+            } else if previous == b',' {
+                start -= 1;
+                break;
+            } else {
+                break;
+            }
+        }
+        self.splice(start..end, b"")
+    }
+
     /// Ensure an empty object exists at `path`, creating what is missing along the way.
     ///
     /// OpenCode needs a model to be *present* in a provider's `models` map and needs nothing said

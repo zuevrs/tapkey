@@ -281,3 +281,17 @@ impl tapkey_core::env::Http for OfflineHttp {
         Ok(tapkey_core::env::ProbeStatus::NoAnswer)
     }
 }
+
+/// The app refreshes the helper into the store at startup; the tests do the same, by copying the
+/// binary cargo just built.
+pub fn install_helper(machine: &Machine) {
+    let mut path = std::env::current_exe().expect("test binary location");
+    path.pop();
+    if path.ends_with("deps") {
+        path.pop();
+    }
+    let built = path.join("tapkey-helper");
+    let dir = machine.store().join("bin");
+    std::fs::create_dir_all(&dir).expect("bin dir");
+    std::fs::copy(built, dir.join("tapkey-helper")).expect("copy the helper");
+}

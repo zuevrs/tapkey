@@ -18,7 +18,9 @@ pub enum Request {
     /// What is every managed tool actually using right now.
     EffectiveState {},
     /// Apply a profile to every tool it covers, all or nothing.
-    Switch { profile_id: String },
+    Switch {
+        profile_id: String,
+    },
     /// Go back to a stored state. The target is tagged rather than inferred from the shape of
     /// an id: "snapshot cannot look like a timestamp" is a guard that lasts exactly until the
     /// format changes.
@@ -27,15 +29,55 @@ pub enum Request {
         target: RestoreTarget,
     },
     /// Establish which formats a provider's endpoint answers. Reads the network, writes the store.
-    Test { provider_id: String },
+    Test {
+        provider_id: String,
+    },
     /// List what the tools already know: the harvest offer. Reads other people's files and changes
     /// nothing, so it takes no lock.
     Harvest {},
     /// Take one candidate: the key is re-read from the tool's file at this moment and piped to the
     /// helper on stdin, so it lives in one buffer for one call and nowhere else.
-    AcceptHarvest { tool: String, id: String },
+    AcceptHarvest {
+        tool: String,
+        id: String,
+    },
     /// Record that a candidate was declined, so an offer does not become a reminder. Reversible.
-    DeclineHarvest { tool: String, id: String },
+    DeclineHarvest {
+        tool: String,
+        id: String,
+    },
+    // -- Management. Operations on **profiles** write the store only; operations on **providers**
+    // -- may touch the tools' files and are ADR-0005 verbatim.
+    CreateProfile {
+        profile: crate::profile::Profile,
+    },
+    RenameProfile {
+        id: String,
+        name: String,
+    },
+    DuplicateProfile {
+        id: String,
+        as_id: String,
+    },
+    DeleteProfile {
+        id: String,
+    },
+    CreateProvider {
+        id: String,
+        name: String,
+        base_url: String,
+    },
+    RenameProvider {
+        id: String,
+        name: String,
+    },
+    SetProviderEnabled {
+        id: String,
+        enabled: bool,
+    },
+    RemoveProvider {
+        id: String,
+    },
 }
 
 #[derive(Debug, Deserialize)]
@@ -85,6 +127,13 @@ pub enum Response {
         /// A profile describing what the tools hold now, so a first switch is reversible.
         #[serde(skip_serializing_if = "Option::is_none")]
         suggested_profile: Option<SuggestedProfile>,
+    },
+    Changed {
+        ok: bool,
+        /// What was managed, in the catalogue's vocabulary: a profile or a provider.
+        what: &'static str,
+        action: &'static str,
+        id: String,
     },
     Accepted {
         ok: bool,

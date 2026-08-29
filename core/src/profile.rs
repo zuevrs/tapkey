@@ -54,7 +54,7 @@ fn yes() -> bool {
 /// `model_provider` behind all five, so for them a per-slot provider is an instruction the tool
 /// cannot carry out — reported rather than obeyed, because effective state is about what the tool
 /// will use.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum SlotAssignment {
     /// `null`: no assignment, which is an instruction too.
@@ -66,7 +66,7 @@ pub enum SlotAssignment {
 }
 
 /// Serde needs a type to fail on for the `null` arm to be distinguishable from the others.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Nothing {}
 
 impl SlotAssignment {
@@ -88,7 +88,7 @@ impl SlotAssignment {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Profile {
     pub id: String,
     #[serde(default)]
@@ -97,7 +97,7 @@ pub struct Profile {
     pub tools: BTreeMap<String, ToolAssignment>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ToolAssignment {
     /// The **id** of a provider in the same file. Claude Code has one endpoint behind every slot
     /// and Codex one `model_provider` behind all five, so a provider is chosen once per tool.

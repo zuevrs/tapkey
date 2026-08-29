@@ -69,3 +69,24 @@ pub fn store(env: &Env, id: &str, secret: &[u8]) -> Result<(), String> {
         Err(e) => Err(format!("the credential helper failed: {e}")),
     }
 }
+
+/// Delete the stored key for one provider, through the helper's `forget`.
+pub fn forget(env: &Env, id: &str) -> Result<(), String> {
+    let mut child = Command::new(crate::env::helper_path(env.store()))
+        .env("TAPKEY_STORE", env.store())
+        .arg("forget")
+        .arg(id)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| format!("could not run the credential helper: {e}"))?;
+    match child.wait() {
+        Ok(status) if status.success() => Ok(()),
+        // Exit 1 is the helper's *no such item* — nothing stored, nothing to forget, which is
+        // success for a removal. A provider that never had a key still has to be removable.
+        Ok(status) if status.code() == Some(1) => Ok(()),
+        Ok(_) => Err("the credential helper refused".into()),
+        Err(e) => Err(format!("the credential helper failed: {e}")),
+    }
+}

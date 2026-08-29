@@ -77,6 +77,107 @@ fn dispatch(env: &Env, request: &str) -> Response {
         Request::Harvest {} => harvest(env),
         Request::AcceptHarvest { tool, id } => accept_harvest(env, &tool, &id),
         Request::DeclineHarvest { tool, id } => decline_harvest(env, &tool, &id),
+        Request::CreateProfile { profile } => write_profiles(env, |p| {
+            if p.profiles.iter().any(|x| x.id == profile.id) {
+                return Err((
+                    "unknown_profile",
+                    format!("a profile named {:?} exists", profile.id),
+                ));
+            }
+            if profile.tools.is_empty() {
+                // The same refusal a switch gives: an empty profile cannot be applied, so it
+                // cannot be created either.
+                return Err((
+                    "unknown_profile",
+                    "a profile has to name at least one tool".into(),
+                ));
+            }
+            let id = profile.id.clone();
+            p.profiles.push(profile);
+            Ok(("profile", "created", id))
+        }),
+        Request::RenameProfile { id, name } => write_profiles(env, |p| {
+            let profile = p
+                .profiles
+                .iter_mut()
+                .find(|x| x.id == id)
+                .ok_or_else(|| ("unknown_profile", format!("no profile named {id:?}")))?;
+            // The name is the only thing that moves. The id is a reference held in the store and
+            // in every fingerprint taken under it; making it mutable would oblige a rename to
+            // walk through everything that mentions it.
+            profile.name = name;
+            Ok(("profile", "renamed", id))
+        }),
+        Request::DuplicateProfile { id, as_id } => write_profiles(env, |p| {
+            let source = p
+                .profiles
+                .iter()
+                .find(|x| x.id == id)
+                .ok_or_else(|| ("unknown_profile", format!("no profile named {id:?}")))?;
+            // Everything comes across, per-slot providers included: the catalogue's hint for
+            // duplicate is *same provider, different model*, and a copy that lost assignments
+            // would make it a lie.
+            let mut copy = source.clone();
+            copy.id = as_id.clone();
+            copy.name = format!("{} (copy)", source.name);
+            if p.profiles.iter().any(|x| x.id == as_id) {
+                return Err((
+                    "unknown_profile",
+                    format!("a profile named {as_id:?} exists"),
+                ));
+            }
+            p.profiles.push(copy);
+            Ok(("profile", "duplicated", as_id))
+        }),
+        Request::DeleteProfile { id } => write_profiles(env, |p| {
+            // Deleting the profile the tools are currently on deletes it and changes no tool:
+            // switching them to System default would be a large action in answer to a small one.
+            // The tools keep what was applied, and drift still has its fingerprints.
+            let before = p.profiles.len();
+            p.profiles.retain(|x| x.id != id);
+            if p.profiles.len() == before {
+                return Err(("unknown_profile", format!("no profile named {id:?}")));
+            }
+            Ok(("profile", "deleted", id))
+        }),
+        Request::CreateProvider { id, name, base_url } => write_providers(env, |providers| {
+            if providers.iter().any(|p| p.id == id) {
+                return Err((
+                    "unknown_provider",
+                    format!("a provider named {id:?} exists"),
+                ));
+            }
+            providers.push(profile::Provider {
+                id: id.clone(),
+                name,
+                base_url,
+                formats: None,
+                enabled: true,
+                tested_at: None,
+            });
+            Ok(("provider", "created", id))
+        }),
+        Request::RenameProvider { id, name } => write_providers(env, |providers| {
+            let provider = providers
+                .iter_mut()
+                .find(|p| p.id == id)
+                .ok_or_else(|| ("unknown_provider", format!("no provider named {id:?}")))?;
+            // The **name** is editable and the **id** is not. An id is a reference held in three
+            // tools' registry entries, in profiles and in the credential store; keeping only the
+            // visible thing mutable removes the whole class of rename hazards, including moving
+            // the stored key.
+            provider.name = name;
+            Ok(("provider", "renamed", id))
+        }),
+        Request::SetProviderEnabled { id, enabled } => write_providers(env, |providers| {
+            let provider = providers
+                .iter_mut()
+                .find(|p| p.id == id)
+                .ok_or_else(|| ("unknown_provider", format!("no provider named {id:?}")))?;
+            provider.enabled = enabled;
+            Ok(("provider", "set_enabled", id))
+        }),
+        Request::RemoveProvider { id } => remove_provider(env, &id),
         Request::Restore { target } => restore(env, target),
     }
 }
@@ -623,6 +724,151 @@ fn decline_harvest(env: &Env, tool: &str, id: &str) -> Response {
         ok: true,
         provider: id.to_string(),
         attentions: Vec::new(),
+    }
+}
+
+/// Every profile operation is a store write and nothing more: a profile is our state, and no tool
+/// file is touched. The lock is the rule ticket 29 fixed — **any write to the store** — taken here,
+/// once, rather than re-derived per operation where the next writer would forget it.
+fn write_profiles<F>(env: &Env, change: F) -> Response
+where
+    F: FnOnce(
+        &mut profile::Profiles,
+    ) -> Result<(&'static str, &'static str, String), (&'static str, String)>,
+{
+    write_store(env, |p| {
+        change(p).map(
+            |(what, action, id)| -> (bool, &'static str, &'static str, String) {
+                (true, what, action, id)
+            },
+        )
+    })
+}
+
+fn write_providers<F>(env: &Env, change: F) -> Response
+where
+    F: FnOnce(
+        &mut Vec<profile::Provider>,
+    ) -> Result<(&'static str, &'static str, String), (&'static str, String)>,
+{
+    write_profiles(env, move |p| change(&mut p.providers))
+}
+
+fn write_store<F>(env: &Env, change: F) -> Response
+where
+    F: FnOnce(
+        &mut profile::Profiles,
+    ) -> Result<(bool, &'static str, &'static str, String), (&'static str, String)>,
+{
+    let store_path = env.store().join("profiles.json");
+    let _ = std::fs::create_dir_all(env.store());
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    let mut profiles = profile::Profiles::read(&store_path).unwrap_or(profile::Profiles {
+        providers: Vec::new(),
+        profiles: Vec::new(),
+    });
+    let (ok, what, action, id) = match change(&mut profiles) {
+        Ok(result) => result,
+        Err((kind, detail)) => return refuse(kind, detail),
+    };
+    let bytes = serde_json::to_vec_pretty(&profiles).unwrap_or_default();
+    if let Err(e) = atomic::write_atomically(&store_path, &bytes, 0o600) {
+        return refuse("permission_denied", e.to_string());
+    }
+    Response::Changed {
+        ok,
+        what,
+        action,
+        id,
+    }
+}
+
+/// Removing a provider takes out the entries **tapkey created** — its namespaced registry entries —
+/// and refuses while the provider is the current selection in any tool, because the alternative is
+/// the broken tool ADR-0013 identified and deferred twice. The stored key is deleted through the
+/// helper; a harvested original is never touched, and the response says so.
+fn remove_provider(env: &Env, id: &str) -> Response {
+    // The store may not exist on a machine that only ever harvested.
+    let _ = std::fs::create_dir_all(env.store());
+    let store_path = env.store().join("profiles.json");
+    let mut profiles = profile::Profiles::read(&store_path).unwrap_or(profile::Profiles {
+        providers: Vec::new(),
+        profiles: Vec::new(),
+    });
+    let Some(provider) = profiles.providers.iter().find(|p| p.id == id).cloned() else {
+        return refuse("unknown_provider", format!("no provider named {id:?}"));
+    };
+
+    // Planned before anything is staged: a refusal here changed nothing anywhere.
+    let mut actions = Vec::new();
+    for adapter in adapters::all() {
+        match adapter.plan_removal(env, &provider) {
+            Ok(planned) => actions.extend(planned),
+            Err(using) => {
+                return refuse(
+                    "provider_in_use",
+                    format!("{using} is using {id:?} right now — switch it first"),
+                );
+            }
+        }
+    }
+
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    let transaction = transaction::Transaction::new(actions);
+    let mut disk = env.filesystem();
+    let captured = match transaction.capture(&**disk, &adapters::managed_files(env)) {
+        Ok(c) => c,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    // A removal is a change tapkey makes, so it is backed up like one (ADR-0019).
+    let store = match store::Store::open(env.store()) {
+        Ok(s) => s,
+        Err(e) => return refuse("permission_denied", e.to_string()),
+    };
+    if store
+        .take_backup(&captured, "remove provider", env.now())
+        .is_err()
+    {
+        return refuse("permission_denied", "could not record a backup".into());
+    }
+    if let Err(rolled_back) = transaction.apply(&mut **disk) {
+        return Response::Failed {
+            ok: false,
+            outcome: "rolled back",
+            failure: Failure {
+                kind: "write_failed",
+                detail: format!(
+                    "{}: {} — {} file(s) restored",
+                    rolled_back.failed_at.display(),
+                    rolled_back.reason,
+                    rolled_back.restored
+                ),
+            },
+        };
+    }
+
+    // The key we stored is deleted: a secret outliving its owner is a secret with no visible
+    // owner. The harvested original stays where it is, and the UI says so.
+    if let Err(why) = crate::credentials::forget(env, id) {
+        return refuse("keychain_denied", why);
+    }
+
+    profiles.providers.retain(|p| p.id != id);
+    let bytes = serde_json::to_vec_pretty(&profiles).unwrap_or_default();
+    if let Err(e) = atomic::write_atomically(&store_path, &bytes, 0o600) {
+        return refuse("permission_denied", e.to_string());
+    }
+    Response::Changed {
+        ok: true,
+        what: "provider",
+        action: "removed",
+        id: id.to_string(),
     }
 }
 

@@ -83,6 +83,12 @@ pub trait Adapter {
     /// going from the file to the helper's stdin and nowhere else.
     fn known_providers(&self, env: &Env) -> Vec<KnownProvider>;
 
+    /// The writes that take this tool's registry entries for one of tapkey's providers back out,
+    /// or the reason not to: the provider is the tool's current selection, and removing its entry
+    /// would break the tool outright. Not a third widening of the *facts* half — it is a sibling
+    /// of `plan_switch`, an operation rather than an observation.
+    fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String>;
+
     /// A hash per owned slot of what was just written, so drift has something to disagree with.
     /// Values never leave this function — the store keeps hashes, never what they were made from.
     fn fingerprint(&self, assignment: &ToolAssignment) -> BTreeMap<String, String>;

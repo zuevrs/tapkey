@@ -3,7 +3,7 @@
 use serde_json::{Value, json};
 
 mod support;
-use support::{Machine, call};
+use support::{Machine, call, install_helper};
 
 fn harvest() -> Value {
     json!({"version": 1, "op": "harvest", "params": {}})
@@ -65,20 +65,6 @@ fn a_decline_is_recorded_and_still_visible() {
         .cloned()
         .expect("still offered");
     assert_eq!(zai["declined"], json!(true), "{zai}");
-}
-
-/// The app refreshes the helper into the store at startup; the test does the same, by copying the
-/// binary cargo just built.
-fn install_helper(machine: &Machine) {
-    let mut path = std::env::current_exe().expect("test binary location");
-    path.pop();
-    if path.ends_with("deps") {
-        path.pop();
-    }
-    let built = path.join("tapkey-helper");
-    let dir = machine.store().join("bin");
-    std::fs::create_dir_all(&dir).expect("bin dir");
-    std::fs::copy(built, dir.join("tapkey-helper")).expect("copy the helper");
 }
 
 /// Accepting re-reads the key **now** and stores it through the helper; the provider record lands

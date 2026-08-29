@@ -526,3 +526,29 @@ fn a_minified_jsonc_file_does_not_carry_its_comment_into_an_insertion() {
         "{/* note */\"a\":\"one\",\"b\":\"two\"}"
     );
 }
+
+/// Removal takes the element and the separator before it, so remove-then-append leaves no doubled
+/// comma — the idempotence rule from ADR-0010, one level down. Absent array, absent element: both
+/// the same as nothing to do.
+#[test]
+fn an_element_can_be_removed_from_an_array() {
+    let mut document = Document::parse_jsonc(
+        b"{\n  \"enabled_providers\": [\"anthropic\", \"tapkey-zai\", \"ollama\"],\n}\n",
+    )
+    .expect("parses");
+
+    document
+        .remove_from_array(&["enabled_providers"], "tapkey-zai")
+        .expect("removes");
+    document
+        .remove_from_array(&["enabled_providers"], "never-there")
+        .expect("absent element is nothing to do");
+    document
+        .remove_from_array(&["no_such_list"], "x")
+        .expect("absent array too");
+
+    assert_eq!(
+        String::from_utf8(document.to_bytes()).unwrap(),
+        "{\n  \"enabled_providers\": [\"anthropic\", \"ollama\"],\n}\n"
+    );
+}

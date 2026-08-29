@@ -426,6 +426,10 @@ impl super::Adapter for Claude {
     fn known_providers(&self, env: &Env) -> Vec<super::KnownProvider> {
         known_providers(env)
     }
+
+    fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+        plan_removal(env, provider)
+    }
 }
 
 /// No registry, so the harvest is the one endpoint the tool is pointed at — and the **host** is the
@@ -463,4 +467,15 @@ fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
         base_url: url.to_string(),
         credential,
     }]
+}
+
+/// No registry, so there is nothing to remove — but the tool can still be *using* the provider,
+/// and the way it says so is its endpoint matching the provider's.
+fn plan_removal(env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+    let files = read_all(env).map_err(|e| format!("{e:?}"))?;
+    let endpoint = resolve(env, &files, ENDPOINT);
+    if endpoint.effective.as_deref() == Some(provider.base_url.as_str()) {
+        return Err("Claude Code".to_string());
+    }
+    Ok(Vec::new())
 }

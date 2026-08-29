@@ -16,6 +16,8 @@
 
 use crate::env::Env;
 use crate::json::{Document, Error};
+use crate::profile::Provider;
+use crate::transaction::Action;
 use crate::wire::{Link, Resolved, SlotState, ToolState};
 use std::path::PathBuf;
 
@@ -360,6 +362,10 @@ impl super::Adapter for OpenCode {
         known_providers(env)
     }
 
+    fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+        plan_removal(env, provider)
+    }
+
     fn effective_state(&self, env: &Env) -> Result<ToolState, String> {
         effective_state(env).map_err(|e| format!("{e:?}"))
     }
@@ -444,4 +450,28 @@ fn known_providers(env: &Env) -> Vec<super::KnownProvider> {
         }
     }
     out
+}
+
+/// Selected means the namespaced `model` names our provider. Removal takes the registry object out
+/// and our id out of an existing `enabled_providers` list.
+fn plan_removal(env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
+    let path = config_path(env);
+    let existing = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
+    let mut document = Document::parse_jsonc(&existing).map_err(|e| format!("{e:?}"))?;
+    if let Some(model) = document.get_string(&["model"])
+        && model.starts_with(&format!("{}/", table_id(&provider.id)))
+    {
+        return Err("OpenCode".to_string());
+    }
+    document
+        .remove(&["provider", &table_id(&provider.id)])
+        .map_err(|e| format!("{e:?}"))?;
+    document
+        .remove_from_array(&["enabled_providers"], &table_id(&provider.id))
+        .map_err(|e| format!("{e:?}"))?;
+    Ok(vec![Action::Write {
+        path,
+        bytes: document.to_bytes(),
+        mode: 0o600,
+    }])
 }
