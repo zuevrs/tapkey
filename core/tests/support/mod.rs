@@ -45,6 +45,17 @@ pub struct Machine {
     dir: TempDir,
     shell: BTreeMap<String, ShellVar>,
     fail_after: Option<usize>,
+    credentials: Credentials,
+}
+
+/// What the credential seam answers in this test. The default is *everything stored*, so the
+/// sixty-odd tests that are not about credentials keep testing what they were about; the three
+/// that are about credentials opt into absence and denial explicitly.
+enum Credentials {
+    All,
+    Stored(Vec<String>),
+    None,
+    Denied,
 }
 
 impl Machine {
@@ -55,6 +66,7 @@ impl Machine {
             dir,
             shell: BTreeMap::new(),
             fail_after: None,
+            credentials: Credentials::All,
         }
     }
 
@@ -67,6 +79,19 @@ impl Machine {
             .path()
             .join("managed")
             .join("managed-settings.json")
+    }
+
+    /// Declare which providers have a credential stored.
+    pub fn with_credentials(mut self, providers: &[&str]) -> Self {
+        self.credentials = Credentials::Stored(providers.iter().map(|s| s.to_string()).collect());
+        self
+    }
+
+    /// Declare that the Keychain refuses. Distinct from nothing being stored, because the two lead
+    /// to different sentences on screen.
+    pub fn denying_credentials(mut self) -> Self {
+        self.credentials = Credentials::Denied;
+        self
     }
 
     /// Declare that the filesystem refuses one operation, after this many have succeeded.
@@ -173,7 +198,15 @@ impl Machine {
             .with_clock(std::time::UNIX_EPOCH + std::time::Duration::from_millis(1_787_866_640_123))
             .with_project(self.project())
             .with_managed(self.managed())
-            .with_shell(self.shell.clone());
+            .with_shell(self.shell.clone())
+            .with_credentials(match &self.credentials {
+                Credentials::All => {
+                    Box::new(AllCredentials) as Box<dyn tapkey_core::env::Credentials>
+                }
+                Credentials::Stored(ids) => Box::new(StoredCredentials(ids.clone())),
+                Credentials::None => Box::new(tapkey_core::env::NoCredentials),
+                Credentials::Denied => Box::new(DenyingCredentials),
+            });
         match self.fail_after {
             Some(n) => env.with_filesystem(Box::new(tapkey_core::fs::FailOnce::after(n))),
             None => env,
@@ -190,4 +223,32 @@ fn write_json(path: &Path, value: Value) {
 pub fn call(machine: &Machine, request: Value) -> Value {
     let text = tapkey_core::handle_with(&machine.env(), &request.to_string());
     serde_json::from_str(&text).unwrap_or_else(|e| panic!("response was not JSON: {e}\n{text}"))
+}
+
+struct AllCredentials;
+
+impl tapkey_core::env::Credentials for AllCredentials {
+    fn check(&self, _provider_id: &str) -> tapkey_core::env::CredentialState {
+        tapkey_core::env::CredentialState::Found
+    }
+}
+
+struct StoredCredentials(Vec<String>);
+
+impl tapkey_core::env::Credentials for StoredCredentials {
+    fn check(&self, provider_id: &str) -> tapkey_core::env::CredentialState {
+        if self.0.iter().any(|id| id == provider_id) {
+            tapkey_core::env::CredentialState::Found
+        } else {
+            tapkey_core::env::CredentialState::Absent
+        }
+    }
+}
+
+struct DenyingCredentials;
+
+impl tapkey_core::env::Credentials for DenyingCredentials {
+    fn check(&self, _provider_id: &str) -> tapkey_core::env::CredentialState {
+        tapkey_core::env::CredentialState::Denied
+    }
 }

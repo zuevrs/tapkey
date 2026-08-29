@@ -22,7 +22,7 @@ pub mod toml;
 pub mod transaction;
 pub mod wire;
 
-use env::Env;
+use env::{CredentialState, Env};
 use wire::{Envelope, Failure, Request, Response};
 
 /// The schema version carried by every request and response.
@@ -106,6 +106,29 @@ fn switch(env: &Env, profile_id: &str) -> Response {
             },
             None => None,
         };
+        // Probed for **presence** before anything is staged, and never for value. A config pointing
+        // at a credential that is not there is a silent breakage — measured, the tool says nothing
+        // and the endpoint answers 401, which the person reads as a fault of their provider — and
+        // this is where refusing is cheaper than explaining. Absence and denial are distinguished,
+        // because they lead to different sentences: *add a key* said to somebody whose key exists
+        // and was withheld is the wrong sentence.
+        if let Some(provider) = provider {
+            match env.credentials().check(&provider.id) {
+                CredentialState::Found => {}
+                CredentialState::Absent => {
+                    return refuse(
+                        "credential_unavailable",
+                        format!("no key is stored for {provider:?}"),
+                    );
+                }
+                CredentialState::Denied => {
+                    return refuse(
+                        "keychain_denied",
+                        "the keychain refused access — grant it and try again".into(),
+                    );
+                }
+            }
+        }
         assignments.push((tool.as_str(), assignment, provider));
     }
 

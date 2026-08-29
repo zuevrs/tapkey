@@ -17,6 +17,28 @@ const MANAGED_SETTINGS: &str = "/etc/claude-code/managed-settings.json";
 #[cfg(windows)]
 const MANAGED_SETTINGS: &str = r"C:\Program Files\ClaudeCode\managed-settings.json";
 
+/// Asking about a credential, and never being handed one.
+///
+/// ADR-0016 records why this is an interface rather than a call: a test must never raise an access
+/// dialog, and the Linux runner has no Keychain at all. The default implementation spawns the helper
+/// binary; a test substitutes its own and goes near neither. Presence is the only question asked —
+/// a credential tapkey does not need is a credential tapkey does not hold.
+pub trait Credentials {
+    /// Whether a credential is stored for this provider id, answered as the helper's exit code
+    /// distinguishes: found, no such item, or refused.
+    fn check(&self, provider_id: &str) -> CredentialState;
+}
+
+/// The three answers, which is why the helper answers with three exit codes rather than two: an
+/// absent item and a denial lead to different outcomes, and one non-zero code would make the core
+/// guess — the guess becoming "add a key" said to somebody whose key was withheld.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CredentialState {
+    Found,
+    Absent,
+    Denied,
+}
+
 /// What a login shell was found to export.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ShellVar {
@@ -30,6 +52,7 @@ pub enum ShellVar {
 
 /// The world the core acts in.
 pub struct Env {
+    credentials: Box<dyn Credentials>,
     home: PathBuf,
     store: PathBuf,
     project: Option<PathBuf>,
@@ -60,6 +83,7 @@ impl Env {
             shell: BTreeMap::new(),
             now: std::time::SystemTime::now(),
             filesystem: RefCell::new(Box::new(RealFs)),
+            credentials: Box::new(HelperCredentials),
         }
     }
 
@@ -73,7 +97,20 @@ impl Env {
             shell: BTreeMap::new(),
             now: std::time::SystemTime::now(),
             filesystem: RefCell::new(Box::new(RealFs)),
+            // Nothing is stored, which is the safe default for a test: every switch needing a
+            // credential refuses rather than proceeding on one nobody put there.
+            credentials: Box::new(NoCredentials),
         }
+    }
+
+    /// Substitute the credential seam. Tests do this; nothing else needs to.
+    pub fn with_credentials(mut self, credentials: Box<dyn Credentials>) -> Self {
+        self.credentials = credentials;
+        self
+    }
+
+    pub fn credentials(&self) -> &dyn Credentials {
+        &*self.credentials
     }
 
     /// Declare what the login shell exports. Values are only supplied for variables it is safe
@@ -139,4 +176,42 @@ impl Env {
     pub fn shell_var(&self, name: &str) -> Option<&ShellVar> {
         self.shell.get(name)
     }
+}
+
+/// Nothing is stored. The default in tests, and the honest answer on a machine where the helper has
+/// never run.
+pub struct NoCredentials;
+
+impl Credentials for NoCredentials {
+    fn check(&self, _provider_id: &str) -> CredentialState {
+        CredentialState::Absent
+    }
+}
+
+/// The real one: asks the helper binary, which owns every Keychain operation (ADR-0007).
+pub struct HelperCredentials;
+
+impl Credentials for HelperCredentials {
+    fn check(&self, provider_id: &str) -> CredentialState {
+        // `has` prints nothing and answers by exit code, so that asking whether a credential exists
+        // never passes through the code that can print one.
+        match std::process::Command::new(helper_path())
+            .arg("has")
+            .arg(provider_id)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+        {
+            Ok(status) if status.success() => CredentialState::Found,
+            Ok(status) if status.code() == Some(1) => CredentialState::Absent,
+            // Anything else, including the helper being missing, is a refusal rather than an
+            // absence: we could not find out, and "add a key" is the wrong thing to say to somebody
+            // whose key may be sitting there.
+            _ => CredentialState::Denied,
+        }
+    }
+}
+
+fn helper_path() -> PathBuf {
+    Env::real().store().join("bin").join("tapkey-helper")
 }

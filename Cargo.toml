@@ -6,4 +6,8 @@ members = ["core"]
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/zuevrs/tapkey"
-rust-version = "1.85"
+# Raised from 1.85 with the MSRV job already in place — which is the job working: it caught
+# `keyring` 4's floor before the dependency landed, rather than a user finding out first. 1.85 came
+# from edition 2024 rather than from anybody's need, and `core/` is consumed only by our own targets,
+# so holding an older major of a credential crate to keep it would be the wrong trade.
+rust-version = "1.88"

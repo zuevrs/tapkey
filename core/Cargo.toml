@@ -21,11 +21,27 @@ serde_json = "1"
 # Codex's `config.toml`. Its parser keeps comments, spacing and item order, and it is the editor
 # cargo uses on its own manifests (ADR-0010). It does not keep the byte envelope — a BOM, CRLF
 # endings and a missing final newline are all lost on a bare parse-and-render — so `toml` wraps it.
-# Its own MSRV is exactly ours, which is why CI compiles against the declared minimum.
+# Its own MSRV was exactly ours until `keyring` raised the floor; CI compiles against whatever the
+# declared minimum currently is, which is how that move was noticed before it shipped.
 toml_edit = "0.25.13"
 
 [dev-dependencies]
 serde_json = "1"
+
+# The Keychain and Credential Manager, and nowhere else: ADR-0007 gives Linux a `0600` file in the
+# store instead, which is the same branch OpenCode takes on every platform. So no Secret Service
+# store is enabled — a dependency for a path we deliberately do not take is weight with no answer.
+[target.'cfg(target_os = "macos")'.dependencies]
+# `keychain`, not `protected`. The protected store is the data-protection keychain, which needs
+# `keychain-access-groups` — the entitlement route ADR-0016 records as having produced
+# `errSecMissingEntitlement`, and the reason the helper owns every operation in the first place.
+# ADR-0007 lists `kSecUseDataProtectionKeychain` as unmeasured; this chooses the path that works
+# without an entitlement and leaves that question where it was.
+# `v1`, the default, is what selects the classic keychain on this platform.
+keyring = "4"
+
+[target.'cfg(windows)'.dependencies]
+keyring = "4"
 
 [target.'cfg(unix)'.dependencies]
 # For `flock`, and on Darwin for `fcntl(fd, F_FULLFSYNC)`: there a plain `fsync` returns once the

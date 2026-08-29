@@ -52,7 +52,11 @@ impl Case {
     }
 
     fn env(&self) -> Env {
+        // Every credential stored. A fixture depicts a working machine, and several tools refuse a
+        // switch whose credential is absent — the cases that are *about* that refusal would say so
+        // in their expectations.
         let env = Env::for_test(self.home(), self.store())
+            .with_credentials(Box::new(AllStored))
             .with_clock(std::time::UNIX_EPOCH + std::time::Duration::from_millis(CLOCK_MS));
         match read_optional(&self.dir.join("fail.json")) {
             Some(bytes) => {
@@ -171,6 +175,16 @@ fn check_expectations(case: &Case, produced: &BTreeMap<String, Vec<u8>>) {
             problems.join("\n"),
             dump.display()
         );
+    }
+}
+
+/// Everything stored, for the same reason a fixture's providers declare formats: it depicts a
+/// machine that works.
+struct AllStored;
+
+impl tapkey_core::env::Credentials for AllStored {
+    fn check(&self, _provider: &str) -> tapkey_core::env::CredentialState {
+        tapkey_core::env::CredentialState::Found
     }
 }
 
@@ -444,10 +458,10 @@ fn excise(bytes: &[u8], doc: &tapkey_core::json::Document) -> String {
         && inside
             .iter()
             .all(|k| owned.iter().any(|p| p.len() == 2 && p[1] == k));
-    if inside.is_empty() || all_ours {
-        if let Some(span) = doc.member_span(&["env"]) {
-            cuts.push(span);
-        }
+    if (inside.is_empty() || all_ours)
+        && let Some(span) = doc.member_span(&["env"])
+    {
+        cuts.push(span);
     }
     cuts.sort_by_key(|r| r.start);
 
