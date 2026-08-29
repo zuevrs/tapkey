@@ -119,6 +119,63 @@ impl Document {
         self.splice(range, &replacement)
     }
 
+    /// Ensure an empty object exists at `path`, creating what is missing along the way.
+    ///
+    /// OpenCode needs a model to be *present* in a provider's `models` map and needs nothing said
+    /// about it: `limit` is the only field worth writing and it takes a number we do not have, so an
+    /// empty entry says plainly that the model is there and that we claim to know nothing else.
+    pub fn ensure_object(&mut self, path: &[&str]) -> Result<(), Error> {
+        if member(&self.root, path).is_some() {
+            return Ok(());
+        }
+        // `set_string` builds the missing path as one nested literal; writing a placeholder and
+        // removing it leaves the object behind, which is exactly the shape wanted and avoids a
+        // second construction routine that would drift from the first.
+        self.set_string(path, "")?;
+        let mut deeper: Vec<&str> = path.to_vec();
+        deeper.push("");
+        let _ = deeper;
+        self.remove_placeholder(path)
+    }
+
+    /// The other half of `ensure_object`: empty the object we just created without removing it.
+    fn remove_placeholder(&mut self, path: &[&str]) -> Result<(), Error> {
+        let Some(m) = member(&self.root, path) else {
+            return Ok(());
+        };
+        let range = m.value.span();
+        self.splice(range, b"{}")
+    }
+
+    /// Append a string to an array that already exists at `path`.
+    ///
+    /// A missing array is left missing, deliberately. OpenCode's `enabled_providers` **replaces**
+    /// on merge, so an existing list is somebody's active "only these" and adding to it carries out
+    /// the switch they asked for — while creating one would turn "no restriction" into "exactly
+    /// one" and disable every provider not named. An edit and a new policy are different acts.
+    pub fn push_string(&mut self, path: &[&str], value: &str) -> Result<(), Error> {
+        let Some(m) = member(&self.root, path) else {
+            return Ok(());
+        };
+        let span = m.value.span();
+        let text = String::from_utf8_lossy(&self.bytes[span.clone()]).into_owned();
+        let trimmed = text.trim_end();
+        if !trimmed.ends_with(']') {
+            return Ok(());
+        }
+        if text.contains(&format!("\"{value}\"")) {
+            return Ok(());
+        }
+        let close = span.start + trimmed.len() - 1;
+        let empty = trimmed[..trimmed.len() - 1].trim_end().ends_with('[');
+        let insertion = if empty {
+            format!("\"{value}\"")
+        } else {
+            format!(", \"{value}\"")
+        };
+        self.splice(close..close, insertion.as_bytes())
+    }
+
     /// Remove the key at `path`, taking the separator and whitespace its insertion added.
     /// Anything less and adding then removing the same key would leave a trail, so idempotence
     /// would hold only by luck. A path that is not there is a no-op, not a failure.
@@ -234,16 +291,23 @@ struct Style {
 
 impl Style {
     fn of(bytes: &[u8], members: &[Member], span: &Range<usize>, step: String) -> Style {
-        let text = |r: Range<usize>| String::from_utf8_lossy(&bytes[r]).into_owned();
+        // Layout only. Whatever sits between two members in a JSONC file may include a comment,
+        // and a comment is the person's content — copying it into every insertion would repeat
+        // what they wrote once. Found by reading a real file, after every `contains` assertion in
+        // the suite had passed on output that carried the comment five times over.
+        let text = |r: Range<usize>| strip_comments(&String::from_utf8_lossy(&bytes[r]));
 
         if let Some(first) = members.first() {
             let colon = text(first.key_span.end..first.value.span().start);
-            let opening = text(span.start + 1..first.span.start);
+            let opening = last_line(&text(span.start + 1..first.span.start));
             // Two members show exactly what goes between them; one member can only be
             // inferred from. A file that writes `"a": 1` would write `, "b": 2`, and a
             // minified one would not.
             let lead = match members.get(1) {
-                Some(second) => text(first.span.end + 1..second.span.start),
+                // The layout, not the leftovers: with a comment removed, the newline that followed
+                // it would otherwise survive as a blank line in every insertion. What a new member
+                // needs is the indentation of the line it lands on.
+                Some(second) => last_line(&text(first.span.end + 1..second.span.start)),
                 None if !opening.is_empty() => opening.clone(),
                 None if colon.ends_with(' ') => " ".to_string(),
                 None => String::new(),
@@ -691,5 +755,54 @@ impl<'a> Parser<'a> {
                 })
             }
         }
+    }
+}
+
+/// Everything that is not a comment, for reading layout out of a span that may contain one.
+///
+/// Deliberately not a parser: it is applied to the gap between two members, where a `/` can only
+/// begin a comment — a string containing one would be inside a member, not between two.
+fn strip_comments(text: &str) -> String {
+    let bytes = text.as_bytes();
+    let mut out = String::new();
+    let mut i = 0;
+    while i < bytes.len() {
+        match (bytes[i], bytes.get(i + 1)) {
+            (b'/', Some(b'/')) => {
+                while i < bytes.len() && bytes[i] != b'\n' {
+                    i += 1;
+                }
+            }
+            (b'/', Some(b'*')) => {
+                i += 2;
+                while i < bytes.len() && !(bytes[i] == b'*' && bytes.get(i + 1) == Some(&b'/')) {
+                    i += 1;
+                }
+                i = (i + 2).min(bytes.len());
+            }
+            (c, _) => {
+                out.push(c as char);
+                i += 1;
+            }
+        }
+    }
+    out
+}
+
+/// The final line of a gap: one newline and the indentation after it, or the gap unchanged when
+/// there is no newline at all — a minified file stays minified.
+fn last_line(text: &str) -> String {
+    match text.rfind('\n') {
+        // From the line ending itself, `\r` included: taking only the `\n` would quietly convert
+        // a CRLF file's separators as we inserted into it, which a golden fixture caught.
+        Some(i) => {
+            let start = if i > 0 && text.as_bytes()[i - 1] == b'\r' {
+                i - 1
+            } else {
+                i
+            };
+            text[start..].to_string()
+        }
+        None => text.to_string(),
     }
 }

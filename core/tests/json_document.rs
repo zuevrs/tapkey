@@ -476,3 +476,53 @@ fn a_jsonc_document_stays_jsonc_across_an_edit() {
         "{\n  // keep me\n  \"a\": \"three\",\n}\n"
     );
 }
+
+/// A comment is content, and content is never repeated. The style a new member copies is the
+/// whitespace and punctuation between two existing ones — not whatever those two happen to have
+/// written between them. Found by looking at a real file rather than by an assertion that the
+/// output *contains* the right things, which every `contains` in the suite had passed.
+#[test]
+fn inserting_into_a_commented_file_does_not_duplicate_the_comment() {
+    let mut document = Document::parse_jsonc(b"{\n  // hand written\n  \"theme\": \"dark\",\n}\n")
+        .expect("parses");
+
+    document.set_string(&["model"], "new").expect("sets");
+
+    let after = String::from_utf8(document.to_bytes()).unwrap();
+    assert_eq!(
+        after.matches("// hand written").count(),
+        1,
+        "the comment was copied into the insertion:\n{after}"
+    );
+}
+
+/// And the layout it copies is the layout, not the leftovers. Stripping a comment out of the gap
+/// between two members leaves the newline that followed it, so an insertion grew a blank line —
+/// invisible to every `contains` assertion and obvious the moment the whole file is asserted.
+#[test]
+fn an_insertion_copies_the_indentation_and_nothing_else() {
+    let mut document = Document::parse_jsonc(b"{\n  // hand written\n  \"theme\": \"dark\",\n}\n")
+        .expect("parses");
+
+    document.set_string(&["model"], "new").expect("sets");
+
+    assert_eq!(
+        String::from_utf8(document.to_bytes()).unwrap(),
+        "{\n  // hand written\n  \"theme\": \"dark\",\n  \"model\": \"new\",\n}\n"
+    );
+}
+
+/// A minified JSONC file has no newline to take a layout from, so the comment stripper is what
+/// keeps a comment out of the insertion there. Without this case, removing the stripper altogether
+/// changed nothing that any test could see.
+#[test]
+fn a_minified_jsonc_file_does_not_carry_its_comment_into_an_insertion() {
+    let mut document = Document::parse_jsonc(b"{/* note */\"a\":\"one\"}").expect("parses");
+
+    document.set_string(&["b"], "two").expect("sets");
+
+    assert_eq!(
+        String::from_utf8(document.to_bytes()).unwrap(),
+        "{/* note */\"a\":\"one\",\"b\":\"two\"}"
+    );
+}

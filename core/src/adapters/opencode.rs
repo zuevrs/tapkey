@@ -231,6 +231,88 @@ fn settle(mut chain: Vec<Link>) -> Resolved {
     Resolved { effective, chain }
 }
 
+/// Every id tapkey writes is prefixed. OpenCode has **no** reserved list — a config entry simply
+/// deep-merges over a built-in of the same id — so the constraint is self-imposed, and worth
+/// imposing: merging into somebody else's provider is harder to reason about and harder to undo
+/// than adding beside it, and it leaves nobody able to see where their configuration ends and ours
+/// begins. One rule across two tools beats two similar ones.
+pub const ID_PREFIX: &str = "tapkey-";
+
+pub fn table_id(provider_id: &str) -> String {
+    format!("{ID_PREFIX}{provider_id}")
+}
+
+/// The npm package **is** the protocol here — there is no config key for it. `@ai-sdk/openai`
+/// speaks Responses, `@ai-sdk/openai-compatible` speaks Chat Completions, which is how OpenCode
+/// reaches the large population of gateways Codex cannot reach at all. An untested provider takes
+/// the compatible one: erring toward the wider protocol is the cheaper mistake.
+fn npm_package(provider: &crate::profile::Provider) -> &'static str {
+    match &provider.formats {
+        Some(formats) if formats.iter().any(|f| f == "openai_responses") => "@ai-sdk/openai",
+        _ => "@ai-sdk/openai-compatible",
+    }
+}
+
+/// Where tapkey keeps a credential it cannot put in a keychain. ADR-0007: OpenCode has neither a
+/// keyring nor a command-backed credential, so the key is on disk in a file we own at `0600`.
+pub fn credential_path(env: &Env, provider_id: &str) -> PathBuf {
+    env.store().join("keys").join(provider_id)
+}
+
+pub fn plan_switch(
+    env: &Env,
+    assignment: &crate::profile::ToolAssignment,
+    provider: Option<&crate::profile::Provider>,
+) -> Result<(Vec<crate::transaction::Action>, Vec<crate::wire::Attention>), Error> {
+    let path = config_path(env);
+    let existing = std::fs::read(&path).unwrap_or_else(|_| b"{}".to_vec());
+    let mut document = Document::parse_jsonc(&existing)?;
+
+    // The one key whose absence makes the tool rewrite this file on every plain read, stripping a
+    // BOM and inserting an LF into a CRLF file. It is the first top-level key tapkey writes that no
+    // profile asked for, and it is written because it protects what we promised to preserve.
+    document.set_string(&[SCHEMA_KEY], SCHEMA_URL)?;
+
+    if let Some(provider) = provider {
+        let id = table_id(&provider.id);
+        document.set_string(&["provider", &id, "npm"], npm_package(provider))?;
+        document.set_string(&["provider", &id, "name"], &provider.name)?;
+        document.set_string(&["provider", &id, "options", "baseURL"], &provider.base_url)?;
+        // A path, never a key. When the config breaks the tool prints the whole of it, so an inline
+        // credential leaks and a reference discloses a path instead.
+        document.set_string(
+            &["provider", &id, "options", "apiKey"],
+            &format!("{{file:{}}}", credential_path(env, &provider.id).display()),
+        )?;
+        // Appended only where the list already exists: creating one would turn "no restriction"
+        // into "exactly one" and disable every provider not named in it.
+        document.push_string(&["enabled_providers"], &id)?;
+
+        for slot in SLOTS {
+            if let Some(model) = assignment.slots.get(slot.name).and_then(|a| a.model()) {
+                let slot_provider = assignment
+                    .slots
+                    .get(slot.name)
+                    .and_then(|a| a.provider())
+                    .unwrap_or(provider.id.as_str());
+                let namespaced = format!("{}/{model}", table_id(slot_provider));
+                document.set_string(slot.path, &namespaced)?;
+                // Present, and nothing claimed about it: `limit` needs a number we do not have.
+                document.ensure_object(&["provider", &table_id(slot_provider), "models", model])?;
+            }
+        }
+    }
+
+    Ok((
+        vec![crate::transaction::Action::Write {
+            path,
+            bytes: document.to_bytes(),
+            mode: 0o600,
+        }],
+        Vec::new(),
+    ))
+}
+
 /// The adapter, as the core sees it.
 pub struct OpenCode;
 
@@ -253,13 +335,11 @@ impl super::Adapter for OpenCode {
 
     fn plan_switch(
         &self,
-        _env: &Env,
-        _assignment: &crate::profile::ToolAssignment,
-        _provider: Option<&crate::profile::Provider>,
+        env: &Env,
+        assignment: &crate::profile::ToolAssignment,
+        provider: Option<&crate::profile::Provider>,
     ) -> Result<(Vec<crate::transaction::Action>, Vec<crate::wire::Attention>), String> {
-        // The write lands in its own slice; reading comes first so the verification it will need
-        // exists before there is anything to verify.
-        Ok((Vec::new(), Vec::new()))
+        plan_switch(env, assignment, provider).map_err(|e| format!("{e:?}"))
     }
 
     fn fingerprint(
