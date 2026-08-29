@@ -17,9 +17,8 @@ if (label === "panel") {
   panel();
 } else if (label === "hud") {
   hud();
-} else {
-  // Settings and the sheets are A4/A6; the shell stays honest about what is not here yet.
-  surface.innerHTML = `<p style="padding:16px;font-size:13px;opacity:.6">Coming in A4.</p>`;
+} else if (label === "settings") {
+  import("./settings.js").then((m) => m.settings());
 }
 
 // -- The panel -------------------------------------------------------------------------

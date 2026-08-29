@@ -45,3 +45,39 @@ body.hud { display: grid; place-items: center; }
   font-size: 12px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
   border-radius: 6px; background: transparent; color: inherit; padding: 4px 10px;
 }
+
+/* -- Settings: tabs, cards, forms. Same row primitive, wider shell. -- */
+#surface.settings { padding: 0 20px 20px; font-size: 13px; }
+.tabs { display: flex; gap: 4px; padding: 12px 0; }
+.tabs button {
+  border: 0; background: transparent; color: inherit; font-size: 13px;
+  padding: 6px 14px; border-radius: 6px; cursor: default;
+}
+.tabs button.active { background: color-mix(in srgb, currentColor 12%, transparent); }
+.card {
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+}
+.card .row { padding: 4px 0; }
+.field { display: block; margin-bottom: 10px; }
+.field span { display: block; font-size: 11px; opacity: 0.6; margin-bottom: 3px; }
+.field input, .field select {
+  width: 100%; padding: 7px 10px; font-size: 13px; color: inherit;
+  background: transparent; border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 6px;
+}
+button.act {
+  font-size: 12px; padding: 5px 12px; border-radius: 6px; color: inherit;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent); background: transparent;
+}
+button.act.danger { border-color: color-mix(in srgb, red 45%, transparent); }
+.note { font-size: 11px; opacity: 0.55; margin-top: 4px; }
+#sheet {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  background: color-mix(in srgb, black 35%, transparent);
+}
+#sheet .box {
+  background: color-mix(in srgb, canvashighlight 4%, canvas); border-radius: 10px;
+  padding: 16px 18px; max-width: 340px; font-size: 13px;
+}
+#sheet .box .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
