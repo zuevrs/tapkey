@@ -1,98 +1,98 @@
-:root { color-scheme: light dark; }
-* { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: transparent; }
+/* Surface CSS: consumes tokens, invents nothing. The panel and HUD windows are transparent —
+   the OS draws the floating material — so only settings and onboarding paint var(--canvas). */
+
+html, body { height: 100%; }
+body.panel, body.hud { background: transparent; }
+body.settings, body.onboarding { background: var(--canvas); }
 
 /* -- The row primitive: icon, title + description, one trailing element. The label never
    shrinks below its own text; the value truncates instead. -- */
 .row {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px; border-radius: 8px; cursor: default;
+  padding: 8px 12px; border-radius: var(--r-md);
 }
-.row:hover, .row.active { background: color-mix(in srgb, currentColor 8%, transparent); }
+.row:hover, .row.active { background: var(--chip); }
 .row .tile {
-  flex: none; width: 28px; height: 28px; border-radius: 6px;
-  display: grid; place-items: center; font-size: 13px;
-  background: color-mix(in srgb, currentColor 10%, transparent);
+  flex: none; width: 28px; height: 28px; border-radius: 7px;
+  display: grid; place-items: center; font-size: 1.3rem; color: var(--mark-knockout);
+  background: currentColor; position: relative;
 }
-.row .label { flex: none; font-size: 13px; }
-.row .qualifier {
-  flex: none; font-size: 11px; opacity: 0.55;
-  /* The qualifier is inline dim text, not a mid-row chip. */
-}
+.row .tile::after { content: attr(data-l); position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; }
+.row .label { flex: none; font-size: 1.3rem; }
+.row .qualifier { flex: none; font-size: 1.1rem; color: var(--muted); }
 .row .value {
-  flex: 1 1 auto; text-align: right; font-size: 11px; opacity: 0.55;
+  flex: 1 1 auto; text-align: right; font-size: 1.1rem; color: var(--muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
 #search {
-  width: 100%; padding: 8px 12px; font-size: 13px; color: inherit;
-  background: transparent; border: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  width: 100%; padding: 8px 12px; font: inherit; font-size: 1.3rem; color: var(--ink);
+  background: var(--field); border: 0; border-bottom: var(--hairline) solid var(--line);
   outline: none;
 }
 #list { padding: 6px; overflow: hidden; }
 #footer {
-  padding: 6px 12px; font-size: 11px; opacity: 0.5;
-  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  padding: 6px 12px; font-size: 1.1rem; color: var(--muted);
+  border-top: var(--hairline) solid var(--line);
 }
+
+/* -- Motion: three moments, all from the tokens, all surrendered under Reduce Motion. -- */
+#surface.panel { animation: materialise var(--dur-normal) var(--ease-entrance); }
+@keyframes materialise { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
+#surface.hud { animation: materialise var(--dur-fast) var(--ease-entrance); }
+@media (prefers-reduced-motion: reduce) { #surface { animation: none; } }
 
 /* -- The HUD: one line of result and, when there is a backup to undo, one control. -- */
 body.hud { display: grid; place-items: center; }
-#surface.hud {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-}
-#surface.hud .result { font-size: 13px; }
+#surface.hud { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+#surface.hud .result { font-size: 1.3rem; }
 #surface.hud button {
-  font-size: 12px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
-  border-radius: 6px; background: transparent; color: inherit; padding: 4px 10px;
+  font-size: 1.2rem; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--card); color: var(--ink); padding: 4px 10px;
 }
 
 /* -- Settings: tabs, cards, forms. Same row primitive, wider shell. -- */
-#surface.settings { padding: 0 20px 20px; font-size: 13px; }
+#surface.settings { padding: 0 20px 20px; font-size: 1.3rem; }
 .tabs { display: flex; gap: 4px; padding: 12px 0; }
 .tabs button {
-  border: 0; background: transparent; color: inherit; font-size: 13px;
-  padding: 6px 14px; border-radius: 6px; cursor: default;
+  border: 0; background: transparent; color: var(--muted); font-size: 1.3rem;
+  padding: 6px 14px; border-radius: 6px;
 }
-.tabs button.active { background: color-mix(in srgb, currentColor 12%, transparent); }
+.tabs button.active { background: var(--accent-fill); color: var(--on-accent); }
 .card {
-  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
-  border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+  border: var(--hairline) solid var(--line); border-radius: var(--r-md);
+  background: var(--card); padding: 12px 14px; margin-bottom: 10px;
 }
-.card .row { padding: 4px 0; }
+.card .row { padding: 4px 0; border-radius: 6px; }
 .field { display: block; margin-bottom: 10px; }
-.field span { display: block; font-size: 11px; opacity: 0.6; margin-bottom: 3px; }
-.field input, .field select {
-  width: 100%; padding: 7px 10px; font-size: 13px; color: inherit;
-  background: transparent; border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-  border-radius: 6px;
+.field span { display: block; font-size: 1.1rem; color: var(--muted); margin-bottom: 3px; }
+.field input {
+  width: 100%; padding: 7px 10px; font: inherit; font-size: 1.3rem; color: var(--ink);
+  background: var(--field); border: 1px solid var(--field-line); border-radius: 6px;
 }
 button.act {
-  font-size: 12px; padding: 5px 12px; border-radius: 6px; color: inherit;
-  border: 1px solid color-mix(in srgb, currentColor 25%, transparent); background: transparent;
+  font-size: 1.2rem; padding: 5px 12px; border-radius: 6px; color: var(--ink);
+  border: 1px solid var(--line); background: var(--card);
 }
-button.act.danger { border-color: color-mix(in srgb, red 45%, transparent); }
-.note { font-size: 11px; opacity: 0.55; margin-top: 4px; }
-#sheet {
-  position: fixed; inset: 0; display: grid; place-items: center;
-  background: color-mix(in srgb, black 35%, transparent);
-}
-#sheet .box {
-  background: color-mix(in srgb, canvashighlight 4%, canvas); border-radius: 10px;
-  padding: 16px 18px; max-width: 340px; font-size: 13px;
-}
+button.act.primary { background: var(--accent-fill); color: var(--on-accent); border-color: transparent; }
+button.act.danger { border-color: var(--bad); }
+.note { font-size: 1.1rem; color: var(--muted); margin-top: 4px; }
+#sheet { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.35); }
+#sheet .box { background: var(--card); border-radius: var(--r-md); padding: 16px 18px; max-width: 340px; font-size: 1.3rem; box-shadow: var(--shadow); }
 #sheet .box .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
 /* -- Onboarding: one screen, three sections, chips for presence. -- */
-#surface.onboarding { padding: 24px 28px; font-size: 13px; max-width: 420px; }
-#surface.onboarding h2 { font-size: 17px; margin: 0 0 4px; }
-#surface.onboarding h3 { font-size: 12px; margin: 16px 0 4px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.04em; }
+#surface.onboarding { padding: 24px 28px; font-size: 1.3rem; max-width: 44rem; }
+#surface.onboarding h2 { font-size: 1.7rem; margin: 0 0 4px; }
+#surface.onboarding h3 {
+  font-size: 1.2rem; margin: 16px 0 4px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .04em;
+}
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip {
-  font-size: 11px; padding: 4px 10px; border-radius: 999px;
-  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  font-size: 1.1rem; padding: 4px 10px; border-radius: 999px;
+  border: var(--hairline) solid var(--line);
 }
-.chip b { font-weight: 500; opacity: 0.6; margin-left: 4px; }
-.chip.ok b { color: inherit; opacity: 0.9; }
+.chip b { font-weight: 500; color: var(--muted); margin-left: 4px; }
 .candidates .row.declined { opacity: 0.45; }
 #surface.onboarding .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-button.primary { background: color-mix(in srgb, currentColor 15%, transparent); }

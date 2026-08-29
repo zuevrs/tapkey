@@ -4,6 +4,7 @@
 
 const { invoke } = window.__TAURI__.core;
 
+const surface = document.getElementById("surface");
 const call = (request) =>
   invoke("invoke", { request: JSON.stringify(request) }).then(JSON.parse);
 
@@ -13,6 +14,7 @@ const esc = (text) =>
 let tab = "providers";
 
 export function settings() {
+  document.getElementById("surface").className = "settings";
   surface.innerHTML = `
     <nav class="tabs">
       <button data-tab="providers">Providers</button>

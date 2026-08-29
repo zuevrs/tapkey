@@ -7,6 +7,11 @@ const { invoke } = window.__TAURI__.core;
 const surface = document.getElementById("surface");
 const label = getCurrentWindow().label;
 
+// The platform layer is a token swap, and the OS is the only honest source of which one.
+// Windows WebView2's UA carries "Windows NT"; nothing else needs distinguishing yet.
+document.documentElement.dataset.platform = /Windows NT/.test(navigator.userAgent) ? "win" : "mac";
+document.body.classList.add(label);
+
 const call = (request) =>
   invoke("invoke", { request: JSON.stringify(request) }).then(JSON.parse);
 
@@ -32,6 +37,7 @@ async function panel() {
     call({ version: 1, op: "list_profiles", params: {} }),
     call({ version: 1, op: "effective_state", params: {} }),
   ]);
+  surface.className = "panel";
   render(profiles.profiles, state);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") getCurrentWindow().hide();

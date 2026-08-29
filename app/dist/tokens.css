@@ -1,0 +1,68 @@
+/* Ported verbatim from internal/prototype/tapkey-prototype.html — the measured design system,
+   comments and contrast ratios included. The prototype is the working visual reference
+   (ADR-0017); this file is its token layer, and surface CSS consumes it rather than inventing. */
+
+:root{
+  --dur-faster:100ms; --dur-fast:150ms; --dur-normal:250ms;
+  --ease-entrance:cubic-bezier(.2,.9,.25,1); --ease-exit:cubic-bezier(.2,.9,.25,1);
+  /* one number, not two hard-coded ones: Windows sets 14px where macOS sets 13, so the
+     same width holds less text, and a long locale holds less again */
+  --panel-w:min(35.2rem, 92vw);
+  /* a half-pixel border is a Retina idiom: Fluent strokes are 1px, and at 125% or 150%
+     display scaling .5px rounds unpredictably and the line flickers in and out */
+  --hairline:0.5px;
+  /* The OS text-size setting has to be able to reach the type; type and row heights are rem,
+     furniture stays px. Capped at 2: past that the panel scrolls rather than reflowing. */
+  --text-scale:1;
+}
+:root[data-platform="win"]{
+  /* ControlFaster/Fast/NormalAnimationDuration, Fluent's Fast Out Slow In / Slow Out Fast In */
+  --dur-faster:83ms; --dur-fast:167ms; --dur-normal:250ms;
+  --ease-entrance:cubic-bezier(0,0,0,1); --ease-exit:cubic-bezier(1,0,1,1);
+  --panel-w:min(37.6rem, 92vw);
+  --hairline:1px;
+}
+html{font-size:calc(10px * min(var(--text-scale), 2))}
+:root{
+  --canvas:#f6f7f9; --ink:#1c1c1e; --muted:#6b6b70; --line:#dcdee3; --card:#fff; --accent:#0a6cd8;
+  --attn:#b25e00; --bad:#c9342b; --good:#248a3d; --on-attn:#fff; --on-bad:#fff;
+  --accent-fill:#0a6cd8; --on-accent:#fff;        /* white on fill: 5.06:1 */
+  --sel-fill:#0a6cd8;  --on-sel:#fff;          /* selected row: 5.06:1 */
+  --group:#fff; --group-sep:rgba(0,0,0,.07);
+  --field:#fff; --field-line:#d3d3d9; --chip:rgba(0,0,0,.055);
+  --sw-off:#d3d3d9; --sw-knob:#fff; --press-fill:#0a4fa0; --dim-text:#9a9aa1;
+  --mark-knockout:#fff;
+  --shadow:0 16px 40px rgba(18,22,34,.28), 0 1px 3px rgba(18,22,34,.18);
+  --r-lg:22px; --r-md:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --canvas:#101013; --ink:#f2f2f5; --muted:#95959c; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+    --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
+    --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
+    --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
+    --group:#2c2c31; --group-sep:rgba(255,255,255,.09);
+    --field:#37373d; --field-line:#48484f; --chip:rgba(255,255,255,.09);
+    --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
+    --mark-knockout:#1d1d21;
+    --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#101013; --ink:#f2f2f5; --muted:#95959c; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+  --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
+  --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
+  --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
+  --group:#2c2c31; --group-sep:rgba(255,255,255,.09);
+  --field:#37373d; --field-line:#48484f; --chip:rgba(255,255,255,.09);
+  --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
+  --mark-knockout:#1d1d21;
+  --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
