@@ -33,14 +33,16 @@ jobs:
       - name: Format
         run: cargo fmt --all --check
 
+      # Scoped to the core: the app is a Tauri crate whose Linux build wants webkit system
+      # libraries the engine has no use for. The app has its own job.
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy -p tapkey-core --all-targets -- -D warnings
 
       - name: Test
-        run: cargo test --workspace --all-targets
+        run: cargo test -p tapkey-core --all-targets
 
       - name: Doc tests
-        run: cargo test --workspace --doc
+        run: cargo test -p tapkey-core --doc
 
   app:
     name: app bundle
@@ -61,6 +63,9 @@ jobs:
 
       # The smoke build per ADR-0016: the bundle exists. The backend is already covered by the
       # core's tests, and launching a GUI in CI is flake that would only re-prove them.
+      - name: Clippy
+        run: cargo clippy -p tapkey-app --all-targets -- -D warnings
+
       - name: Build the bundle
         run: cargo tauri build
 
@@ -81,7 +86,7 @@ jobs:
       # Tests, not just a check: the seam is now implemented, and the tests are the measurement
       # the seam ticket said Windows deserved. A check alone would let a lying stub stay green.
       - name: Test
-        run: cargo test --workspace --all-targets
+        run: cargo test -p tapkey-core --all-targets
 
   msrv:
     name: oldest supported Rust
@@ -105,10 +110,10 @@ jobs:
       # Build and test only: clippy and rustfmt move faster than the language, and holding an
       # old toolchain to a new lint would fail for a reason that is not about portability.
       - name: Build
-        run: cargo build --workspace --all-targets
+        run: cargo build -p tapkey-core --all-targets
 
       - name: Test
-        run: cargo test --workspace --all-targets
+        run: cargo test -p tapkey-core --all-targets
 
   hygiene:
     name: repository hygiene
