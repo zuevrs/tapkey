@@ -247,6 +247,20 @@ function renderProviderPane(pane, p, using, toolList) {
         <div class="g-row"><span class="gl">Enabled</span>
           <span class="gv"><label class="swl"><input type="checkbox" id="prov-enabled" ${p.enabled ? "checked" : ""}/><span class="sw"></span></label></span></div>
       </div>
+      <div class="g-label">Models</div>
+      <div class="g-desc">Enabled models appear in profiles</div>
+      <div class="group">
+        <div class="g-row"><span class="gv grow">
+          <input class="tfield grow" id="m-search" placeholder="Filter models…" /></span>
+          <button class="act" id="disc-btn">Discover</button></div>
+        <div class="model-rows" id="m-rows"></div>
+        <div class="g-status" id="m-status">${
+          p.models?.length
+            ? `${p.models.filter((x) => x.enabled).length} of ${p.models.length} enabled`
+            : "No models yet — Discover asks the host for its catalogue"
+        }</div>
+      </div>
+      <div class="g-note" id="disc-out" role="status"></div>
       <div class="group"><button class="act danger" id="remove-btn">Delete provider…</button></div>
       <div class="g-note">${usedBy ? `${usedBy} ${usedBy === 1 ? "profile uses" : "profiles use"} this provider and will fall back to System default` : ""}</div>
       <div class="g-note" id="pane-result" role="status"></div>`;
@@ -268,6 +282,53 @@ function renderProviderPane(pane, p, using, toolList) {
       if (!r.ok) {
         document.getElementById("pane-result").textContent = `${r.failure.kind} — nothing was changed`;
         e.target.checked = !e.target.checked;
+      }
+    });
+    // The models group: a local filter over a discovered list, switches that write through
+    // the store, and Discover asking the host for its catalogue.
+    const renderModels = (filter) => {
+      const rows = document.getElementById("m-rows");
+      const all = p.models ?? [];
+      const shown = all.filter((mo) => !filter || mo.id.toLowerCase().includes(filter.toLowerCase()));
+      rows.innerHTML = shown.length
+        ? shown.map((mo) => `
+          <div class="g-row model-row"><span class="mono nm">${esc(mo.id)}</span>
+            <span class="hint">${mo.context_k ? `${mo.context_k}k context` : "context limit unknown"}</span>
+            <label class="swl"><input type="checkbox" data-model="${esc(mo.id)}" ${mo.enabled ? "checked" : ""}/><span class="sw"></span></label>
+          </div>`).join("")
+        : `<div class="g-empty"><b>No models match “${esc(filter)}”</b>Clear the filter, or run Discover again</div>`;
+      rows.querySelectorAll("input[data-model]").forEach((box) =>
+        box.addEventListener("change", async (e) => {
+          const r = await call({ version: 1, op: "set_model_enabled",
+            params: { provider_id: p.id, model: box.dataset.model, enabled: e.target.checked } });
+          if (r.ok) {
+            const model = p.models.find((x) => x.id === box.dataset.model);
+            if (model) model.enabled = e.target.checked;
+            document.getElementById("m-status").textContent =
+              `${p.models.filter((x) => x.enabled).length} of ${p.models.length} enabled`;
+          } else {
+            e.target.checked = !e.target.checked;
+          }
+        })
+      );
+    };
+    renderModels("");
+    const mSearch = document.getElementById("m-search");
+    mSearch.addEventListener("input", () => renderModels(mSearch.value));
+    document.getElementById("disc-btn").addEventListener("click", async () => {
+      document.getElementById("disc-out").textContent = `Asking ${p.base_url}…`;
+      const r = await call({ version: 1, op: "discover", params: { provider_id: p.id } });
+      if (r.ok) {
+        document.getElementById("disc-out").textContent = `${r.count} models`;
+        // Refresh the whole pane from the store — the card now carries the catalogue.
+        draw();
+      } else {
+        document.getElementById("disc-out").textContent =
+          r.failure?.kind === "no_catalogue"
+            ? "No catalogue here — enter models by hand"
+            : r.failure?.kind === "network_unreachable"
+              ? "No response — check the base URL"
+              : `${r.failure?.kind} — nothing was changed`;
       }
     });
     document.getElementById("remove-btn").addEventListener("click", () => {
@@ -458,7 +519,22 @@ async function editProfile(id, paneArg, toolListArg) {
         </div>
         <div class="row tall">
           <span class="stack"><span class="label">Main model</span></span>
-          <span class="trail"><input class="sheet-input" id="uni-main" value="${esc(mainOf(first?.tool))}" placeholder="—" /></span>
+          <span class="trail">${
+            (() => {
+              const models = (providers.find((x) => x.id === anyProvider)?.models ?? [])
+                .filter((mo) => mo.enabled);
+              const current = mainOf(first?.tool);
+              return models.length
+                ? `<select id="uni-main">
+                     <option value="">—</option>
+                     ${models.map((mo) =>
+                       `<option value="${esc(mo.id)}"${mo.id === current ? " selected" : ""}>${esc(mo.id)}</option>`).join("")}
+                     ${current && !models.some((mo) => mo.id === current)
+                       ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : ""}
+                   </select>`
+                : `<input class="sheet-input" id="uni-main" value="${esc(current)}" placeholder="—" />`;
+            })()
+          }</span>
         </div>
       </div>
       <div class="actions"><button class="act" id="customize">${custom ? "Hide per-tool detail" : "Customize per tool…"}</button></div>
@@ -474,13 +550,28 @@ async function editProfile(id, paneArg, toolListArg) {
                 `<option value="${esc(p.id)}"${a.provider === p.id ? " selected" : ""}>${esc(p.name)}</option>`).join("")}
             </select></span>
           </div>
-          ${tool.slots.filter((s) => s.owned).map((slot) => `
+          ${tool.slots.filter((s) => s.owned).map((slot) => {
+            const models = (providers.find((x) => x.id === a.provider)?.models ?? [])
+              .filter((mo) => mo.enabled);
+            const current = a.slots?.[slot.slot] ?? "";
+            return `
             <div class="row tall">
               <span class="stack"><span class="label">${esc(slotName(slot.slot))}</span>
                 ${slotHint(slot.slot) ? `<span class="qualifier">${esc(slotHint(slot.slot))}</span>` : ""}</span>
-              <span class="trail"><input class="sheet-input" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
-                   value="${esc(a.slots?.[slot.slot] ?? "")}" placeholder="—" /></span>
-            </div>`).join("")}
+              <span class="trail">${
+                models.length
+                  ? `<select data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}" data-kind="slot">
+                       <option value="">—</option>
+                       ${models.map((mo) =>
+                         `<option value="${esc(mo.id)}"${mo.id === current ? " selected" : ""}>${esc(mo.id)}</option>`).join("")}
+                       ${current && !models.some((mo) => mo.id === current)
+                         ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : ""}
+                     </select>`
+                  : `<input class="sheet-input" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
+                       value="${esc(current)}" placeholder="—" />`
+              }</span>
+            </div>`;
+          }).join("")}
         </div>`;
       }).join("") : ""}
       <div class="ob-foot">
@@ -523,6 +614,13 @@ async function editProfile(id, paneArg, toolListArg) {
         } else {
           working[tool].provider = sel.value;
         }
+      })
+    );
+    pane.querySelectorAll("select[data-kind=slot]").forEach((sel) =>
+      sel.addEventListener("change", () => {
+        const tool = working[sel.dataset.tool];
+        if (!tool) return;
+        tool.slots[sel.dataset.slot] = sel.value || null;
       })
     );
     pane.querySelectorAll("input[data-slot]").forEach((input) =>

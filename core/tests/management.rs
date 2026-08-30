@@ -393,3 +393,141 @@ fn update_profile_refuses_an_empty_assignment() {
     assert_eq!(response["ok"], json!(false), "{response}");
     assert_eq!(response["failure"]["kind"], json!("unknown_profile"));
 }
+
+/// Discover reads the host's own model catalogue — the OpenAI-compatible `/models` — and the
+/// models land in the provider record, riding `list_providers` to the editor's selects. The
+/// context limit arrives when the host publishes one and stays honestly absent when it does not.
+#[test]
+fn discover_fills_the_provider_with_the_hosts_models() {
+    let machine = seeded().with_catalogue(
+        br#"{"data":[{"id":"glm-5.3","context_length":128000},{"id":"glm-5.3-air"}]}"#,
+    );
+    let response = call(&machine, op("discover", json!({"provider_id": "zai"})));
+
+    assert_eq!(response["ok"], json!(true), "{response}");
+    assert_eq!(response["count"], json!(2), "{response}");
+    let stored = profiles(&machine);
+    let provider = stored["providers"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("zai"))
+        .expect("the provider");
+    let models = provider["models"].as_array().expect("models stored");
+    assert_eq!(models.len(), 2);
+    assert_eq!(models[0]["id"], json!("glm-5.3"));
+    assert_eq!(
+        models[0]["context_k"],
+        json!(128),
+        "published limits travel"
+    );
+    assert_eq!(
+        models[1]["context_k"],
+        json!(null),
+        "unpublished limits stay absent, not zero"
+    );
+
+    // And the wire carries them: the editor's selects are fed from this list.
+    let wire = call(
+        &machine,
+        json!({"version": 1, "op": "list_providers", "params": {}}),
+    );
+    let card = wire["providers"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("zai"))
+        .expect("card");
+    assert_eq!(
+        card["models"].as_array().unwrap().len(),
+        2,
+        "the card carries the models"
+    );
+}
+
+/// A host with no catalogue is a fact the person reads, not a failure: the string says so and
+/// nothing is written.
+#[test]
+fn discover_without_a_catalogue_writes_nothing_and_says_so() {
+    let machine = seeded().with_catalogue(br#"{"error":"nope"}"#);
+    let response = call(&machine, op("discover", json!({"provider_id": "zai"})));
+
+    assert_eq!(response["ok"], json!(false), "{response}");
+    assert_eq!(
+        response["failure"]["kind"],
+        json!("no_catalogue"),
+        "{response}"
+    );
+    let stored = profiles(&machine);
+    let provider = stored["providers"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("zai"))
+        .expect("the provider");
+    assert!(
+        provider
+            .get("models")
+            .map(|m| m.as_array().unwrap().is_empty())
+            .unwrap_or(true),
+        "nothing was written: {provider}"
+    );
+}
+
+/// An unreachable host is our outage, not a verdict — the Test op's own rule, and Discover
+/// inherits it rather than inventing a second answer.
+#[test]
+fn discover_to_an_unreachable_host_reports_the_network() {
+    let machine = seeded().offline_catalogue();
+    let response = call(&machine, op("discover", json!({"provider_id": "zai"})));
+    assert_eq!(response["ok"], json!(false), "{response}");
+    assert_eq!(
+        response["failure"]["kind"],
+        json!("network_unreachable"),
+        "{response}"
+    );
+}
+
+/// Enabling and disabling a model is a store write about a discovered fact — the person
+/// trims the catalogue to what they use, and the editor's selects follow.
+#[test]
+fn a_model_can_be_enabled_and_disabled() {
+    let machine = seeded().with_catalogue(
+        br#"{"data":[{"id":"glm-5.3","context_length":128000},{"id":"glm-5.3-air"}]}"#,
+    );
+    call(&machine, op("discover", json!({"provider_id": "zai"})));
+
+    let off = call(
+        &machine,
+        op(
+            "set_model_enabled",
+            json!({"provider_id": "zai", "model": "glm-5.3-air", "enabled": false}),
+        ),
+    );
+    assert_eq!(off["ok"], json!(true), "{off}");
+
+    let wire = call(
+        &machine,
+        json!({"version": 1, "op": "list_providers", "params": {}}),
+    );
+    let card = wire["providers"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("zai"))
+        .expect("card");
+    let air = card["models"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|m| m["id"] == json!("glm-5.3-air"))
+        .expect("the model");
+    assert_eq!(air["enabled"], json!(false), "disabled in the card: {air}");
+    let main = card["models"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|m| m["id"] == json!("glm-5.3"))
+        .expect("the other model");
+    assert_eq!(main["enabled"], json!(true), "the sibling is untouched");
+}

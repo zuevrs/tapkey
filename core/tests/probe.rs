@@ -10,12 +10,21 @@ use serde_json::{Value, json};
 
 mod support;
 use support::{Machine, call};
-use tapkey_core::env::{Http, ProbeStatus};
+use tapkey_core::env::{Http, NetworkUnreachable, ProbeStatus};
 
 /// An HTTP seam that answers from a table, so a test states exactly what the wire said.
 struct Scripted(Vec<(String, u16)>);
 
 impl Http for Scripted {
+    fn get_with_header(
+        &self,
+        _url: &str,
+        _header: &str,
+        _value: Option<&str>,
+    ) -> Result<String, NetworkUnreachable> {
+        Err(NetworkUnreachable)
+    }
+
     fn post(&self, url: &str) -> Result<ProbeStatus, tapkey_core::env::NetworkUnreachable> {
         match self.0.iter().find(|(pattern, _)| url.contains(pattern)) {
             Some((_, status)) => Ok(ProbeStatus::Answered(*status)),

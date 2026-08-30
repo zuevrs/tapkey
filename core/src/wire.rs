@@ -32,6 +32,18 @@ pub enum Request {
     Test {
         provider_id: String,
     },
+    /// Read the host's own model catalogue — the OpenAI-compatible `/models` — into the
+    /// provider record. A Test establishes formats; a Discover establishes models; neither
+    /// implies the other.
+    Discover {
+        provider_id: String,
+    },
+    /// Trim the catalogue to what the person uses: one model's enabled flag, one store write.
+    SetModelEnabled {
+        provider_id: String,
+        model: String,
+        enabled: bool,
+    },
     /// List what the tools already know: the harvest offer. Reads other people's files and changes
     /// nothing, so it takes no lock.
     Harvest {},
@@ -146,6 +158,12 @@ pub enum Response {
         because: Option<&'static str>,
         provider: String,
         tested_at: String,
+    },
+    Discovered {
+        ok: bool,
+        /// How many models the host's catalogue named. The models themselves live in the
+        /// provider record and ride `list_providers` — a discover is a write, not a delivery.
+        count: usize,
     },
     Profiles {
         ok: bool,
@@ -325,6 +343,10 @@ pub struct ProviderCard {
     pub formats: Option<Vec<String>>,
     pub enabled: bool,
     pub tested_at: Option<String>,
+    /// The host's model catalogue as a Discover found it — the editor's selects are fed
+    /// from here, never invented.
+    #[serde(default)]
+    pub models: Vec<crate::profile::ProviderModel>,
 }
 
 /// One tool's presence: installed-ness is a fact about the machine, configured-ness about its

@@ -104,3 +104,21 @@ pub fn forget(env: &Env, id: &str) -> Result<(), String> {
         Err(e) => Err(format!("the credential helper failed: {e}")),
     }
 }
+
+/// The stored secret for one provider, for the one request that needs it on the wire: the
+/// provider's own catalogue. File → buffer → header, and stops — never a log, never a
+/// response, never a structure that outlives the call.
+pub fn read_stored(env: &Env, id: &str) -> Option<String> {
+    let output = std::process::Command::new(crate::env::helper_path(env.store()))
+        .env_remove("TAPKEY_FILE_STORE")
+        .arg("get")
+        .arg(id)
+        .output()
+        .ok()?;
+    if !output.status.success() || output.stdout.is_empty() {
+        return None;
+    }
+    String::from_utf8(output.stdout)
+        .ok()
+        .map(|s| s.trim().to_string())
+}

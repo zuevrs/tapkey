@@ -36,6 +36,11 @@ pub struct Provider {
     /// core needs to see the ones no profile mentions.
     #[serde(default = "yes")]
     pub enabled: bool,
+    /// The host's own model catalogue, as a Discover found it. `context_k` is the published
+    /// context limit in thousands of tokens — absent when the host does not publish one,
+    /// which OpenCode's remaining-context display wants to know.
+    #[serde(default)]
+    pub models: Vec<ProviderModel>,
     /// When Test last ran, as the store formats instants. Never interpreted: a result does not
     /// expire on its own, because expiry would move a provider from permitted to refused with
     /// nobody acting.
@@ -163,4 +168,14 @@ fn write_declines(store: &Path, declined: &[(String, String)]) {
     if let Ok(bytes) = serde_json::to_vec_pretty(declined) {
         let _ = crate::atomic::write_atomically(&declines_path(store), &bytes, 0o600);
     }
+}
+
+/// One model in a host's catalogue, with the two facts a person picks by.
+#[derive(Clone, Debug, Default, Deserialize, Serialize, PartialEq)]
+pub struct ProviderModel {
+    pub id: String,
+    #[serde(default)]
+    pub context_k: Option<u32>,
+    #[serde(default = "yes")]
+    pub enabled: bool,
 }

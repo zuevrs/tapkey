@@ -192,6 +192,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
                 base_url,
                 formats: None,
                 enabled: true,
+                models: Vec::new(),
                 tested_at: None,
             });
             Ok(("provider", "created", id))
@@ -287,10 +288,39 @@ fn dispatch(env: &Env, request: &str) -> Response {
                         formats: p.formats.clone(),
                         enabled: p.enabled,
                         tested_at: p.tested_at.clone(),
+                        models: p.models.clone(),
                     })
                     .collect(),
             }
         }
+        Request::Discover { provider_id } => discover(env, &provider_id),
+        Request::SetModelEnabled {
+            provider_id,
+            model,
+            enabled,
+        } => write_providers(env, |providers| {
+            let provider = providers
+                .iter_mut()
+                .find(|p| p.id == provider_id)
+                .ok_or_else(|| {
+                    (
+                        "unknown_provider",
+                        format!("no provider named {provider_id:?}"),
+                    )
+                })?;
+            let entry = provider
+                .models
+                .iter_mut()
+                .find(|m| m.id == model)
+                .ok_or_else(|| {
+                    (
+                        "unknown_provider",
+                        format!("no model named {model:?} for {provider_id:?}"),
+                    )
+                })?;
+            entry.enabled = enabled;
+            Ok(("provider", "updated", provider_id.to_string()))
+        }),
         Request::Restore { target } => restore(env, target),
     }
 }
@@ -738,6 +768,154 @@ fn endpoint_host(url: &str) -> String {
 /// lives in one buffer for one call, and never enters a response, a log, or anything outliving the
 /// operation. What we store is what is there now, which is also the more correct answer if the key
 /// changed since the offer was made.
+/// The OpenAI-compatible catalogue: GET `{base}/models`, answered with `{"data":[{"id":…}]}`,
+/// often carrying `context_length` in tokens. Enabling on arrival: the person asked for the
+/// catalogue, and the trimming is the editing the models group exists for.
+fn discover(env: &Env, provider_id: &str) -> Response {
+    let provider = match read_providers(env)
+        .providers
+        .into_iter()
+        .find(|p| p.id == provider_id)
+    {
+        Some(p) => p,
+        None => {
+            return refuse(
+                "unknown_provider",
+                format!("no provider named {provider_id:?}"),
+            );
+        }
+    };
+    // The join is ours, not a normalisation of theirs: the trailing slash is trimmed the way
+    // Test trims it, and `models` is the one path the convention agrees on.
+    let base = provider.base_url.trim_end_matches('/');
+    // The catalogue usually sits behind the key the person already stored. Presence is
+    // probed first, as a switch probes it; the value travels buffer → header → request.
+    // The two families measure differently, and the provider's own formats say which it is:
+    // Anthropic-compatible hosts answer `/v1/models` under `x-api-key`; OpenAI-compatible
+    // ones answer `/models` under `Bearer`, with the base already carrying its `/v1`.
+    // The two joins, most likely first for this provider. A Test has not run on an imported
+    // provider, so the family is unknown and both are tried — a body that parses as a
+    // catalogue wins, and a 404-shaped answer is not a failure, just the wrong door.
+    let anthropic_first = provider
+        .formats
+        .as_ref()
+        .is_some_and(|f| f.iter().any(|x| x == "anthropic_messages"));
+    let joins: Vec<(&str, String)> = if anthropic_first {
+        vec![("x-api-key", format!("{base}/v1/models"))]
+    } else if provider.formats.is_some() {
+        vec![("Authorization", format!("{base}/models"))]
+    } else {
+        vec![
+            ("Authorization", format!("{base}/models")),
+            ("x-api-key", format!("{base}/v1/models")),
+        ]
+    };
+    let key = match env.credentials().check(provider_id) {
+        crate::env::CredentialState::Found => crate::credentials::read_stored(env, provider_id),
+        _ => None,
+    };
+    // The last body that answered at all: a network death on the first door still leaves the
+    // second worth trying, while two deaths are the host's, not ours.
+    let mut last: Option<String> = None;
+    let mut body = None;
+    for (header, url) in &joins {
+        let header_value = key.as_ref().map(|k| {
+            if *header == "x-api-key" {
+                k.clone()
+            } else {
+                format!("Bearer {k}")
+            }
+        });
+        match env
+            .http()
+            .get_with_header(url, header, header_value.as_deref())
+        {
+            Ok(text) => {
+                let parsed: Option<serde_json::Value> = serde_json::from_str(&text).ok();
+                if parsed
+                    .as_ref()
+                    .and_then(|v| v.get("data"))
+                    .and_then(|d| d.as_array())
+                    .is_some_and(|a| !a.is_empty())
+                {
+                    body = parsed;
+                    break;
+                }
+                last = Some(text);
+            }
+            Err(_) => continue,
+        }
+    }
+    let Some(parsed) = body else {
+        return if last.is_some() {
+            refuse(
+                "no_catalogue",
+                "no catalogue here — enter models by hand".into(),
+            )
+        } else {
+            refuse("network_unreachable", "the host did not answer".into())
+        };
+    };
+    let Some(items) = parsed.get("data").and_then(|d| d.as_array()) else {
+        return refuse(
+            "no_catalogue",
+            "no catalogue here — enter models by hand".into(),
+        );
+    };
+    let models: Vec<profile::ProviderModel> = items
+        .iter()
+        .filter_map(|item| {
+            let id = item.get("id")?.as_str()?.to_string();
+            // Published in tokens, held in thousands; absent stays absent — OpenCode's
+            // remaining-context display wants the fact, not a zero.
+            let context_k = item
+                .get("context_length")
+                .and_then(|v| v.as_u64())
+                .map(|tokens| (tokens / 1000) as u32);
+            Some(profile::ProviderModel {
+                id,
+                context_k,
+                enabled: true,
+            })
+        })
+        .collect();
+    if models.is_empty() {
+        return refuse(
+            "no_catalogue",
+            "no catalogue here — enter models by hand".into(),
+        );
+    }
+    let count = models.len();
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(lock) => lock,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    let mut all = read_providers(env);
+    let stored = all
+        .providers
+        .iter_mut()
+        .find(|p| p.id == provider_id)
+        .expect("read moments ago");
+    stored.models = models;
+    if let Err(e) = write_providers_atomic(env, &all) {
+        return refuse("permission_denied", e);
+    }
+    Response::Discovered { ok: true, count }
+}
+
+fn read_providers(env: &Env) -> profile::Profiles {
+    profile::Profiles::read(&env.store().join("profiles.json")).unwrap_or(profile::Profiles {
+        providers: Vec::new(),
+        profiles: Vec::new(),
+    })
+}
+
+fn write_providers_atomic(env: &Env, profiles: &profile::Profiles) -> Result<(), String> {
+    let bytes = serde_json::to_vec_pretty(profiles).map_err(|e| e.to_string())?;
+    atomic::write_atomically(&env.store().join("profiles.json"), &bytes, 0o600)
+        .map_err(|e| e.to_string())
+}
+
 fn accept_harvest(env: &Env, tool: &str, id: &str) -> Response {
     // The store may not exist yet: adopting is often the first thing tapkey ever writes, and the
     // helper needs somewhere to put the key.
@@ -795,6 +973,7 @@ fn accept_harvest(env: &Env, tool: &str, id: &str) -> Response {
         base_url: known.base_url,
         formats: None,
         enabled: true,
+        models: Vec::new(),
         tested_at: None,
     });
     // The decline, if there was one, is undone by adopting.

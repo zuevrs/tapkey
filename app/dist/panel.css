@@ -257,3 +257,9 @@ button.act.danger { border-color: var(--bad); }
   min-width: 0; }
 input.tfield { outline: none; }
 .ok { color: var(--good); }
+
+/* The models group: mono ids, the context hint, the switch. */
+.model-row .nm { font-size: 1.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.model-row .hint { margin-left: auto; }
+.g-empty { padding: 16px 12px; text-align: center; color: var(--muted); font-size: 1.3rem;
+  display: grid; gap: 4px; }

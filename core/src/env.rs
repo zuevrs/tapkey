@@ -58,6 +58,18 @@ pub enum ShellVar {
 /// establishable without either: an absent path answers 404 and a present one 401.
 pub trait Http {
     fn post(&self, url: &str) -> Result<ProbeStatus, NetworkUnreachable>;
+
+    /// A GET whose body the caller may read — the model catalogue. The Test probe above
+    /// deliberately sees statuses only; a catalogue is the one thing the core wants a body
+    /// from, and it carries model ids rather than anything a person would call a secret.
+    /// The bearer, when there is one, is the provider's own key going to the provider's own
+    /// endpoint — the use it exists for — and is held for the length of one request.
+    fn get_with_header(
+        &self,
+        url: &str,
+        header: &str,
+        value: Option<&str>,
+    ) -> Result<String, NetworkUnreachable>;
 }
 
 /// What came back, reduced to what a Test can use. A body would be a secret-carrying surface and
@@ -270,6 +282,15 @@ impl Http for NoNetwork {
     fn post(&self, _url: &str) -> Result<ProbeStatus, NetworkUnreachable> {
         Err(NetworkUnreachable)
     }
+
+    fn get_with_header(
+        &self,
+        _url: &str,
+        _header: &str,
+        _value: Option<&str>,
+    ) -> Result<String, NetworkUnreachable> {
+        Err(NetworkUnreachable)
+    }
 }
 
 /// The real one, through `ureq` with the platform's own trust store: a bundled CA list would go
@@ -289,6 +310,31 @@ impl Http for RealHttp {
             Ok(response) => Ok(ProbeStatus::Answered(response.status().as_u16())),
             Err(ureq::Error::StatusCode(code)) => Ok(ProbeStatus::Answered(code)),
             Err(_) => Ok(ProbeStatus::NoAnswer),
+        }
+    }
+
+    fn get_with_header(
+        &self,
+        url: &str,
+        header: &str,
+        value: Option<&str>,
+    ) -> Result<String, NetworkUnreachable> {
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(std::time::Duration::from_secs(8)))
+            .build()
+            .into();
+        let request = agent.get(url);
+        let request = match value {
+            Some(value) => request.header(header, value),
+            None => request,
+        };
+        match request.call() {
+            Ok(mut response) => response
+                .body_mut()
+                .read_to_string()
+                .map_err(|_| NetworkUnreachable),
+            Err(ureq::Error::StatusCode(_)) => Err(NetworkUnreachable),
+            Err(_) => Err(NetworkUnreachable),
         }
     }
 }

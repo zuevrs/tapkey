@@ -208,6 +208,25 @@ impl Machine {
         std::fs::write(path, bytes).expect("write");
     }
 
+    /// A host that answers GETs with this one body — the catalogue the Discover tests stand on.
+    pub fn with_catalogue(self, body: &[u8]) -> Self {
+        let body = body.to_vec();
+        self.with_http_builder(Box::new(move || Box::new(CatalogueHttp(body.clone()))))
+    }
+
+    pub fn offline_catalogue(self) -> Self {
+        self.with_http_builder(Box::new(|| Box::new(OfflineHttp)))
+    }
+
+    fn with_http_builder(
+        self,
+        build: Box<dyn Fn() -> Box<dyn tapkey_core::env::Http> + Send + Sync>,
+    ) -> Self {
+        let mut machine = self;
+        machine.http = Some(build);
+        machine
+    }
+
     pub fn env(&self) -> Env {
         // A fixed clock, so a backup's name is the same on every run.
         let env = Env::for_test(self.home(), self.store())
@@ -282,6 +301,36 @@ impl tapkey_core::env::Http for OfflineHttp {
         _url: &str,
     ) -> Result<tapkey_core::env::ProbeStatus, tapkey_core::env::NetworkUnreachable> {
         Ok(tapkey_core::env::ProbeStatus::NoAnswer)
+    }
+
+    fn get_with_header(
+        &self,
+        _url: &str,
+        _header: &str,
+        _value: Option<&str>,
+    ) -> Result<String, tapkey_core::env::NetworkUnreachable> {
+        Err(tapkey_core::env::NetworkUnreachable)
+    }
+}
+
+/// A catalogue-serving host: one GET body, whatever the path.
+pub struct CatalogueHttp(pub Vec<u8>);
+
+impl tapkey_core::env::Http for CatalogueHttp {
+    fn post(
+        &self,
+        _url: &str,
+    ) -> Result<tapkey_core::env::ProbeStatus, tapkey_core::env::NetworkUnreachable> {
+        Ok(tapkey_core::env::ProbeStatus::NoAnswer)
+    }
+
+    fn get_with_header(
+        &self,
+        _url: &str,
+        _header: &str,
+        _value: Option<&str>,
+    ) -> Result<String, tapkey_core::env::NetworkUnreachable> {
+        Ok(String::from_utf8_lossy(&self.0).into_owned())
     }
 }
 
