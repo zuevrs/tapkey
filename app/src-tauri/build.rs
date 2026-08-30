@@ -4,7 +4,7 @@ fn main() {
     // place and fails the build loudly if the helper did not build.
     let profile = std::env::var("PROFILE").unwrap_or_else(|_| "debug".into());
     let src = std::path::Path::new("../../target")
-        .join(profile)
+        .join(&profile)
         .join(format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX));
     let dst_dir = std::path::Path::new("binaries");
     let _ = std::fs::create_dir_all(dst_dir);
@@ -13,8 +13,9 @@ fn main() {
     let dst = dst_dir.join(format!("tapkey-helper-{target}"));
     std::fs::copy(&src, &dst).unwrap_or_else(|_| {
         panic!(
-            "the credential helper is not built yet — run `cargo build -p tapkey-core --bin tapkey-helper` first; \
-             the app bundles it beside the executable, so the app does not build without it"
+            "the credential helper is not built for the {profile} profile yet — run \
+             `cargo build --{profile} -p tapkey-core --bin tapkey-helper` first; the app bundles it \
+             beside the executable, so the app does not build without it"
         )
     });
     println!("cargo:rerun-if-changed={}", src.display());

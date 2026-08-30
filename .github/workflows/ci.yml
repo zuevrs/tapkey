@@ -67,7 +67,7 @@ jobs:
       # runs, and the app's own tests must actually execute here — a check-only job left them
       # never running once already.
       - name: Build the credential helper
-        run: cargo build -p tapkey-core --bin tapkey-helper
+        run: cargo build --release -p tapkey-core --bin tapkey-helper
 
       - name: Test
         run: cargo test -p tapkey-app --all-targets
