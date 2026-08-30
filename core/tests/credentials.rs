@@ -111,6 +111,9 @@ fn run_helper(machine: &Machine, args: &[&str], stdin: Option<&str>) -> (i32, Ve
     // is exercised without going near a real Keychain — and it is the same branch Linux always
     // takes.
     command.env("TAPKEY_STORE", machine.store());
+    // The path names where files go; the flag chooses files at all — the platform's store is
+    // the default now, and a test goes nowhere near it.
+    command.env("TAPKEY_FILE_STORE", "1");
     command.args(args).stdout(std::process::Stdio::piped());
     if stdin.is_some() {
         command.stdin(std::process::Stdio::piped());

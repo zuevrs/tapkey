@@ -47,9 +47,17 @@ pub fn read_inline(env: &Env, tool: &str, id: &str) -> Option<Vec<u8>> {
 
 /// Store a secret through the helper's `set`, on stdin.
 pub fn store(env: &Env, id: &str, secret: &[u8]) -> Result<(), String> {
-    let mut child = Command::new(crate::env::helper_path(env.store()))
-        // Scoped to the child, so a test's store never becomes the process's store.
+    let mut command = Command::new(crate::env::helper_path(env.store()));
+    // The path names where files go; only the flag chooses files at all. A real env keeps the
+    // platform's store — the Keychain the catalogue promises and the first shipped iteration
+    // silently skipped.
+    command
         .env("TAPKEY_STORE", env.store())
+        .env_remove("TAPKEY_FILE_STORE");
+    if env.file_key_store() {
+        command.env("TAPKEY_FILE_STORE", "1");
+    }
+    let mut child = command
         .arg("set")
         .arg(id)
         .stdin(Stdio::piped())
@@ -72,8 +80,14 @@ pub fn store(env: &Env, id: &str, secret: &[u8]) -> Result<(), String> {
 
 /// Delete the stored key for one provider, through the helper's `forget`.
 pub fn forget(env: &Env, id: &str) -> Result<(), String> {
-    let mut child = Command::new(crate::env::helper_path(env.store()))
+    let mut command = Command::new(crate::env::helper_path(env.store()));
+    command
         .env("TAPKEY_STORE", env.store())
+        .env_remove("TAPKEY_FILE_STORE");
+    if env.file_key_store() {
+        command.env("TAPKEY_FILE_STORE", "1");
+    }
+    let mut child = command
         .arg("forget")
         .arg(id)
         .stdin(Stdio::null())

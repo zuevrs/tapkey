@@ -70,3 +70,23 @@ fn an_up_to_date_helper_is_not_touched() {
         "identical content must not rewrite the file"
     );
 }
+
+/// The webview cannot boot without the global: `main.js` reads `window.__TAURI__.window` on
+/// its first line, and Tauri injects that global only when `withGlobalTauri` is set. The
+/// app shipped blank windows for its whole life because of this one key — every surface had
+/// been "verified" through the gate harness, whose stub provides the global a real webview
+/// was never given. This test holds the key in place; a live launch remains the only proof
+/// of the whole chain, and that is A11's ritual.
+#[test]
+fn the_webview_gets_the_global_tauri_api() {
+    let conf = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tauri.conf.json"),
+    )
+    .expect("tauri.conf.json is readable");
+    let conf: serde_json::Value = serde_json::from_str(&conf).expect("tauri.conf.json is JSON");
+    assert_eq!(
+        conf["app"]["withGlobalTauri"],
+        serde_json::json!(true),
+        "without it every window renders blank white: main.js dies on its first line"
+    );
+}

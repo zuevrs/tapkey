@@ -127,9 +127,9 @@ enum Store {
     /// The file-backed kind, at `<root>/<provider>`, created at `0600`.
     ///
     /// This is the **only** kind on Linux — ADR-0007 prescribes it there, and it is the same branch
-    /// OpenCode takes on every platform — and it is also what a `TAPKEY_STORE` environment selects
-    /// on any platform, which is how a test exercises the whole surface of subcommands without
-    /// going near a real Keychain.
+    /// OpenCode takes on every platform. A test selects it explicitly with `TAPKEY_FILE_STORE`,
+    /// which is how the whole surface of subcommands is exercised without going near a real
+    /// Keychain.
     File(PathBuf),
     /// The platform's own credential store, through `keyring`. The entry is built per operation,
     /// because the account **is** the provider id and `open` does not know it yet.
@@ -140,14 +140,25 @@ enum Store {
 impl Store {
     /// The store this run uses.
     ///
-    /// `TAPKEY_STORE` wins, because a test must be able to point every part of the machinery at a
-    /// directory it owns. Otherwise the platform decides: its own credential store where one is
-    /// wired, the file-backed kind where none is.
+    /// The platform decides: its own credential store where one is wired, the file-backed kind
+    /// where none is. `TAPKEY_STORE` names **where** files go when files are used — it is not a
+    /// vote for them: for the first shipped iteration a real macOS key landed in a plaintext
+    /// file because the path variable doubled as the selector, and the catalogue promises the
+    /// Keychain. `TAPKEY_FILE_STORE` is the explicit opt-out that lets a test point every part
+    /// of the machinery at a directory it owns, on any platform.
     fn open() -> Result<Store, String> {
-        if let Some(root) = std::env::var_os("TAPKEY_STORE") {
-            let mut path = PathBuf::from(root);
-            path.push("keys");
-            return Ok(Store::File(path));
+        let file_root = || -> PathBuf {
+            match std::env::var_os("TAPKEY_STORE") {
+                Some(root) => {
+                    let mut path = PathBuf::from(root);
+                    path.push("keys");
+                    path
+                }
+                None => default_file_root(),
+            }
+        };
+        if std::env::var_os("TAPKEY_FILE_STORE").is_some_and(|v| v != "0") {
+            return Ok(Store::File(file_root()));
         }
         #[cfg(any(target_os = "macos", target_os = "windows"))]
         {
@@ -158,7 +169,7 @@ impl Store {
         }
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
-            Ok(Store::File(default_file_root()))
+            Ok(Store::File(file_root()))
         }
     }
 
@@ -234,9 +245,28 @@ impl Store {
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 const SERVICE: &str = "tapkey";
 
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn default_file_root() -> PathBuf {
-    // The same directory ADR-0019 gives the whole store.
+    // The same directory ADR-0019 gives the whole store, per platform. Reached only when the
+    // file-backed kind is forced and no path was handed over — a real platform run has a
+    // store directory from its caller, and Linux's own runs land here by default.
+    #[cfg(target_os = "macos")]
+    {
+        let home = std::env::var_os("HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("/"));
+        home.join("Library")
+            .join("Application Support")
+            .join("tapkey")
+            .join("keys")
+    }
+    #[cfg(windows)]
+    {
+        let root = std::env::var_os("LOCALAPPDATA")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| PathBuf::from("."));
+        root.join("tapkey").join("keys")
+    }
+    #[cfg(not(any(target_os = "macos", windows)))]
     match std::env::var_os("HOME") {
         Some(home) => PathBuf::from(home)
             .join(".local")

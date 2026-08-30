@@ -87,6 +87,12 @@ pub struct Env {
     /// only by failing midway through several files, and a failure that cannot be injected is
     /// a guarantee nobody has tested end to end.
     filesystem: RefCell<Box<dyn FileSystem>>,
+    /// Whether helper children must take the file-backed key store rather than the platform's.
+    /// A test env owns its directory and must never raise a Keychain dialog (ADR-0016); a real
+    /// env keeps the platform's store — the catalogue's "Stored in the Keychain" is a promise,
+    /// and for the first shipped iteration it was broken by a path variable doubling as a
+    /// selector.
+    force_file_key_store: bool,
 }
 
 impl Env {
@@ -103,6 +109,7 @@ impl Env {
             filesystem: RefCell::new(Box::new(RealFs)),
             credentials: Box::new(HelperCredentials),
             http: Box::new(RealHttp),
+            force_file_key_store: false,
         }
     }
 
@@ -122,6 +129,7 @@ impl Env {
             // The safe default for a test: the network does not exist, so a Test comes back
             // *untested* rather than reaching for anything.
             http: Box::new(NoNetwork),
+            force_file_key_store: true,
         }
     }
 
@@ -133,6 +141,11 @@ impl Env {
 
     pub fn http(&self) -> &dyn Http {
         &*self.http
+    }
+
+    /// Whether helper children spawned for this env must use the file-backed key store.
+    pub fn file_key_store(&self) -> bool {
+        self.force_file_key_store
     }
 
     /// Substitute the credential seam. Tests do this; nothing else needs to.
