@@ -6,6 +6,18 @@ import { call, cap, esc, fic, mark, tile, tools } from "./ui.js";
 const { getCurrentWindow, LogicalSize } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.core;
 
+// The HUD's dwells. They live here, above the surface dispatch, because hud() is called from
+// it: a const declared mid-file is in the temporal dead zone when hud() runs, and the dwell
+// line's throw silently killed the fit and the auto-hide — the card rendered, the window
+// never fitted, never hid («висит вечно»). The A12.8 live pass could not see it (the success
+// card was never live-verified; the fail card never touched the constant under `if (applied)`).
+const HUD_DWELL = 3200;
+// A failure card used to stay until Dismiss — the prototype's own comment said so. The person
+// overrode it: a card that outlives the person's attention reads as a hang («висит вечно»).
+// Eight seconds is long enough to be read and still leaves the Dismiss button as the fast way
+// out. The rolled-back card rides the same timer: its work is done, there is nothing to undo.
+const HUD_DWELL_FAIL = 8000;
+
 const surface = document.getElementById("surface");
 const label = getCurrentWindow().label;
 
@@ -350,12 +362,18 @@ async function switchTo(id) {
 // The prototype's card, not a pill: a head naming what was switched to (or what went wrong),
 // one row per tool with the truth about when it takes effect, and an action bar — Undo on
 // success, with the fast path's expiry named rather than vanishing, Dismiss on everything
-// else, because a failure carries no timer: it stays until the person closes it.
-
-const HUD_DWELL = 3200;
+// else. The dwells themselves live at the top of this file, above the surface dispatch.
 
 function hud() {
   const params = new URLSearchParams(location.search);
+  // The window's first load carries no query — the page exists so the webview has something
+  // to navigate to. Rendering the empty state would flash a cardless «Switch failed» at the
+  // start of every real switch (the window shows before the navigation now); the surface
+  // stays transparent until a real response rides the URL.
+  if (!params.get("response")) {
+    surface.className = "hud glass";
+    return;
+  }
   const response = JSON.parse(params.get("response") || "{}");
   const backup = params.get("backup");
   const profile = params.get("profile") || "";
@@ -371,7 +389,12 @@ function hud() {
   // but the raw material (the person called it «чёрное окно»). The window's own appearance
   // is the entrance here; `.show` is the visible state. Failure rides the root, where the
   // prototype's `.hud.fail .hh` looks for it.
-  surface.className = `hud glass show${rolledBack || !applied ? " fail" : ""}`;
+  // The class lands a frame late — through a synchronous reflow, not a timer — so the
+  // spring actually plays: born in the shown state, the card has no state to transition
+  // from, and the person read the missing motion as «моушены не как на прототипе».
+  surface.className = `hud glass${rolledBack || !applied ? " fail" : ""}`;
+  void surface.offsetWidth;
+  surface.classList.add("show");
   if (applied) {
     const rows = (response.tools ?? []).map((t) => `
       <div class="hr">${mark(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
@@ -400,7 +423,7 @@ function hud() {
     setTimeout(() => getCurrentWindow().hide(), HUD_DWELL);
   });
   document.getElementById("dismiss")?.addEventListener("click", () => getCurrentWindow().hide());
-  if (applied) setTimeout(() => getCurrentWindow().hide(), HUD_DWELL);
+  setTimeout(() => getCurrentWindow().hide(), applied ? HUD_DWELL : HUD_DWELL_FAIL);
   // The card's own width, clamped to the prototype's bounds (274..340): a fail card with two
   // lines must not stretch to the applied card's width, and a long provider name must not
   // grow the HUD unbounded.

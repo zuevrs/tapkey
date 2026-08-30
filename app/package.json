@@ -1,0 +1,9 @@
+{
+  "name": "tapkey",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The tapkey UI — the tauri CLI drives the build; npm exists for `npm run tauri`",
+  "scripts": {
+    "tauri": "tauri"
+  }
+}

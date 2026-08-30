@@ -380,9 +380,14 @@ fn switch(env: &Env, profile_id: &str) -> Response {
                     );
                 }
                 CredentialState::Denied => {
+                    // The sentence names the actual click: this is the first-switch prompt the
+                    // onboarding promises («Всегда разрешать»), and "grant it" left the person
+                    // guessing what granting is. Catalogued (refusal.keychain.denied) and held
+                    // by the strings gate through the fail HUD's real fixture.
                     return refuse(
                         "keychain_denied",
-                        "the keychain refused access — grant it and try again".into(),
+                        "the keychain refused access — click Always Allow when macOS asks, then try again"
+                            .into(),
                     );
                 }
             }

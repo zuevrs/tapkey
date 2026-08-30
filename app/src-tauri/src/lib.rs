@@ -50,6 +50,17 @@ fn show_hud(
     let hud = app
         .get_webview_window("hud")
         .expect("the hud window exists");
+    // The HUD replaces the panel: the switch happened there, and the eye is there. A window
+    // with no position lands on macOS's cascade spot, which the person read as «где-то по
+    // центру экрана»; the panel is still visible at show time (the panel hides after this
+    // command), so its frame is the anchor. Centred on the panel's width.
+    if let Some(panel) = app.get_webview_window("panel")
+        && let (Ok(pp), Ok(ps), Ok(hs)) =
+            (panel.outer_position(), panel.outer_size(), hud.outer_size())
+    {
+        let x = pp.x + (ps.width as i32 - hs.width as i32) / 2;
+        let _ = hud.set_position(tauri::PhysicalPosition::new(x, pp.y));
+    }
     // Built on the window's own absolute URL: `Url::parse` refuses a relative path, and the
     // live pass watched every switch kill the app on exactly that line — the command had
     // never once run outside the gate harness.
@@ -60,10 +71,13 @@ fn show_hud(
         .append_pair("profile", &profile)
         .finish();
     url.set_query(Some(&query));
-    // `navigate`, not `eval`: an eval'd `location.replace` never fired on a webview that had
-    // not been shown, and the live pass watched the HUD stay empty through a whole switch.
+    // Show **before** navigating, not after: measured live, a navigation issued while the
+    // webview was hidden never painted — the HUD appeared as the raw material rectangle at
+    // 280×64 and stayed («застывает худ»), its page never loaded. A visible webview loads;
+    // the card springs in over the material, which is the entrance anyway.
+    hud.show()?;
     hud.navigate(url)?;
-    hud.show()
+    Ok(())
 }
 
 /// A system confirmation: NSAlert's geometry, the catalogue's words. The boundary is the

@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The floating surfaces fit their content: the panel and the HUD resize to what they drew. set-size is the one window permission beyond the default set; everything else the surfaces do (hide, show, focus) is already in core:window:default.",
+  "description": "The floating surfaces fit their content and close themselves: the panel and the HUD resize to what they drew, and every surface hides itself — the panel after a switch, the HUD on its dwell, the sheets on Esc. hide and set-size are the window permissions beyond the default set; measured live, without allow-hide the panel stayed up after every switch and the HUD's dwell never hid it — the person read that as «висит вечно».",
   "windows": ["*"],
-  "permissions": ["core:window:allow-set-size"]
+  "permissions": ["core:window:allow-set-size", "core:window:allow-hide"]
 }
