@@ -20,6 +20,10 @@ if (label === "panel") {
   hud();
 } else if (label === "settings") {
   import("./settings.js").then((m) => m.settings());
+} else if (label === "effective" || label === "history") {
+  import("./sheets.js").then((m) =>
+    label === "effective" ? m.effectiveState() : m.history()
+  );
 } else if (label === "onboarding") {
   import("./onboarding.js").then((m) =>
     m.onboarding(() => window.__TAURI__.core.invoke("onboarding_done"))
@@ -45,7 +49,11 @@ function render(rows, toolList) {
   surface.innerHTML = `
     <input id="search" type="text" placeholder="Switch profile…" aria-label="Switch profile" />
     <div id="list" role="listbox" aria-label="Profiles"></div>
-    <div id="footer" aria-hidden="true">Type to filter · Enter to switch · Esc to close</div>`;
+    <footer id="footer">
+      <button id="open-history">History…</button>
+      <button id="open-settings">Settings…</button>
+      <span aria-hidden="true">Type to filter · Esc to close</span>
+    </footer>`;
   const search = document.getElementById("search");
   const list = document.getElementById("list");
 
@@ -87,9 +95,19 @@ function render(rows, toolList) {
       if (first) first.click();
     }
   });
+  document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
+  document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
   search.addEventListener("input", draw);
   draw();
   search.focus();
+}
+
+function openSheet(sheet) {
+  if (sheet === "settings") {
+    window.__TAURI__.window.Window.getByLabel("settings")?.show();
+  } else {
+    window.__TAURI__.core.invoke("show_sheet", { sheet });
+  }
 }
 
 async function switchTo(id) {

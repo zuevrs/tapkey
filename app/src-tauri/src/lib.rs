@@ -22,6 +22,22 @@ fn onboarding_done(app: tauri::AppHandle) {
 }
 
 #[tauri::command]
+fn show_sheet(app: tauri::AppHandle, sheet: String) -> tauri::Result<()> {
+    // Sheets are windows the shell owns; the panel never touches another window's content, it
+    // asks the shell to show one.
+    let label = match sheet.as_str() {
+        "effective" => "effective",
+        "history" => "history",
+        _ => return Ok(()),
+    };
+    if let Some(window) = app.get_webview_window(label) {
+        window.show()?;
+        window.set_focus()?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> tauri::Result<()> {
     let hud = app
         .get_webview_window("hud")
@@ -79,7 +95,12 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![invoke, show_hud, onboarding_done])
+        .invoke_handler(tauri::generate_handler![
+            invoke,
+            show_hud,
+            show_sheet,
+            onboarding_done
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tapkey");
 }

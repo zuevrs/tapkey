@@ -48,6 +48,22 @@
         "width": 480,
         "height": 560,
         "resizable": false
+      },
+      {
+        "label": "effective",
+        "url": "index.html",
+        "visible": false,
+        "title": "What is in effect right now",
+        "width": 460,
+        "height": 520
+      },
+      {
+        "label": "history",
+        "url": "index.html",
+        "visible": false,
+        "title": "Switch history",
+        "width": 460,
+        "height": 520
       }
     ],
     "security": {

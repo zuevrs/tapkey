@@ -33,8 +33,13 @@ body.settings, body.onboarding { background: var(--canvas); }
 }
 #list { padding: 6px; overflow: hidden; }
 #footer {
+  display: flex; gap: 12px; align-items: center;
   padding: 6px 12px; font-size: 1.1rem; color: var(--muted);
   border-top: var(--hairline) solid var(--line);
+}
+#footer span { margin-left: auto; }
+#footer button {
+  border: 0; background: none; color: var(--accent); font: inherit; font-size: 1.1rem;
 }
 
 /* -- Motion: three moments, all from the tokens, all surrendered under Reduce Motion. -- */
@@ -102,3 +107,9 @@ button.act.danger { border-color: var(--bad); }
   color: var(--ink); background: var(--field);
   border: 1px solid var(--field-line); border-radius: 6px;
 }
+
+/* -- The sheets: a scrolling page of cards, opened where the person thinks of them. -- */
+#surface.sheet-page { padding: 20px 24px; font-size: 1.3rem; overflow-y: auto; }
+.sheet-head h2 { font-size: 1.7rem; margin: 0 0 2px; }
+.sheet-head { margin-bottom: 14px; }
+.row.attn .note { color: var(--attn); }
