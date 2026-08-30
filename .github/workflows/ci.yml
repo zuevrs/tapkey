@@ -67,7 +67,11 @@ jobs:
       # runs, and the app's own tests must actually execute here — a check-only job left them
       # never running once already.
       - name: Build the credential helper
-        run: cargo build --release -p tapkey-core --bin tapkey-helper
+        # Both profiles: the app's tests build debug, the bundle builds release, and the app's
+        # build script refuses to run without the helper beside it in the matching profile.
+        run: |
+          cargo build -p tapkey-core --bin tapkey-helper
+          cargo build --release -p tapkey-core --bin tapkey-helper
 
       - name: Test
         run: cargo test -p tapkey-app --all-targets
