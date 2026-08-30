@@ -2,7 +2,7 @@
 // the surface composes and never decides. Destructive actions confirm in a page sheet, because
 // WKWebView does not implement window.confirm and the styling is ours anyway.
 
-import { call, esc, tile, tools, cap, plural, slotName, slotHint } from "./ui.js";
+import { call, esc, tile, tools, cap, plural, slotName, slotHint, PRESETS } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
@@ -21,6 +21,8 @@ export function settings() {
   draw();
 }
 
+let selected = null; // the side list's selection: a provider id, or null for the presets view
+
 async function draw() {
   surface.innerHTML = `
     <nav class="tabs">
@@ -28,207 +30,319 @@ async function draw() {
       <button data-tab="profiles">Profiles</button>
       <button data-tab="general">General</button>
     </nav>
-    <section id="tab"></section>`;
+    <div class="win-body" id="win-body">
+      <aside class="side" id="side-list" ${tab === "general" ? 'style="display:none"' : ""}></aside>
+      <section class="pane" id="pane-content"></section>
+    </div>`;
   surface.querySelectorAll(".tabs button").forEach((b) =>
     b.addEventListener("click", () => {
       tab = b.dataset.tab;
-      surface.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("active", x === b));
+      selected = null;
       draw();
     })
   );
-  surface.querySelector('[data-tab="providers"]').classList.add("active");
-  const pane = document.getElementById("tab");
-  if (tab === "providers") await providers(pane);
-  else if (tab === "profiles") await profilesTab(pane);
+  surface.querySelector(`[data-tab="${tab}"]`).classList.add("active");
+  const side = document.getElementById("side-list");
+  const pane = document.getElementById("pane-content");
+  if (tab === "providers") await providers(side, pane);
+  else if (tab === "profiles") await profilesTab(side, pane);
   else general(pane);
 }
 
 // -- Providers -------------------------------------------------------------------------
+//
+// The prototype's architecture: a side list to find and choose, a presets view for adding
+// (official providers first, Custom endpoint for marketplaces), and a detail pane whose
+// groups — Provider, Endpoint, Connection — carry the keychain truth and the format facts.
+// Balance and Models have no data and no core operation yet: omitted rather than faked, per
+// the design rules and A12's record.
 
-async function providers(pane) {
-  const [{ providers }, toolList] = await Promise.all([
+async function providers(side, pane) {
+  const [{ providers: list }, toolList] = await Promise.all([
     call({ version: 1, op: "list_providers", params: {} }),
     tools(),
   ]);
-  pane.innerHTML =
-    providers
-      .map((p) => {
-        const format = !p.formats
-          ? "Unknown until you test"
-          : p.formats.length === 0
-            ? "Serves none of your tools"
-            : p.formats.length === toolList.length
-              ? `Serves all ${p.formats.length} tools`
-              : `Serves ${p.formats.join(", ")}`;
-        // ADR-0007: the credential line is per tool, not per app — and for OpenCode the key is
-        // on disk. A provider serving the chat format reaches OpenCode, so the row must say so
-        // instead of the Keychain reassurance.
-        const reachesOpenCode = p.formats?.some((f) => f === "openai_chat") ?? true;
-        const keyLine = reachesOpenCode
-          ? "OpenCode has no key helper — written to a file only you can read"
-          : "Claude Code and Codex fetch it through a helper command";
-        return `
-      <div class="card" data-id="${esc(p.id)}">
-        <div class="row">
-          ${tile(p.name)}
-          <span class="label">${esc(p.name)}</span>
-          <span class="value">${esc(p.enabled ? "" : "off")}</span>
-        </div>
-        <div class="row"><span class="label">Endpoint</span><span class="value">${esc(p.base_url)}</span></div>
-        <div class="row"><span class="label">API format</span><span class="value">${esc(format)}</span></div>
-        <div class="row"><span class="note">${esc(keyLine)}</span></div>
-        <div class="actions"><button class="act" data-do="test">Test</button>
-          <button class="act" data-do="toggle">${p.enabled ? "Turn off" : "Turn on"}</button>
-          <button class="act danger" data-do="remove">Remove provider…</button></div>
-        <div class="result note" role="status"></div>
-      </div>`;
-      })
-      .join("") +
-    `
-    <div class="card">
-      <div class="field"><span>Name</span><input id="np-name" placeholder="e.g. Work OpenRouter" /></div>
-      <div class="field"><span>Base URL</span><input id="np-url" placeholder="https://api.example.com/v1" /></div>
-      <div class="field"><span>API key</span><input id="np-key" type="password" placeholder="Paste a key" /></div>
-      <label class="field"><input type="checkbox" id="np-auto" checked /> Also create a profile</label>
-      <p class="note">Switchable right away</p>
-      <button class="act" id="np-add">Add provider</button>
-      <div class="result note" role="status"></div>
-    </div>`;
+  const all = list;
+  const { profiles } = await call({ version: 1, op: "list_profiles", params: {} });
+  const using = {};
+  for (const prof of profiles)
+    for (const assignment of Object.values(prof.assignments ?? {}))
+      if (assignment.provider) using[assignment.provider] = (using[assignment.provider] ?? 0) + 1;
+  drawSide(side, all.map((p) => ({ id: p.id, name: p.name, on: selected === p.id })),
+    "Find a provider…", "Add provider…", () => { selected = null; draw(); });
+  if (!selected || !all.some((p) => p.id === selected)) {
+    renderPresets(pane);
+  } else {
+    renderProviderPane(pane, all.find((p) => p.id === selected), using, toolList);
+  }
+}
 
-  const refused = (result, r) => {
-    result.textContent = r.failure ? `${r.failure.kind} — nothing was changed` : "";
-  };
-
-  pane.querySelectorAll(".card .actions").forEach((actions) => {
-    const card = actions.closest(".card");
-    const id = card.dataset.id;
-    const result = card.querySelector(".result");
-    actions.querySelectorAll("button").forEach((button) =>
-      button.addEventListener("click", async () => {
-        result.textContent = "";
-        const doing = button.dataset.do;
-        if (doing === "test") {
-          button.disabled = true;
-          const started = performance.now();
-          const r = await call({ version: 1, op: "test", params: { provider_id: id } });
-          button.disabled = false;
-          result.textContent = !r.knowable
-            ? "This endpoint answers everything — its formats can’t be read from here"
-            : r.formats.some((f) => f.served)
-              ? `${Math.round(performance.now() - started)} ms · answers ${r.formats.filter((f) => f.served).map((f) => f.format).join(", ")}`
-              : "Serves none of your tools";
-        } else if (doing === "toggle") {
-          const p = providers.find((x) => x.id === id);
-          const r = await call({ version: 1, op: "set_provider_enabled", params: { id, enabled: !p.enabled } });
-          if (r.ok) draw();
-          else refused(result, r);
-        } else if (doing === "remove") {
-          confirmSheet(
-            "Remove provider…",
-            `Its entries go from ${toolList.map(cap).join(", ")}; the key tapkey stored is deleted`,
-            async () => {
-              const r = await call({ version: 1, op: "remove_provider", params: { id } });
-              if (r.ok) draw();
-              else refused(result, r);
-            }
-          );
-        }
-      })
-    );
+/// The side list both tabs share: a find field, the items, and the add foot. Finding filters
+/// the list; nothing here reads or holds a secret.
+function drawSide(side, items, placeholder, addLabel, onAdd) {
+  side.innerHTML = `
+    <input class="side-find" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" />
+    <div role="listbox" aria-label="Items">${items
+      .map((it) => `<div class="s-item${it.on ? " on" : ""}" role="option" tabindex="-1"
+           aria-selected="${it.on}" data-id="${esc(it.id)}"><span>${esc(it.name)}</span></div>`)
+      .join("")}</div>
+    <div class="plus" role="button" tabindex="0">＋ ${esc(addLabel)}</div>`;
+  const find = side.querySelector(".side-find");
+  find.addEventListener("input", () => {
+    const q = find.value.trim().toLowerCase();
+    side.querySelectorAll(".s-item").forEach((el) => {
+      el.style.display = !q || el.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
   });
+  side.querySelectorAll(".s-item").forEach((el) =>
+    el.addEventListener("click", () => { selected = el.dataset.id; draw(); })
+  );
+  side.querySelector(".plus").addEventListener("click", onAdd);
+}
 
-  const form = pane.querySelectorAll(".card")[pane.querySelectorAll(".card").length - 1];
-  const formResult = form.querySelector(".result");
-  form.querySelector("#np-add").addEventListener("click", async () => {
-    const name = form.querySelector("#np-name").value.trim();
-    const base = form.querySelector("#np-url").value.trim();
-    const key = form.querySelector("#np-key").value.trim();
-    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `provider-${Date.now()}`;
+/// The presets view: official providers as rows, the add-what group, the note.
+function renderPresets(pane) {
+  pane.innerHTML = `
+    <div class="pane-head">Add provider</div>
+    <div class="g-label">Official providers</div>
+    <div class="group">
+      ${PRESETS.map((p, i) => `
+        <div class="g-row preset" data-pi="${i}" role="button" tabindex="0" style="cursor:pointer">
+          ${tile(p.name)}
+          <span class="gl" style="min-width:0">${esc(p.name)}</span>
+          <span class="gv">${p.opt ? `<span class="hint">${esc(p.opt)}</span>` : ""}<span class="hint">›</span></span>
+        </div>`).join("")}
+    </div>
+    <div class="g-label">On add</div>
+    <div class="group">
+      <div class="g-row">
+        <span class="gl" style="min-width:0">Also create a profile</span>
+        <span class="gv"><span class="hint">Switchable right away</span>
+          <label class="swl"><input type="checkbox" id="preset-auto" checked /><span class="sw"></span></label></span>
+      </div>
+    </div>
+    <div class="g-note">Marketplaces and resellers use Custom endpoint</div>`;
+  pane.querySelectorAll(".preset").forEach((el) =>
+    el.addEventListener("click", () => {
+      const preset = PRESETS[Number(el.dataset.pi)];
+      if (preset.name.startsWith("Custom")) renderNewProvider(pane);
+      else addPreset(pane, preset);
+    })
+  );
+}
+
+async function addPreset(pane, preset) {
+  const id = preset.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const created = await call({
+    version: 1, op: "create_provider",
+    params: { id, name: preset.name, base_url: preset.base_url },
+  });
+  if (!created.ok) {
+    pane.insertAdjacentHTML("beforeend",
+      `<div class="g-note">${esc(created.failure?.kind ?? "refused")} — nothing was changed</div>`);
+    return;
+  }
+  if (document.getElementById("preset-auto")?.checked) {
+    const toolList = await tools();
+    await call({
+      version: 1, op: "create_profile",
+      params: { profile: {
+        id, name: preset.name,
+        tools: Object.fromEntries(toolList.map((t) => [t, { provider: id, slots: {} }])),
+      }},
+    });
+  }
+  selected = id;
+  draw();
+}
+
+/// The custom form, Q9-Q11's shape: name, base URL, key, and Test; format is a result, not
+/// an input.
+function renderNewProvider(pane) {
+  pane.innerHTML = `
+    <div class="pane-head">${tile("+")}New provider</div>
+    <div class="g-label">Endpoint</div>
+    <div class="g-desc">Where requests go, and the key that signs them</div>
+    <div class="group">
+      <div class="g-row"><span class="gl">Name</span>
+        <span class="gv grow"><input class="tfield grow" id="np-name" placeholder="e.g. Work OpenRouter" /></span></div>
+      <div class="g-row"><span class="gl">Base URL</span>
+        <span class="gv grow"><input class="tfield mono grow" id="np-url" placeholder="https://api.example.com/v1" /></span></div>
+      <div class="g-row"><span class="gl">API key</span>
+        <span class="gv grow"><input class="tfield mono grow" id="np-key" type="password" placeholder="Paste a key" /></span></div>
+      <div class="g-row"><span class="gl">API format</span>
+        <span class="gv"><span class="hint">Unknown until you test</span></span></div>
+      <div class="g-status">Test fills this in</div>
+      <div class="g-row"><span class="gl">Connection</span>
+        <span class="gv"><span class="hint">Not tested yet</span>
+          <button class="act" id="np-add">Add provider</button></span></div>
+    </div>
+    <div class="g-note">You can add it untested — Test later fills the format</div>
+    <div class="g-note" id="np-result" role="status"></div>`;
+  document.getElementById("np-add").addEventListener("click", async () => {
+    const name = document.getElementById("np-name").value.trim();
+    const base_url = document.getElementById("np-url").value.trim();
+    const key = document.getElementById("np-key").value.trim();
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-") || `provider-${Date.now()}`;
     const created = await call({
       version: 1, op: "create_provider",
-      params: { id, name: name || id, base_url: base },
+      params: { id, name: name || id, base_url },
     });
-    if (!created.ok) return refused(formResult, created);
+    if (!created.ok) {
+      document.getElementById("np-result").textContent = `${created.failure.kind} — nothing was changed`;
+      return;
+    }
     if (key) {
-      const stored = await call({
-        version: 1, op: "set_credential", params: { provider_id: id, secret: key },
-      });
-      if (!stored.ok) return refused(formResult, stored);
+      const stored = await call({ version: 1, op: "set_credential", params: { provider_id: id, secret: key } });
+      if (!stored.ok) {
+        document.getElementById("np-result").textContent = `${stored.failure.kind} — nothing was changed`;
+        return;
+      }
     }
-    if (form.querySelector("#np-auto").checked) {
-      // Two calls joined by the interface, per ticket 31: a provider without a profile is an
-      // ordinary state, so a failed profile creation does not undo the provider.
-      await call({
-        version: 1, op: "create_profile",
-        params: { profile: {
-          id, name: name || id,
-          tools: Object.fromEntries(toolList.map((t) => [t, { provider: id, slots: {} }])),
-        }},
-      });
-    }
+    selected = id;
     draw();
   });
 }
 
-// -- Profiles --------------------------------------------------------------------------
+/// The detail pane: groups Provider / Endpoint / Connection, the keychain truth, the format
+/// facts, the real Test, and the delete with its consequence counted from the store.
+function renderProviderPane(pane, p, using, toolList) {
+  const format = !p.formats
+    ? null
+    : p.formats.length === 0
+      ? "Serves none of your tools"
+      : p.formats.length === toolList.length
+        ? `Serves all ${p.formats.length} tools`
+        : `Serves ${p.formats.join(", ")}`;
+  const reachesOpenCode = p.formats?.some((f) => f === "openai_chat") ?? true;
+  const fmtNames = { anthropic_messages: "Anthropic Messages", openai_responses: "OpenAI Responses", openai_chat: "OpenAI Chat" };
+  const result = pane.querySelector("#pane-result");
 
-async function profilesTab(pane) {
+  const draw2 = (testNote) => {
+    const usedBy = using[p.id] ?? 0;
+    pane.innerHTML = `
+      <div class="pane-head">${tile(p.name)}${esc(p.name)}</div>
+      <div class="g-label">Provider</div>
+      <div class="group">
+        <div class="g-row"><span class="gl">Name</span>
+          <span class="gv grow"><span class="tfield grow">${esc(p.name)}</span></span></div>
+      </div>
+      <div class="g-label">Endpoint</div>
+      <div class="g-desc">Where requests go, and the key that signs them</div>
+      <div class="group">
+        <div class="g-row"><span class="gl">Base URL</span>
+          <span class="gv grow"><span class="tfield mono grow">${esc(p.base_url)}</span></span></div>
+        <div class="g-row"><span class="gl">API key</span>
+          <span class="gv grow"><span class="tfield mono grow">••••••••••••••••</span></span></div>
+        <div class="g-status">${reachesOpenCode
+          ? "OpenCode has no key helper — written to a file only you can read"
+          : "Keychain · Claude Code and Codex fetch it through a helper command"}</div>
+        <div class="g-row"><span class="gl">API format</span>
+          <span class="gv">${format ? `<span>${esc(format)}</span>` : '<span class="hint">Unknown until you test</span>'}</span></div>
+        <div class="g-status">${format ? p.formats.map((f) => fmtNames[f] ?? f).join(" · ") : "Test fills this in"}</div>
+        <div class="g-row"><span class="gl">Connection</span>
+          <span class="gv">${p.formats ? `<span class="hint"><span class="ok">✓</span> ${esc(testNote ?? "tested")}</span>`
+            : '<span class="hint">Not tested yet</span>'}
+            <span class="hint" id="test-out"></span><button class="act" id="test-btn">Test</button></span></div>
+        <div class="g-row"><span class="gl">Enabled</span>
+          <span class="gv"><label class="swl"><input type="checkbox" id="prov-enabled" ${p.enabled ? "checked" : ""}/><span class="sw"></span></label></span></div>
+      </div>
+      <div class="group"><button class="act danger" id="remove-btn">Delete provider…</button></div>
+      <div class="g-note">${usedBy ? `${usedBy} ${usedBy === 1 ? "profile uses" : "profiles use"} this provider and will fall back to System default` : ""}</div>
+      <div class="g-note" id="pane-result" role="status"></div>`;
+
+    document.getElementById("test-btn").addEventListener("click", async () => {
+      document.getElementById("test-out").textContent = "Testing…";
+      const started = performance.now();
+      const r = await call({ version: 1, op: "test", params: { provider_id: p.id } });
+      const note = !r.knowable
+        ? "This endpoint answers everything — its formats can’t be read from here"
+        : r.formats.some((f) => f.served)
+          ? `${Math.round(performance.now() - started)} ms · answers ${r.formats.filter((f) => f.served).map((f) => f.format).join(", ")}`
+          : "Serves none of your tools";
+      document.getElementById("test-out").textContent = "";
+      draw2(note);
+    });
+    document.getElementById("prov-enabled").addEventListener("change", async (e) => {
+      const r = await call({ version: 1, op: "set_provider_enabled", params: { id: p.id, enabled: e.target.checked } });
+      if (!r.ok) {
+        document.getElementById("pane-result").textContent = `${r.failure.kind} — nothing was changed`;
+        e.target.checked = !e.target.checked;
+      }
+    });
+    document.getElementById("remove-btn").addEventListener("click", () => {
+      confirmSheet(
+        "Delete provider…",
+        `Its entries go from ${toolList.map(cap).join(", ")}; the key tapkey stored is deleted`,
+        async () => {
+          const r = await call({ version: 1, op: "remove_provider", params: { id: p.id } });
+          if (r.ok) { selected = null; draw(); }
+          else document.getElementById("pane-result").textContent = `${r.failure.kind} — nothing was changed`;
+        }
+      );
+    });
+  };
+  draw2();
+}
+
+// -- Profiles --------------------------------------------------------------------------
+//
+// The side list chooses; the pane is the editor — the prototype's renderProfile is a detail
+// pane, not a stack of cards, and Rename/Duplicate/Delete live in the pane's own actions.
+
+async function profilesTab(side, pane) {
   const [{ profiles }, toolList] = await Promise.all([
     call({ version: 1, op: "list_profiles", params: {} }),
     tools(),
   ]);
-  pane.innerHTML =
-    profiles
-      .map(
-        (p) => `
-      <div class="card" data-id="${esc(p.id)}">
-        <div class="row">
-          ${tile(p.name)}
-          <span class="label">${esc(p.name)}</span>
-          <span class="qualifier">${esc(`${p.tools} of ${toolList.length} tools`)}</span>
-        </div>
-        <div class="actions"><button class="act" data-do="edit">Edit…</button>
-          <button class="act" data-do="rename">Rename…</button>
-          <button class="act" data-do="duplicate">Duplicate…</button>
-          <button class="act danger" data-do="delete">Delete profile…</button></div>
-        <div class="result note" role="status"></div>
-      </div>`
-      )
-      .join("") +
-    `<p class="note">New profiles come from the panel — type an unknown name</p>`;
-
-  pane.querySelectorAll(".card").forEach((card) => {
-    const id = card.dataset.id;
-    const result = card.querySelector(".result");
-    card.querySelectorAll("button").forEach((button) =>
-      button.addEventListener("click", () => {
-        const doing = button.dataset.do;
-        const refused = (r) => {
-          result.textContent = r.ok ? "" : `${r.failure.kind} — nothing was changed`;
-        };
-        if (doing === "edit") {
-          editProfile(id);
-        } else if (doing === "rename") {
-          askText("Rename…", async (name) => {
-            refused(await call({ version: 1, op: "rename_profile", params: { id, name } }));
-            if (result.textContent === "") draw();
-          });
-        } else if (doing === "duplicate") {
-          askText("Duplicate…", async (asId) => {
-            refused(await call({ version: 1, op: "duplicate_profile", params: { id, as_id: asId } }));
-            if (result.textContent === "") draw();
-          });
-        } else if (doing === "delete") {
-          confirmSheet(
-            "Delete profile…",
-            `Your tools keep what it last applied across ${plural("{count} tool", "{count} tools", p.tools ?? toolList.length)}`,
-            async () => {
-              refused(await call({ version: 1, op: "delete_profile", params: { id } }));
-              if (result.textContent === "") draw();
-            }
-          );
-        }
-      })
+  if (!selected || !profiles.some((p) => p.id === selected)) {
+    selected = profiles[0]?.id ?? null;
+  }
+  drawSide(side, profiles.map((p) => ({ id: p.id, name: p.name, on: selected === p.id })),
+    "Find a profile…", "New profile…", () => {
+      pane.innerHTML = `
+        <div class="pane-head">New profile</div>
+        <div class="g-desc">New profiles come from the panel — type an unknown name</div>`;
+    });
+  const profile = profiles.find((p) => p.id === selected);
+  if (!profile) {
+    pane.innerHTML = `
+      <div class="pane-head">Profiles</div>
+      <div class="g-desc">New profiles come from the panel — type an unknown name</div>`;
+    return;
+  }
+  editProfile(profile.id, pane, toolList);
+  pane.insertAdjacentHTML("beforeend", `
+    <div class="group">
+      <div class="actions">
+        <button class="act" id="pf-rename">Rename…</button>
+        <button class="act" id="pf-duplicate">Duplicate…</button>
+        <button class="act danger" id="pf-delete">Delete profile…</button>
+      </div>
+    </div>
+    <div class="g-note" id="pf-result" role="status"></div>`);
+  const result = pane.querySelector("#pf-result");
+  const refused = (r) => { result.textContent = r.failure ? `${r.failure.kind} — nothing was changed` : ""; };
+  document.getElementById("pf-rename").addEventListener("click", () => {
+    askText("Rename…", async (name) => {
+      refused(await call({ version: 1, op: "rename_profile", params: { id: profile.id, name } }));
+      if (!result.textContent) draw();
+    });
+  });
+  document.getElementById("pf-duplicate").addEventListener("click", () => {
+    askText("Duplicate…", async (asId) => {
+      refused(await call({ version: 1, op: "duplicate_profile", params: { id: profile.id, as_id: asId } }));
+      if (!result.textContent) { selected = asId; draw(); }
+    });
+  });
+  document.getElementById("pf-delete").addEventListener("click", () => {
+    confirmSheet(
+      "Delete profile…",
+      `Your tools keep what it last applied across ${plural("{count} tool", "{count} tools", profile.tools ?? toolList.length)}`,
+      async () => {
+        refused(await call({ version: 1, op: "delete_profile", params: { id: profile.id } }));
+        if (!result.textContent) { selected = null; draw(); }
+      }
     );
   });
 }
@@ -253,8 +367,8 @@ function general(pane) {
 // an empty slot meaning the ADR's own null assignment — *no assignment*, an instruction, not
 // an absence of one.
 
-async function editProfile(id) {
-  const pane = document.getElementById("tab");
+async function editProfile(id, paneArg, toolListArg) {
+  const pane = paneArg ?? document.getElementById("tab");
   const [{ profiles, providers }, state] = await Promise.all([
     call({ version: 1, op: "list_profiles", params: {} }),
     call({ version: 1, op: "effective_state", params: {} }),

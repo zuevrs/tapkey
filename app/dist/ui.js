@@ -38,3 +38,16 @@ export const slotHint = (slot) => ({
   fallback: "Used when the main model is overloaded",
   aliases: "What /model sonnet resolves to here",
 }[slot] ?? "");
+
+// The official-provider presets, from the prototype's stand: a name and a base URL, both
+// facts rather than copy. Ollama carries its Cloud/Local option; Custom endpoint is the
+// escape hatch for marketplaces and resellers, as the presets note says.
+export const PRESETS = [
+  { name: "DeepSeek", base_url: "https://api.deepseek.com/v1" },
+  { name: "OpenRouter", base_url: "https://openrouter.ai/api/v1" },
+  { name: "Z.ai", base_url: "https://api.z.ai/api/anthropic" },
+  { name: "Qwen", base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1" },
+  { name: "Moonshot Kimi", base_url: "https://api.moonshot.cn/v1" },
+  { name: "Ollama", base_url: "http://localhost:11434/v1", opt: "Cloud / Local" },
+  { name: "Custom endpoint…" },
+];

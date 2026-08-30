@@ -106,7 +106,8 @@ body.hud { display: grid; place-items: center; }
 }
 
 /* -- Settings: tabs, cards, forms. Same row primitive, wider shell. -- */
-#surface.settings { padding: 0 20px 20px; font-size: 1.3rem; overflow-y: auto; height: 100%; }
+#surface.settings { padding: 0 20px 20px; font-size: 1.3rem; overflow: hidden; height: 100%;
+  display: flex; flex-direction: column; }
 .tabs { display: flex; gap: 4px; padding: 12px 0; }
 .tabs button {
   border: 0; background: transparent; color: var(--muted); font-size: 1.3rem;
@@ -226,3 +227,33 @@ button.act.danger { border-color: var(--bad); }
   padding: 5px 8px; max-width: 230px;
 }
 .row.tall .trail .sheet-input { width: 220px; margin-top: 0; }
+
+/* -- Settings as the prototype's two columns: a side list, a detail pane. -- */
+.win-body { display: grid; grid-template-columns: 220px 1fr; gap: 0; flex: 1; min-height: 0; }
+.side { background: var(--group); padding: 8px; display: flex; flex-direction: column; gap: 2px;
+  overflow-y: auto; border-right: var(--hairline) solid var(--line); }
+.side-find { background: var(--field); border: var(--hairline) solid var(--field-line);
+  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 1.3rem; color: var(--ink);
+  outline: none; margin-bottom: 6px; }
+.side .s-item { padding: 0 8px; min-height: 3.2rem; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; }
+.side .s-item > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.side .s-item.on { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.side .s-item:not(.on):hover { background: var(--chip); }
+.side .plus { color: var(--muted); font-size: 1.2rem; padding: 6px 8px; cursor: pointer; margin-top: 2px; }
+.side .plus:hover { color: var(--ink); }
+.pane { padding: 12px 20px 20px; overflow-y: auto; min-width: 0; }
+.pane-head { display: flex; align-items: center; gap: 10px; font-size: 1.9rem; font-weight: 700;
+  margin-bottom: 10px; }
+.g-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 3.2rem; }
+.g-row .gl { flex: none; font-size: 1.3rem; color: var(--ink); }
+.g-row .gv { margin-left: auto; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.g-row .gv.grow { flex: 1; margin-left: 24px; justify-content: flex-end; }
+.g-row .hint { color: var(--muted); font-size: 1.2rem; }
+.g-status { font-size: 1.2rem; color: var(--muted); padding: 2px 12px 8px; line-height: 1.4; }
+.g-note { font-size: 1.2rem; color: var(--muted); padding: 6px 12px; }
+.tfield { background: var(--field); border: var(--hairline) solid var(--field-line);
+  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 1.3rem; color: var(--ink);
+  min-width: 0; }
+input.tfield { outline: none; }
+.ok { color: var(--good); }
