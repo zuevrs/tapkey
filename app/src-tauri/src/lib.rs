@@ -161,6 +161,26 @@ mod shortcuts {
                     }
                 },
             )?;
+            // The footer's two openings are the prototype's shortcuts, and a shortcut is a
+            // promise the footer visibly makes — ⌘Y and ⌘, are the macOS conventions they ride.
+            app.global_shortcut()
+                .on_shortcut("CommandOrControl+Y", |app, _shortcut, event| {
+                    if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                        let for_main = app.clone();
+                        let _ = app.run_on_main_thread(move || {
+                            super::show_sheet(for_main, "history".into()).ok();
+                        });
+                    }
+                })?;
+            app.global_shortcut()
+                .on_shortcut("CommandOrControl+,", |app, _shortcut, event| {
+                    if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                        let for_main = app.clone();
+                        let _ = app.run_on_main_thread(move || {
+                            super::tray::show_settings(&for_main);
+                        });
+                    }
+                })?;
         }
         Ok(())
     }

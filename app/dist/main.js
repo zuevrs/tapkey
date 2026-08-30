@@ -31,6 +31,13 @@ if (label === "panel") {
 }
 
 // -- The panel -------------------------------------------------------------------------
+//
+// The prototype's structure, rendered from the core's facts: a head naming what the tools
+// are on, a search opened by its trigger or by typing, sections, rows with ⌘N badges in
+// most-recently-used order, a tools section, an attention row when something drifted, and a
+// footer whose two openings are global shortcuts. What the prototype shows from demo data,
+// this renders from effective_state and list_profiles — and what has no data yet (balances,
+// per-tool pinning) is omitted rather than faked, per the design rules.
 
 async function panel() {
   const [profiles, state, toolList] = await Promise.all([
@@ -40,26 +47,35 @@ async function panel() {
   ]);
   surface.className = "panel glass";
   current = head(profiles.profiles, state);
-  render(profiles.profiles, toolList);
+  panelState = { rows: profiles.profiles, state, toolList, searchOn: false, query: "", active: -1 };
+  drawPanel();
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") getCurrentWindow().hide();
+    if (e.key === "Escape") {
+      if (panelState.searchOn) {
+        // Esc in the search returns to the head; Esc in the head closes the panel — the
+        // prototype's two-step, so a stray Esc never throws the panel away.
+        panelState.searchOn = false;
+        panelState.query = "";
+        drawPanel();
+      } else {
+        getCurrentWindow().hide();
+      }
+    }
   });
-  // The panel's whole interaction is the field. The window takes focus when it appears
-  // (the shell calls set_focus); this keeps the field the thing that has it, whatever
-  // path opened the panel or stole focus since.
   getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-    if (focused) document.getElementById("search")?.focus();
+    if (focused && !panelState.searchOn) document.getElementById("srch-btn")?.focus();
   });
 }
 
-/// The panel's head: the profile the tools are on, named the way `cycle` finds it — the
-/// first owned slot's effective value, matched against the profiles' assignments. No single
-/// profile owns every tool' state — the catalogue's word for that is Mixed.
+let panelState = { rows: [], state: { tools: [] }, toolList: [], searchOn: false, query: "", active: -1 };
 let current = "Mixed";
+let toolsOpen = false;
+
+/// The head: the profile the tools are on, named the way `cycle` finds it — the first owned
+/// slot's effective value, matched against the profiles' assignments. No single profile owns
+/// every tool's state — the catalogue's word for that is Mixed.
 function head(rows, state) {
-  // `list_profiles` carries counts, not assignments, so the name is found the way `cycle`
-  // finds it — the owned value against the profile's name — with the single-profile case
-  // answered outright. The full derivation needs the assignments on the wire (A12).
   const value = state.tools
     ?.find((t) => t.slots?.some((s) => s.owned && s.resolved?.effective))
     ?.slots.find((s) => s.owned && s.resolved?.effective).resolved.effective;
@@ -68,95 +84,174 @@ function head(rows, state) {
   return hit ? hit.name : value ? "Mixed" : "System default";
 }
 
-function render(rows, toolList) {
-  surface.innerHTML = `
-    <header class="p-head"><span class="nm">${esc(current)}</span></header>
-    <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
-           placeholder="Switch profile…" aria-label="Switch profile" />
-    <div id="list" role="listbox" aria-label="Profiles"></div>
-    <footer id="footer">
-      <button id="open-history">History…</button>
-      <button id="open-settings">Settings…</button>
-      <span aria-hidden="true">Type to filter · Esc to close</span>
-    </footer>`;
-  const search = document.getElementById("search");
-  const list = document.getElementById("list");
+/// Most-recently-used order: the panel answers "switch again to what I just used" first, and
+/// ⌘N numbers follow the order the person actually works in. Kept per machine, never synced.
+function mruOrder(rows) {
+  let order = [];
+  try {
+    order = JSON.parse(localStorage.getItem("tapkey-mru") || "[]");
+  } catch {}
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const used = order.filter((id) => byId.has(id)).map((id) => byId.get(id));
+  const rest = rows.filter((r) => !used.includes(r));
+  return [...used, ...rest];
+}
+function bumpMru(id) {
+  let order = [];
+  try {
+    order = JSON.parse(localStorage.getItem("tapkey-mru") || "[]");
+  } catch {}
+  order = [id, ...order.filter((x) => x !== id)].slice(0, 8);
+  localStorage.setItem("tapkey-mru", JSON.stringify(order));
+}
 
-  const draw = () => {
-    const query = search.value.trim().toLowerCase();
-    const visible = rows.filter((r) => !query || r.name.toLowerCase().includes(query));
-    list.innerHTML = visible
-      .map(
-        (r, i) => `
-      <div class="row${i === active ? " active" : ""}" role="option" tabindex="-1" id="opt-${i}"
-           aria-selected="${i === active}" data-id="${esc(r.id)}">
-        ${tile(r.name)}
-        <span class="label">${esc(r.name)}</span>
-        <span class="qualifier">${esc(`${r.tools} of ${toolList.length} tools`)}</span>
-        <span class="value">↩</span>
+function drawPanel() {
+  const { rows, state, toolList, searchOn, query } = panelState;
+  const ordered = mruOrder(rows);
+  const visible = searchOn
+    ? ordered.filter((r) => !query || r.name.toLowerCase().includes(query.toLowerCase()))
+    : ordered;
+  const providerOf = (tool) => {
+    // The tool's current endpoint, matched against the providers' base URLs — the core's
+    // chain knows the endpoint; the panel knows the name.
+    const url = tool.endpoint.effective;
+    return url ? url.split("/").slice(0, 3).join("/") : null;
+  };
+
+  const headHtml = searchOn
+    ? `<div class="p-searchrow">
+        <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
+               placeholder="Switch profile…" aria-label="Switch profile"
+               value="${esc(query)}" autocomplete="off" spellcheck="false" /><kbd>esc</kbd>
       </div>`
-      )
-      .join("");
-    if (query && !rows.some((r) => r.name.toLowerCase() === query)) {
-      list.insertAdjacentHTML(
-        "beforeend",
-        `<div class="row${visible.length === active ? " active" : ""}" role="option" tabindex="-1"
-             id="opt-create" aria-selected="${visible.length === active}"
-             data-create="${esc(search.value.trim())}"
-             title="Creating opens Settings → Profiles">
-           ${tile("+")}
-           <span class="label">Create profile “${esc(search.value.trim())}”…</span>
-         </div>`
-      );
-    }
-    // The combobox relationship: focus never leaves the field (typing keeps working), and
-    // the row the keyboard stands on is the one announced.
-    search.setAttribute("aria-activedescendant", active >= 0 ? `opt-${active}` : "");
-    list.querySelectorAll(".row").forEach((row) =>
-      row.addEventListener("click", () =>
-        row.dataset.create ? undefined : switchTo(row.dataset.id)
-      )
-    );
-  };
+    : `<header class="p-head">
+        ${tile(current)}
+        <span class="nm">${esc(current)}</span>
+        <button type="button" class="srch" id="srch-btn" title="Filter profiles" aria-label="Filter profiles">⌕</button>
+      </header>`;
 
-  // The row the keyboard stands on. Nothing is active until a key or a query picks one —
-  // an always-lit first row teaches that Enter switches row one when it switches the
-  // walked-to row.
-  let active = -1;
-  const move = (to) => {
-    const count = list.querySelectorAll(".row").length;
-    if (!count) return;
-    active = (to + count) % count;
-    draw();
-  };
+  const createRow = (searchOn && query && !rows.some((r) => r.name.toLowerCase() === query.toLowerCase()))
+    ? `<div class="p-row create" role="option" tabindex="-1" data-create="${esc(query)}"
+         title="Creating opens Settings → Profiles">${tile("+")}<span class="nm">Create profile “${esc(query)}”…</span></div>`
+    : "";
 
-  search.addEventListener("keydown", (e) => {
-    const count = list.querySelectorAll(".row").length;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      move(active < 0 ? 0 : active + 1);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      move(active < 0 ? count - 1 : active - 1);
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      move(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      move(count - 1);
-    } else if (e.key === "Enter") {
-      const row = list.querySelectorAll(".row")[active >= 0 ? active : 0];
-      if (row) row.click();
-    }
+  const profHtml = visible
+    .map((r, i) => `
+      <div class="p-row${i === panelState.active ? " sel" : ""}" role="option"
+           tabindex="${i === Math.max(panelState.active, 0) ? "0" : "-1"}"
+           aria-selected="${i === panelState.active}" data-id="${esc(r.id)}">
+        ${tile(r.name)}
+        <span class="nm">${esc(r.name)}</span>
+        <span class="qual">${esc(`${r.tools} of ${toolList.length} tools`)}</span>
+        <span class="kn">⌘${i + 1}</span>
+      </div>`)
+    .join("") + createRow;
+
+  const drifted = state.tools.some((t) => (t.slots ?? []).some((s) => s.drifted));
+  const attnHtml = drifted && !searchOn
+    ? `<div class="p-attn" role="status" aria-live="polite">
+        <span>${esc(state.tools.find((t) => (t.slots ?? []).some((s) => s.drifted))?.tool ?? "")} — changed outside tapkey
+        <span class="acts"><button type="button" class="act pri" id="reapply">Re-apply</button></span></span>
+      </div>`
+    : "";
+
+  const summary = state.tools.every((t) => t.endpoint.effective === state.tools[0]?.endpoint.effective)
+    ? `all on ${esc(current)}`
+    : state.tools.map((t) => providerOf(t)).join(" ");
+  const toolsHtml = !searchOn
+    ? `<div class="p-sechead${toolsOpen ? " open" : ""}" role="button" aria-expanded="${toolsOpen}">
+        ${toolList.length} tools <span class="meta">${summary} <span class="chev">›</span></span>
+      </div>
+      ${toolsOpen ? state.tools.map((t) => `
+        <div class="p-row tool" style="margin-left:14px">
+          ${tile(cap(t.tool))}<span class="nm">${esc(cap(t.tool))}</span>
+          <span class="provlogo">${esc(t.endpoint.effective ?? "—")} <span class="chev">›</span></span>
+        </div>
+        <div class="p-row sub"><span class="check"></span>
+          <span class="nm link" data-effective="1">Effective state…</span></div>`).join("") : ""}`
+    : "";
+
+  surface.innerHTML = `
+    ${headHtml}
+    <div class="p-sec">${searchOn ? "Results" : "Switch to"}</div>
+    <div class="p-rows" role="listbox" aria-label="Profiles">${profHtml}</div>
+    ${toolsHtml}
+    ${attnHtml}
+    <footer id="footer">
+      <span class="tip">Type to filter</span>
+      <button id="open-history">History <kbd>⌘Y</kbd></button>
+      <button id="open-settings">Settings <kbd>⌘,</kbd></button>
+    </footer>`;
+
+  const search = document.getElementById("search");
+  if (searchOn) {
+    search.focus();
+    search.setSelectionRange(query.length, query.length);
+    search.addEventListener("input", () => {
+      panelState.query = search.value;
+      panelState.active = search.value.trim() ? 0 : -1;
+      drawPanel();
+    });
+    search.addEventListener("keydown", panelKeys);
+  } else {
+    document.getElementById("srch-btn").addEventListener("click", openSearch);
+  }
+
+  surface.querySelectorAll(".p-row[data-id]").forEach((row) =>
+    row.addEventListener("click", () => switchTo(row.dataset.id))
+  );
+  surface.querySelector(".p-row.create")?.addEventListener("click", () => {});
+  const sechead = surface.querySelector(".p-sechead");
+  if (sechead) sechead.addEventListener("click", () => { toolsOpen = !toolsOpen; drawPanel(); });
+  surface.querySelectorAll("[data-effective]").forEach((el) =>
+    el.addEventListener("click", () => openSheet("effective"))
+  );
+  document.getElementById("reapply")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    switchTo(visible[panelState.active]?.id ?? visible[0]?.id);
   });
   document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
   document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
-  search.addEventListener("input", () => {
-    active = search.value.trim() ? 0 : -1;
-    draw();
-  });
-  draw();
-  search.focus();
+
+  // Any typing in the head opens the search — the palette idiom: the panel's whole
+  // interaction is the field, and the person should never have to find the trigger first.
+  if (!searchOn) {
+    surface.addEventListener("keydown", (e) => {
+      if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        openSearch(e.key);
+      }
+    });
+  }
+}
+
+function openSearch(seed) {
+  panelState.searchOn = true;
+  panelState.query = typeof seed === "string" ? seed : "";
+  panelState.active = panelState.query ? 0 : -1;
+  drawPanel();
+}
+
+/// The keyboard: arrows walk the rows (wrapping, Home/End), Enter switches the walked-to
+/// row, digits 1-9 with ⌘ switch by badge.
+function panelKeys(e) {
+  const rows = [...surface.querySelectorAll(".p-row")];
+  const count = rows.length;
+  const move = (to) => {
+    if (!count) return;
+    panelState.active = (to + count) % count;
+    drawPanel();
+  };
+  if (e.key === "ArrowDown") { e.preventDefault(); move(panelState.active < 0 ? 0 : panelState.active + 1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); move(panelState.active < 0 ? count - 1 : panelState.active - 1); }
+  else if (e.key === "Home") { e.preventDefault(); move(0); }
+  else if (e.key === "End") { e.preventDefault(); move(count - 1); }
+  else if (e.key === "Enter") {
+    const row = rows[panelState.active >= 0 ? panelState.active : 0];
+    if (row) row.click();
+  } else if (/^[1-9]$/.test(e.key) && (e.metaKey || e.ctrlKey)) {
+    const row = rows[Number(e.key) - 1];
+    if (row) row.click();
+  }
 }
 
 function openSheet(sheet) {
@@ -171,6 +266,7 @@ async function switchTo(id) {
   // The response names the backup the switch took (core ticket 33); the HUD's Undo restores
   // exactly that. The HUD drives itself from the query parameters.
   const response = await call({ version: 1, op: "switch", params: { profile_id: id } });
+  bumpMru(id);
   await invoke("show_hud", {
     responseJson: JSON.stringify(response),
     backupId: response.backup ?? "",

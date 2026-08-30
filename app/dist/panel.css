@@ -39,29 +39,55 @@ body.settings, body.onboarding, body.effective, body.history { background: var(-
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-/* The search row, as the prototype draws it: a borderless 1.5rem field on the glass, a
-   hairline under the row, the magnifier at its left. */
-#search {
-  width: 100%; padding: 12px 16px; font: inherit; font-size: 1.5rem; color: var(--ink);
-  background: none; border: 0; border-bottom: var(--hairline) solid var(--glass-rim);
-  outline: none;
-}
-#search::placeholder { color: var(--muted); }
-#list { padding: 4px 8px 8px; overflow: hidden; }
+/* -- The panel's own rows, from the prototype: 32px, radius 12, the selected row filled. -- */
+.p-searchrow { display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-bottom: var(--hairline) solid var(--glass-rim); }
+.p-searchrow input { flex: 1; background: none; border: none; outline: none;
+  font: inherit; font-size: 1.5rem; color: var(--ink); }
+.p-searchrow input::placeholder { color: var(--muted); }
+.p-searchrow kbd { font-size: 1.1rem; color: var(--muted); border: var(--hairline) solid var(--line);
+  border-radius: 4px; padding: 0 4px; }
+.p-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px 8px; }
+.p-head .nm { font-size: 1.5rem; font-weight: 600; }
+.p-head .srch { margin-left: auto; color: var(--muted); cursor: pointer; background: none;
+  border: none; font-size: 1.6rem; padding: 2px 6px; border-radius: 8px; }
+.p-head .srch:hover { color: var(--ink); background: var(--chip); }
+.p-sec { font-size: 1.1rem; font-weight: 700; letter-spacing: .06em; color: var(--muted);
+  padding: 8px 16px 4px; }
+.p-rows { padding: 4px 8px; overflow: hidden; }
+.p-row { display: flex; align-items: center; gap: 10px; min-height: 3.2rem; padding: 4px 12px;
+  border-radius: 12px; color: var(--ink); }
+.p-row:hover { background: var(--chip); }
+.p-row.sel { background: var(--sel-fill); color: var(--on-sel); }
+.p-row.sel .qual, .p-row.sel .kn { color: var(--on-sel); }
+.p-row .nm { font-size: 1.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-row .qual { font-size: 1.2rem; color: var(--muted); margin-left: 8px; white-space: nowrap; }
+.p-row .kn { margin-left: auto; flex: none; font-size: 1.1rem; color: var(--muted); }
+.p-sechead { display: flex; align-items: center; gap: 6px; padding: 10px 16px 6px; cursor: pointer;
+  font-size: 1.3rem; color: var(--ink); }
+.p-sechead .meta { margin-left: auto; color: var(--muted); font-size: 1.2rem; }
+.p-sechead .chev { display: inline-block; transition: transform var(--dur-fast) var(--ease-entrance); }
+.p-sechead.open .chev { transform: rotate(90deg); }
+.p-row.tool .provlogo { margin-left: auto; color: var(--muted); font-size: 1.1rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-row.sub { min-height: 2.8rem; padding-left: 40px; color: var(--muted); }
+.p-row.sub .check { width: 1.2rem; }
+.p-row.sub .nm.link { color: var(--accent); }
+.p-attn { display: flex; align-items: center; gap: 8px; margin: 6px 12px; padding: 8px 10px;
+  border-radius: 10px; font-size: 1.2rem; color: var(--attn);
+  border: var(--hairline) solid var(--attn); }
+.p-attn .acts { margin-left: 8px; display: inline-flex; gap: 6px; }
+.p-attn button { font: inherit; font-size: 1.1rem; border-radius: 6px; padding: 2px 8px;
+  border: 1px solid currentColor; background: none; color: inherit; cursor: pointer; }
+.p-attn button.pri { background: var(--attn); color: var(--on-attn); border-color: transparent; }
 #footer {
   display: flex; gap: 12px; align-items: center; margin-top: auto;
   padding: 6px 12px; font-size: 1.1rem; color: var(--muted);
   border-top: var(--hairline) solid var(--glass-rim);
 }
-#footer span { margin-left: auto; }
-#footer button {
-  border: 0; background: none; color: var(--accent); font: inherit; font-size: 1.1rem;
-}
-
-/* -- The panel's head: the profile the tools are on, named. -- */
-.p-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px 0; }
-.p-head .nm { font-size: 1.5rem; font-weight: 600; }
-.p-head .sub { margin-left: auto; font-size: 1.1rem; color: var(--muted); }
+#footer .tip { margin-right: auto; }
+#footer button { border: 0; background: none; color: var(--accent); font: inherit; font-size: 1.1rem; }
+#footer kbd { font: inherit; color: var(--muted); }
 
 /* -- Motion: three moments, all from the tokens, all surrendered under Reduce Motion. -- */
 #surface.panel { animation: materialise var(--dur-normal) var(--ease-entrance); }
