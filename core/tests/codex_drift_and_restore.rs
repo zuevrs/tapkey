@@ -110,6 +110,49 @@ fn a_value_tapkey_never_wrote_is_not_drift() {
     assert_eq!(main["drifted"], json!(false), "{main}");
 }
 
+/// Accept adopts the external change rather than fighting it: the fingerprint is re-taken from
+/// the live file, the value stays what somebody chose, and the drift signal falls — the panel's
+/// Accept action, on the core side of the bridge. Re-applying would have overwritten the choice;
+/// that is the other button.
+#[test]
+fn accepting_the_drift_adopts_the_external_choice() {
+    let machine = Machine::new("cx-drift-accept");
+    machine.write_profiles(profiles());
+    machine.write_codex_config(b"model = \"gpt-5.6\"\n");
+    call(&machine, switch("glm"));
+    let after = std::fs::read_to_string(config_path(&machine)).expect("read");
+    std::fs::write(
+        config_path(&machine),
+        after.replace("glm-5.3", "somebody-elses-choice"),
+    )
+    .expect("write");
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "accept_drift", "params": {"tool": "codex"}}),
+    );
+
+    assert_eq!(response["ok"], json!(true), "{response}");
+    let main = slot(&call(&machine, effective_state()), "main");
+    assert_eq!(main["effective"], json!("somebody-elses-choice"), "{main}");
+    assert_eq!(main["drifted"], json!(false), "{main}");
+}
+
+/// Accept on a tool tapkey owns nothing on is a quiet no-op, not an error: the nothing-owned
+/// machine is the ordinary first-run state, and a refusal would turn a first-run panel red.
+#[test]
+fn accepting_with_nothing_owned_is_a_quiet_no_op() {
+    let machine = Machine::new("cx-drift-accept-empty");
+    machine.write_profiles(profiles());
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "accept_drift", "params": {"tool": "codex"}}),
+    );
+
+    assert_eq!(response["ok"], json!(true), "{response}");
+}
+
 /// Restore returns the file to what was on disk before tapkey's first change — comments and all.
 #[test]
 fn restoring_the_snapshot_returns_the_original_bytes() {

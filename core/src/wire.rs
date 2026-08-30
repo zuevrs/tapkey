@@ -28,6 +28,13 @@ pub enum Request {
         #[serde(flatten)]
         target: RestoreTarget,
     },
+    /// Adopt what an outside change left in one tool: the fingerprints of everything tapkey owns
+    /// there are re-taken from the live files, so the drift signal falls without overwriting the
+    /// choice somebody made. The panel's Accept action — Re-apply is the other answer to drift,
+    /// and the two must not share a path.
+    AcceptDrift {
+        tool: String,
+    },
     /// Establish which formats a provider's endpoint answers. Reads the network, writes the store.
     Test {
         provider_id: String,

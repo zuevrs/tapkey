@@ -1,9 +1,9 @@
 // One surface per window; the label decides. The panel is a list read in half a second:
 // it composes from the row primitive, filters, and switches. Nothing caches.
 
-import { call, esc, plural, tile, tools } from "./ui.js";
+import { call, cap, esc, plural, tile, tools } from "./ui.js";
 
-const { getCurrentWindow } = window.__TAURI__.window;
+const { getCurrentWindow, LogicalSize } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.core;
 
 const surface = document.getElementById("surface");
@@ -40,14 +40,15 @@ if (label === "panel") {
 // per-tool pinning) is omitted rather than faked, per the design rules.
 
 async function panel() {
-  const [profiles, state, toolList] = await Promise.all([
+  const [profiles, state, toolList, providers] = await Promise.all([
     call({ version: 1, op: "list_profiles", params: {} }),
     call({ version: 1, op: "effective_state", params: {} }),
     tools(),
+    call({ version: 1, op: "list_providers", params: {} }),
   ]);
   surface.className = "panel glass";
   current = head(profiles.profiles, state);
-  panelState = { rows: profiles.profiles, state, toolList, searchOn: false, query: "", active: -1 };
+  panelState = { rows: profiles.profiles, state, toolList, providers: providers.providers ?? [], searchOn: false, query: "", active: -1 };
   drawPanel();
 
   document.addEventListener("keydown", (e) => {
@@ -111,7 +112,25 @@ function bumpMru(id) {
 }
 
 function drawPanel() {
-  const { rows, state, toolList, searchOn, query } = panelState;
+  const { rows, state, toolList, providers, searchOn, query } = panelState;
+  // An empty store is not an empty listbox: the panel becomes the invitation, because a
+  // section labelled "Switch to" over nothing is a question with no answer.
+  if (!rows.length && !searchOn) {
+    surface.innerHTML = `
+      <div class="p-rows" style="padding:9px 7px">
+        <div class="p-row" tabindex="0">${tile("tapkey")}<span class="nm hi">Add your first provider…</span></div>
+      </div>
+      <footer id="footer">
+        <span class="tip">Type to filter</span>
+        <button id="open-history">History <kbd>⌘Y</kbd></button>
+        <button id="open-settings">Settings <kbd>⌘,</kbd></button>
+      </footer>`;
+    document.querySelector(".p-row").addEventListener("click", () => openSheet("settings"));
+    document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
+    document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
+    fitWindow(352, 120, 490);
+    return;
+  }
   const ordered = mruOrder(rows);
   const visible = searchOn
     ? ordered.filter((r) => !query || r.name.toLowerCase().includes(query.toLowerCase()))
@@ -123,6 +142,16 @@ function drawPanel() {
     return url ? url.split("/").slice(0, 3).join("/") : null;
   };
 
+  // The Mixed head is icon pairs, one per tool — "which provider is this tool on" is the whole
+  // content of the state, and a word asks the person to hold what six icons show at a glance.
+  const mixHtml = current === "Mixed"
+    ? `<span class="mixlogos">${state.tools.map((t) => {
+        const url = t.endpoint.effective || "";
+        const prov = (providers ?? []).find((p) => p.base_url && url.startsWith(p.base_url.replace(/\/$/, "")));
+        return `<span class="pair">${tile(t.tool)}<span class="to">›</span>${tile(prov ? prov.id : url || "—")}</span>`;
+      }).join("")}</span>`
+    : "";
+
   const headHtml = searchOn
     ? `<div class="p-searchrow">
         <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
@@ -133,6 +162,7 @@ function drawPanel() {
     : `<header class="p-head">
         ${tile(current)}
         <span class="nm">${esc(current)}</span>
+        ${mixHtml}
         <button type="button" class="srch" id="srch-btn" title="Filter profiles" aria-label="Filter profiles">⌕</button>
       </header>`;
 
@@ -153,11 +183,20 @@ function drawPanel() {
       </div>`)
     .join("") + createRow;
 
-  const drifted = state.tools.some((t) => (t.slots ?? []).some((s) => s.drifted));
-  const attnHtml = drifted && !searchOn
+  // The attention block tells the whole story: what changed outside tapkey, where exactly
+  // (the why line is the file and the key, from the slot's own resolution chain), and both
+  // answers — Re-apply erases the choice, Accept adopts it. One without the other is a forced
+  // answer.
+  const driftedTool = state.tools.find((t) => (t.slots ?? []).some((s) => s.drifted));
+  const driftedSlot = driftedTool?.slots.find((s) => s.drifted);
+  const whyLink = (driftedSlot?.resolved?.chain ?? []).find((l) => l.source);
+  const why = whyLink ? `${whyLink.key} in ${whyLink.source}` : "";
+  const attnHtml = driftedTool && !searchOn
     ? `<div class="p-attn" role="status" aria-live="polite">
-        <span>${esc(state.tools.find((t) => (t.slots ?? []).some((s) => s.drifted))?.tool ?? "")} — changed outside tapkey
-        <span class="acts"><button type="button" class="act pri" id="reapply">Re-apply</button></span></span>
+        <span>⚠ ${esc(cap(driftedTool.tool))} — changed outside tapkey
+        ${why ? `<span class="why">${esc(why)}</span>` : ""}
+        <span class="acts"><button type="button" class="act pri" id="reapply">Re-apply</button>
+          <button type="button" class="act" id="accept">Accept</button></span></span>
       </div>`
     : "";
 
@@ -180,7 +219,7 @@ function drawPanel() {
   surface.innerHTML = `
     ${headHtml}
     <div class="p-sec">${searchOn ? "Results" : "Switch to"}</div>
-    <div class="p-rows" role="listbox" aria-label="Profiles">${profHtml}</div>
+    <div class="p-rows${visible.length > 7 ? " scroll" : ""}" role="listbox" aria-label="Profiles">${profHtml}</div>
     ${toolsHtml}
     ${attnHtml}
     <footer id="footer">
@@ -215,6 +254,18 @@ function drawPanel() {
     e.stopPropagation();
     switchTo(visible[panelState.active]?.id ?? visible[0]?.id);
   });
+  document.getElementById("accept")?.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    // Accept adopts the outside choice on the core's side: the fingerprints are re-taken from
+    // the live files, the value keeps what somebody chose, and the response is the fresh state
+    // this panel redraws from — no second read, no invented fact.
+    const r = await call({ version: 1, op: "accept_drift", params: { tool: driftedTool.tool } });
+    if (r.ok) {
+      panelState.state = r;
+      current = head(panelState.rows, r);
+      drawPanel();
+    }
+  });
   document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
   document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
 
@@ -227,6 +278,16 @@ function drawPanel() {
       }
     });
   }
+  fitWindow(352, 120, 490);
+}
+
+/// The window is not a fixed frame but a card that fits its content, as the prototype's panel
+/// does — growing with its rows and attention, shrinking for the empty invitation, clamped so a
+/// hundred profiles cannot outgrow the screen and a bare panel still reads as a card.
+/// getBoundingClientRect forces the layout synchronously, so the measure is of the drawn card.
+function fitWindow(width, min, max) {
+  const h = Math.ceil(surface.getBoundingClientRect().height);
+  getCurrentWindow().setSize(new LogicalSize(width, Math.max(min, Math.min(max, h))));
 }
 
 function openSearch(seed) {
@@ -269,47 +330,82 @@ function openSheet(sheet) {
 
 async function switchTo(id) {
   // The response names the backup the switch took (core ticket 33); the HUD's Undo restores
-  // exactly that. The HUD drives itself from the query parameters.
+  // exactly that. The HUD drives itself from the query parameters — the profile's name travels
+  // with them because the response, a wire shape, does not carry display facts.
   const response = await call({ version: 1, op: "switch", params: { profile_id: id } });
   bumpMru(id);
   await invoke("show_hud", {
     responseJson: JSON.stringify(response),
     backupId: response.backup ?? "",
+    profile: panelState.rows.find((r) => r.id === id)?.name ?? "",
   });
   getCurrentWindow().hide();
 }
 
 // -- The HUD window --------------------------------------------------------------------
+//
+// The prototype's card, not a pill: a head naming what was switched to (or what went wrong),
+// one row per tool with the truth about when it takes effect, and an action bar — Undo on
+// success, with the fast path's expiry named rather than vanishing, Dismiss on everything
+// else, because a failure carries no timer: it stays until the person closes it.
+
+const HUD_DWELL = 3200;
 
 function hud() {
   const params = new URLSearchParams(location.search);
   const response = JSON.parse(params.get("response") || "{}");
   const backup = params.get("backup");
+  const profile = params.get("profile") || "";
   const applied = response.outcome === "applied";
+  const rolledBack = response.outcome === "rolled back";
   // The design rules settle the default: an unmeasured reload behaviour is "on next launch",
-  // in neutral colour — a permanent amber glyph teaches users to ignore amber. And a notice
-  // reporting a failure carries no timer: only success fades on its own.
-  const result = applied
-    ? "on next launch"
-    : response.outcome === "rolled back"
-      ? "Switch rolled back"
-      : "Switch failed";
-  const timed = applied;
+  // in neutral colour — a permanent amber glyph teaches users to ignore amber. "Applied live"
+  // is a session fact the core does not know yet; rendering it would be inventing it.
+  const title = rolledBack ? "Switch rolled back" : applied ? profile : "Switch failed";
+
   surface.className = "hud glass";
-  surface.innerHTML = `
-    <span class="result" role="status">${esc(result)}</span>
-    ${applied && backup ? `<button id="undo">Undo</button>` : ""}`;
-  if (applied && backup) {
-    document.getElementById("undo").addEventListener("click", async () => {
-      // Undo is a core operation like any other: one envelope through the bridge, never a
-      // second marshalling of a request in the app.
-      const r = await call({
-        version: 1, op: "restore",
-        params: { target: { target: "backup", id: backup } },
-      });
-      document.querySelector(".result").textContent = r.outcome === "applied" ? "Restored" : "Switch failed";
-      document.getElementById("undo").remove();
-    });
+  if (applied) {
+    const rows = (response.tools ?? []).map((t) => `
+      <div class="hr">${tile(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
+    surface.innerHTML = `
+      <div class="hh">${tile(profile)}<span>${esc(profile)}</span></div>
+      ${rows}
+      ${backup ? `<button type="button" class="undo" id="undo"><kbd>⌘Z</kbd>Undo<span class="fallback">later in History <kbd>⌘Y</kbd></span></button>` : ""}`;
+  } else {
+    const why = response.failure?.detail || "";
+    surface.innerHTML = `
+      <div class="hh fail">⚠ <span>${esc(title)}</span></div>
+      ${why ? `<div class="why">${esc(why)}</div>` : ""}
+      <button type="button" class="undo" id="dismiss">Dismiss</button>`;
   }
-  if (timed) setTimeout(() => getCurrentWindow().hide(), 4000);
+
+  document.getElementById("undo")?.addEventListener("click", async () => {
+    // Undo is a core operation like any other: one envelope through the bridge, never a
+    // second marshalling of a request in the app.
+    const r = await call({
+      version: 1, op: "restore",
+      params: { target: { target: "backup", id: backup } },
+    });
+    document.querySelector(".hh").innerHTML = r.outcome === "applied" ? "Restored" : "⚠ Switch failed";
+    document.getElementById("undo").remove();
+    // The undo leaves the dwell behind: its result stays until the person has read it.
+    setTimeout(() => getCurrentWindow().hide(), HUD_DWELL);
+  });
+  document.getElementById("dismiss")?.addEventListener("click", () => getCurrentWindow().hide());
+  if (applied) setTimeout(() => getCurrentWindow().hide(), HUD_DWELL);
+  // The card's own width, clamped to the prototype's bounds (274..340): a fail card with two
+  // lines must not stretch to the applied card's width, and a long provider name must not
+  // grow the HUD unbounded.
+  fitCard();
+}
+
+/// The HUD sizes both dimensions from its card, unlike the panel whose width is the spec's own.
+function fitCard() {
+  const r = surface.getBoundingClientRect();
+  getCurrentWindow().setSize(
+    new LogicalSize(
+      Math.max(274, Math.min(340, Math.ceil(r.width))),
+      Math.max(64, Math.min(260, Math.ceil(r.height))),
+    ),
+  );
 }

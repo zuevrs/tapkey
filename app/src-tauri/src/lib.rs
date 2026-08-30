@@ -38,7 +38,12 @@ fn show_sheet(app: tauri::AppHandle, sheet: String) -> tauri::Result<()> {
 }
 
 #[tauri::command]
-fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> tauri::Result<()> {
+fn show_hud(
+    app: tauri::AppHandle,
+    response_json: String,
+    backup_id: String,
+    profile: String,
+) -> tauri::Result<()> {
     let hud = app
         .get_webview_window("hud")
         .expect("the hud window exists");
@@ -49,6 +54,7 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
     let query = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("response", &response_json)
         .append_pair("backup", &backup_id)
+        .append_pair("profile", &profile)
         .finish();
     url.set_query(Some(&query));
     // `navigate`, not `eval`: an eval'd `location.replace` never fired on a webview that had

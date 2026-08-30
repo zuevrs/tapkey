@@ -322,6 +322,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
             Ok(("provider", "updated", provider_id.to_string()))
         }),
         Request::Restore { target } => restore(env, target),
+        Request::AcceptDrift { tool } => accept_drift(env, &tool),
     }
 }
 
@@ -602,6 +603,52 @@ fn restore(env: &Env, target: wire::RestoreTarget) -> Response {
         Ok(tools) => Response::Ok {
             ok: true,
             outcome: Some("applied"),
+            tools,
+            backup: None,
+        },
+        Err(e) => refuse("unparsable", e),
+    }
+}
+
+/// Adopt what an outside change left on one tool: re-take the fingerprints of everything tapkey
+/// owns there from the live files, so the drift signal falls without overwriting the choice the
+/// person (or the tool) made. Re-apply is the other answer to drift, and the two share no path —
+/// one keeps the edit, one erases it.
+fn accept_drift(env: &Env, tool: &str) -> Response {
+    // The fingerprint write is a store write like any other: held, and refused loudly when the
+    // switch someone is running has it.
+    let _lock = match lock::Lock::acquire(env.store()) {
+        Ok(l) => l,
+        Err(lock::Busy(why)) => return refuse("busy", why),
+    };
+    let path = env.store().join("state.json");
+    let mut state = fingerprint::State::read(&path);
+    // Nothing owned on this tool is the first-run machine, not an error — a refusal would paint
+    // a first-run panel red for answering its own question.
+    if let Some(owned) = state.owned.get_mut(tool) {
+        if let Ok(live) = adapters::effective_state(env) {
+            let live = live.iter().find(|t| t.tool == tool);
+            for key in owned.keys().cloned().collect::<Vec<_>>() {
+                let value = live.and_then(|t| {
+                    t.slots
+                        .iter()
+                        .find(|s| s.slot == key)
+                        .and_then(|s| s.resolved.effective.clone())
+                });
+                // A key with no live value keeps its record: absent is not a change, and wiping
+                // the record would make the value's return read as fresh drift.
+                if let Some(value) = value {
+                    owned.insert(key, fingerprint::hash(&value));
+                }
+            }
+        }
+        let _ = fingerprint::State::write(&path, &state.profile, state.owned);
+    }
+    // Reported from a fresh read, never from what was written — the invariant binds here too.
+    match adapters::effective_state(env) {
+        Ok(tools) => Response::Ok {
+            ok: true,
+            outcome: None,
             tools,
             backup: None,
         },
