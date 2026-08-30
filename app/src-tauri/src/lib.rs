@@ -57,6 +57,32 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
     hud.show()
 }
 
+/// A system confirmation: NSAlert's geometry, the catalogue's words. The boundary is the
+/// command's arguments — the strings gate asserts the words here, exactly the way it asserts
+/// `show_hud`'s — because the OS surface itself is outside every gate.
+#[tauri::command]
+async fn confirm_dialog(
+    app: tauri::AppHandle,
+    title: String,
+    body: String,
+    ok_label: String,
+) -> Result<bool, String> {
+    use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+    let (tx, rx) = std::sync::mpsc::channel::<bool>();
+    app.dialog()
+        .message(body)
+        .title(title)
+        .kind(tauri_plugin_dialog::MessageDialogKind::Warning)
+        .buttons(MessageDialogButtons::OkCancelCustom(
+            ok_label,
+            "Cancel".into(),
+        ))
+        .show(move |answer| {
+            let _ = tx.send(answer);
+        });
+    rx.recv().map_err(|e| e.to_string())
+}
+
 /// Open at login, through the autostart plugin — the one General toggle that needs the OS.
 #[tauri::command]
 fn set_autostart(app: tauri::AppHandle, enabled: bool) -> Result<bool, String> {
@@ -102,6 +128,7 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
             None,
@@ -155,7 +182,8 @@ pub fn run() {
             onboarding_done,
             set_autostart,
             get_autostart,
-            run_setup_again
+            run_setup_again,
+            confirm_dialog
         ]);
 
     builder

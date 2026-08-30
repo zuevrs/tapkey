@@ -1,6 +1,7 @@
 // Settings: Providers, Profiles, General. Every action is a core operation through the bridge;
-// the surface composes and never decides. Destructive actions confirm in a page sheet, because
-// WKWebView does not implement window.confirm and the styling is ours anyway.
+// the surface composes and never decides. Destructive confirmations are system alerts — the
+// catalogue's words, the OS's geometry — through the confirm_dialog command; the one shape
+// this stack has no native dialog for (ask-with-field) stays an in-page sheet.
 
 import { call, esc, tile, tools, cap, plural, slotName, slotHint, PRESETS } from "./ui.js";
 
@@ -333,16 +334,17 @@ function renderProviderPane(pane, p, using, toolList) {
               : `${r.failure?.kind} — nothing was changed`;
       }
     });
-    document.getElementById("remove-btn").addEventListener("click", () => {
-      confirmSheet(
-        "Remove provider…",
-        `Its entries go from ${toolList.map(cap).join(", ")}; the key tapkey stored is deleted`,
-        async () => {
-          const r = await call({ version: 1, op: "remove_provider", params: { id: p.id } });
-          if (r.ok) { selected = null; draw(); }
-          else document.getElementById("pane-result").textContent = `${r.failure.kind} — nothing was changed`;
-        }
-      );
+    document.getElementById("remove-btn").addEventListener("click", async () => {
+      // A system alert carries the question: the catalogue's words, the OS's geometry.
+      const ok = await window.__TAURI__.core.invoke("confirm_dialog", {
+        title: `Remove “${p.name}”?`,
+        body: "Its entries go from your tools; the key tapkey stored is deleted",
+        okLabel: "Remove",
+      });
+      if (!ok) return;
+      const r = await call({ version: 1, op: "remove_provider", params: { id: p.id } });
+      if (r.ok) { selected = null; draw(); }
+      else document.getElementById("pane-result").textContent = `${r.failure.kind} — nothing was changed`;
     });
   };
   draw2();
@@ -387,26 +389,26 @@ async function profilesTab(side, pane) {
   const result = pane.querySelector("#pf-result");
   const refused = (r) => { result.textContent = r.failure ? `${r.failure.kind} — nothing was changed` : ""; };
   document.getElementById("pf-rename").addEventListener("click", () => {
-    askText("Rename…", async (name) => {
+    askText(`Rename “${profile.name}”`, async (name) => {
       refused(await call({ version: 1, op: "rename_profile", params: { id: profile.id, name } }));
       if (!result.textContent) draw();
     });
   });
   document.getElementById("pf-duplicate").addEventListener("click", () => {
-    askText("Duplicate…", async (asId) => {
+    askText(`Duplicate “${profile.name}”`, async (asId) => {
       refused(await call({ version: 1, op: "duplicate_profile", params: { id: profile.id, as_id: asId } }));
       if (!result.textContent) { selected = asId; draw(); }
     });
   });
-  document.getElementById("pf-delete").addEventListener("click", () => {
-    confirmSheet(
-      "Delete profile…",
-      `Your tools keep what it last applied across ${plural("{count} tool", "{count} tools", profile.tools ?? toolList.length)}`,
-      async () => {
-        refused(await call({ version: 1, op: "delete_profile", params: { id: profile.id } }));
-        if (!result.textContent) { selected = null; draw(); }
-      }
-    );
+  document.getElementById("pf-delete").addEventListener("click", async () => {
+    const ok = await window.__TAURI__.core.invoke("confirm_dialog", {
+      title: `Delete “${profile.name}”?`,
+      body: "Tools on this profile fall back to System default",
+      okLabel: "Delete",
+    });
+    if (!ok) return;
+    refused(await call({ version: 1, op: "delete_profile", params: { id: profile.id } }));
+    if (!result.textContent) { selected = null; draw(); }
   });
 }
 
@@ -688,16 +690,12 @@ function sheet(html) {
   });
 }
 
-function confirmSheet(title, detail, onOk) {
-  sheet(`<strong>${esc(title)}</strong><p class="note">${esc(detail)}</p>`).then((ok) => {
-    if (ok) onOk();
-  });
-}
-
 function askText(title, onOk) {
+  // The one shape this stack has no native dialog for: an in-page field carrying the
+  // catalogue's words, the default the catalogue names.
+  const def = title.startsWith("Duplicate") ? `${title.replace(/^Duplicate\s+|”$/g, "")} copy`.replace("“", "") : "";
   sheet(`<strong>${esc(title)}</strong>
-    <p class="note">The name is shown; the id never moves.</p>
-    <input class="sheet-input" />`).then((value) => {
+    <label class="field"><span>Name</span><input class="sheet-input" value="${esc(def)}" /></label>`).then((value) => {
     if (value && value !== true) onOk(value);
   });
 }
