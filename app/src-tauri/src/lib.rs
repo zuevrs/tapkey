@@ -61,15 +61,18 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
 /// command's arguments — the strings gate asserts the words here, exactly the way it asserts
 /// `show_hud`'s — because the OS surface itself is outside every gate.
 #[tauri::command]
-async fn confirm_dialog(
+fn confirm_dialog(
     app: tauri::AppHandle,
     title: String,
     body: String,
     ok_label: String,
 ) -> Result<bool, String> {
+    // Sync on purpose: a sync command runs on a worker thread, where the plugin's own
+    // blocking_show belongs — the async version's channel-wait starved the runtime and the
+    // alert never appeared, which the live pass watched happen.
     use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
-    let (tx, rx) = std::sync::mpsc::channel::<bool>();
-    app.dialog()
+    Ok(app
+        .dialog()
         .message(body)
         .title(title)
         .kind(tauri_plugin_dialog::MessageDialogKind::Warning)
@@ -77,10 +80,7 @@ async fn confirm_dialog(
             ok_label,
             "Cancel".into(),
         ))
-        .show(move |answer| {
-            let _ = tx.send(answer);
-        });
-    rx.recv().map_err(|e| e.to_string())
+        .blocking_show())
 }
 
 /// Open at login, through the autostart plugin — the one General toggle that needs the OS.
