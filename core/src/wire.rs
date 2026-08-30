@@ -57,6 +57,13 @@ pub enum Request {
         id: String,
         name: String,
     },
+    /// Replace one profile's assignments wholesale. The interface sends the whole edited
+    /// shape; the name is not this operation's, because renaming is its own and a stale name
+    /// riding an edit nobody made is the failure that split exists to prevent.
+    UpdateProfile {
+        id: String,
+        tools: std::collections::BTreeMap<String, crate::profile::ToolAssignment>,
+    },
     DuplicateProfile {
         id: String,
         as_id: String,
@@ -302,6 +309,10 @@ pub struct ProfileRow {
     pub name: String,
     /// How many tools this profile names. The row's scope line — `{count} of {total} tools`.
     pub tools: usize,
+    /// The assignments themselves, for the editor: what a profile names per tool and per slot
+    /// is the core's fact, and an editor that could not read it would invent one.
+    #[serde(default)]
+    pub assignments: std::collections::BTreeMap<String, crate::profile::ToolAssignment>,
 }
 
 /// One settings card: what a provider is, never a secret's value.

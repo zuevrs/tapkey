@@ -80,7 +80,7 @@ body.hud { display: grid; place-items: center; }
 }
 
 /* -- Settings: tabs, cards, forms. Same row primitive, wider shell. -- */
-#surface.settings { padding: 0 20px 20px; font-size: 1.3rem; }
+#surface.settings { padding: 0 20px 20px; font-size: 1.3rem; overflow-y: auto; height: 100%; }
 .tabs { display: flex; gap: 4px; padding: 12px 0; }
 .tabs button {
   border: 0; background: transparent; color: var(--muted); font-size: 1.3rem;
@@ -192,3 +192,11 @@ button.act.danger { border-color: var(--bad); }
   transition: left var(--dur-fast) var(--ease-entrance); }
 .swl input:checked + .sw { background: var(--accent); }
 .swl input:checked + .sw::after { left: 18px; background: var(--on-accent); }
+
+/* The editor's controls: a select in a row's trail, a slot input that holds its width. */
+.row.tall select {
+  font: inherit; font-size: 1.3rem; color: var(--ink);
+  background: var(--field); border: 1px solid var(--field-line); border-radius: 6px;
+  padding: 5px 8px; max-width: 230px;
+}
+.row.tall .trail .sheet-input { width: 220px; margin-top: 0; }

@@ -298,3 +298,98 @@ fn removing_a_provider_forgets_the_stored_key() {
         "the stored key went with its provider"
     );
 }
+
+/// Editing a profile replaces its assignments wholesale and touches nothing else: not the name
+/// (renaming is its own operation, and a stale name riding an edit nobody made is the failure
+/// this split exists to prevent), not other profiles, and no tool's config — an edit is a store
+/// write; applying is the switch's job, and nothing has been applied.
+#[test]
+fn update_profile_replaces_assignments_and_touches_nothing_else() {
+    let machine = seeded();
+    let before = call(
+        &machine,
+        op(
+            "update_profile",
+            json!({"id": "glm", "tools": {
+                "claude": {"provider": "zai", "slots": {"main": "glm-5.3", "utility": "glm-5.3-flash"}},
+                "codex": {"provider": "zai", "slots": {}}
+            }}),
+        ),
+    );
+
+    assert_eq!(before["ok"], json!(true), "{before}");
+    let rows = profiles(&machine);
+    let edited = rows["profiles"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("glm"))
+        .expect("the profile is there");
+    assert_eq!(
+        edited["name"],
+        json!("Z.ai GLM"),
+        "the name is not this operation's"
+    );
+    assert_eq!(
+        edited["tools"]["claude"]["slots"]["utility"],
+        json!("glm-5.3-flash"),
+        "the assignments travelled in the store: {edited}"
+    );
+    assert_eq!(
+        edited["tools"]["codex"]["provider"],
+        json!("zai"),
+        "a tool the edit added arrived: {edited}"
+    );
+    // And the wire carries the same map on the row, which is the editor's only door in.
+    let wire = call(
+        &machine,
+        json!({"version": 1, "op": "list_profiles", "params": {}}),
+    );
+    let row = wire["profiles"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|p| p["id"] == json!("glm"))
+        .expect("the row is there");
+    assert_eq!(
+        row["assignments"]["claude"]["slots"]["main"],
+        json!("glm-5.3"),
+        "the wire row carries the assignments: {row}"
+    );
+    assert!(
+        !machine
+            .home()
+            .join(".claude")
+            .join("settings.json")
+            .exists(),
+        "an edit never writes a tool's config — applying is the switch's job"
+    );
+}
+
+/// An edit naming nobody is refused with the same kindness as every other unknown id.
+#[test]
+fn update_profile_refuses_an_unknown_id() {
+    let machine = seeded();
+    let response = call(
+        &machine,
+        op(
+            "update_profile",
+            json!({"id": "nope", "tools": {"claude": {"provider": "zai", "slots": {}}}}),
+        ),
+    );
+    assert_eq!(response["ok"], json!(false), "{response}");
+    assert_eq!(response["failure"]["kind"], json!("unknown_profile"));
+}
+
+/// The editor cannot send a profile with no tools left — the same refusal creation gives,
+/// because an empty profile cannot be applied and must not be saveable.
+#[test]
+fn update_profile_refuses_an_empty_assignment() {
+    let machine = seeded();
+    let response = call(
+        &machine,
+        op("update_profile", json!({"id": "glm", "tools": {}})),
+    );
+    assert_eq!(response["ok"], json!(false), "{response}");
+    assert_eq!(response["failure"]["kind"], json!("unknown_profile"));
+}

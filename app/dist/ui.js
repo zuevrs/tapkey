@@ -21,3 +21,20 @@ export async function tools() {
   const state = await call({ version: 1, op: "effective_state", params: {} });
   return state.tools.map((t) => t.tool);
 }
+
+// A slot's display name, from the catalogue's `prof.slot.*`. The slot inventory itself is the
+// adapter's fact — effective_state names the slots; this only names them for a person.
+export const slotName = (slot) => ({
+  main: "Main model", utility: "Utility model", subagent: "Subagent model",
+  review: "Review model", effort: "Effort level", verbosity: "Verbosity",
+  opus: "Opus pin", sonnet: "Sonnet pin", fable: "Fable pin",
+  advisor: "Advisor model", fallback: "Fallback model",
+}[slot] ?? cap(slot));
+
+// The catalogue's per-slot hints, shown under their own row only.
+export const slotHint = (slot) => ({
+  utility: "Titles, summaries, compaction",
+  subagent: "Overrides every subagent, without editing their files",
+  fallback: "Used when the main model is overloaded",
+  aliases: "What /model sonnet resolves to here",
+}[slot] ?? "");

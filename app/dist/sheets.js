@@ -2,7 +2,7 @@
 // reads through the bridge — the chains and the moments are the core's to give, and this
 // surface renders what it is told. Everything composes from the row primitive and the tokens.
 
-import { call, esc, tile, cap, plural } from "./ui.js";
+import { call, esc, tile, cap, plural, slotName } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
@@ -63,16 +63,6 @@ function attentionText(a) {
     case "format_untested": return "switched to a provider nothing has tested";
     default: return a.kind;
   }
-}
-
-function slotName(slot) {
-  const names = {
-    main: "Main model", utility: "Utility model", subagent: "Subagent model",
-    review: "Review model", effort: "Effort level", verbosity: "Verbosity",
-    opus: "Opus pin", sonnet: "Sonnet pin", fable: "Fable pin",
-    advisor: "Advisor model", fallback: "Fallback model",
-  };
-  return names[slot] ?? cap(slot);
 }
 
 // -- History ---------------------------------------------------------------------------

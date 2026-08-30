@@ -92,6 +92,7 @@ fn dispatch(env: &Env, request: &str) -> Response {
                         id: p.id.clone(),
                         name: p.name.clone(),
                         tools: p.tools.len(),
+                        assignments: p.tools.clone(),
                     })
                     .collect(),
             }
@@ -116,6 +117,23 @@ fn dispatch(env: &Env, request: &str) -> Response {
             let id = profile.id.clone();
             p.profiles.push(profile);
             Ok(("profile", "created", id))
+        }),
+        Request::UpdateProfile { id, tools } => write_profiles(env, |p| {
+            if tools.is_empty() {
+                // The same refusal creation gives: an empty profile cannot be applied, so it
+                // cannot be saved either — deleting is the honest name for that edit.
+                return Err((
+                    "unknown_profile",
+                    "a profile has to name at least one tool".into(),
+                ));
+            }
+            let profile = p
+                .profiles
+                .iter_mut()
+                .find(|x| x.id == id)
+                .ok_or_else(|| ("unknown_profile", format!("no profile named {id:?}")))?;
+            profile.tools = tools;
+            Ok(("profile", "updated", id))
         }),
         Request::RenameProfile { id, name } => write_profiles(env, |p| {
             let profile = p

@@ -2,7 +2,7 @@
 // the surface composes and never decides. Destructive actions confirm in a page sheet, because
 // WKWebView does not implement window.confirm and the styling is ours anyway.
 
-import { call, esc, tile, tools, cap, plural } from "./ui.js";
+import { call, esc, tile, tools, cap, plural, slotName, slotHint } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
@@ -187,7 +187,8 @@ async function profilesTab(pane) {
           <span class="label">${esc(p.name)}</span>
           <span class="qualifier">${esc(`${p.tools} of ${toolList.length} tools`)}</span>
         </div>
-        <div class="actions"><button class="act" data-do="rename">Rename…</button>
+        <div class="actions"><button class="act" data-do="edit">Edit…</button>
+          <button class="act" data-do="rename">Rename…</button>
           <button class="act" data-do="duplicate">Duplicate…</button>
           <button class="act danger" data-do="delete">Delete profile…</button></div>
         <div class="result note" role="status"></div>
@@ -205,7 +206,9 @@ async function profilesTab(pane) {
         const refused = (r) => {
           result.textContent = r.ok ? "" : `${r.failure.kind} — nothing was changed`;
         };
-        if (doing === "rename") {
+        if (doing === "edit") {
+          editProfile(id);
+        } else if (doing === "rename") {
           askText("Rename…", async (name) => {
             refused(await call({ version: 1, op: "rename_profile", params: { id, name } }));
             if (result.textContent === "") draw();
@@ -240,6 +243,136 @@ function general(pane) {
       <div class="row"><span class="label">Open panel</span><span class="value">⌘⇧P</span></div>
       <div class="row"><span class="label">Cycle profiles</span><span class="value">⌥⌘P</span></div>
     </div>`;
+}
+
+// -- The profile editor -----------------------------------------------------------------
+//
+// The slot inventory is the adapter's fact — effective_state names each tool's owned slots —
+// and the assignments are the core's (they ride the profile row). The editor owns nothing but
+// the editing: a working copy in memory, Save sending the whole shape through update_profile,
+// an empty slot meaning the ADR's own null assignment — *no assignment*, an instruction, not
+// an absence of one.
+
+async function editProfile(id) {
+  const pane = document.getElementById("tab");
+  const [{ profiles, providers }, state] = await Promise.all([
+    call({ version: 1, op: "list_profiles", params: {} }),
+    call({ version: 1, op: "effective_state", params: {} }),
+  ]);
+  const profile = profiles.find((p) => p.id === id);
+  if (!profile) return;
+
+  const working = JSON.parse(JSON.stringify(profile.assignments ?? {}));
+  let custom = false;
+  const enabled = providers.filter((p) => p.enabled);
+
+  const draw = () => {
+    const first = state.tools[0];
+    const anyProvider = Object.values(working)[0]?.provider ?? "";
+    const mainOf = (tool) => working[tool]?.slots?.main ?? "";
+    pane.innerHTML = `
+      <header class="ob-title">${esc(profile.name)}</header>
+      <p class="g-desc">The tools this profile changes; the rest keep what they have</p>
+      <div class="g-label">All tools</div>
+      <div class="group">
+        <div class="row tall">
+          <span class="label">Provider</span>
+          <span class="trail"><select id="uni-provider">
+            <option value="">Not in this profile</option>
+            ${enabled.map((p) =>
+              `<option value="${esc(p.id)}"${anyProvider === p.id ? " selected" : ""}>${esc(p.name)}</option>`).join("")}
+          </select></span>
+        </div>
+        <div class="row tall">
+          <span class="stack"><span class="label">Main model</span></span>
+          <span class="trail"><input class="sheet-input" id="uni-main" value="${esc(mainOf(first?.tool))}" placeholder="—" /></span>
+        </div>
+      </div>
+      <div class="actions"><button class="act" id="customize">${custom ? "Hide per-tool detail" : "Customize per tool…"}</button></div>
+      ${custom ? state.tools.map((tool) => {
+        const a = working[tool.tool] ?? { provider: null, slots: {} };
+        return `<div class="g-label">${esc(cap(tool.tool))}</div>
+        <div class="group">
+          <div class="row tall">
+            <span class="label">Provider</span>
+            <span class="trail"><select data-tool="${esc(tool.tool)}" data-kind="provider">
+              <option value="">Not in this profile</option>
+              ${enabled.map((p) =>
+                `<option value="${esc(p.id)}"${a.provider === p.id ? " selected" : ""}>${esc(p.name)}</option>`).join("")}
+            </select></span>
+          </div>
+          ${tool.slots.filter((s) => s.owned).map((slot) => `
+            <div class="row tall">
+              <span class="stack"><span class="label">${esc(slotName(slot.slot))}</span>
+                ${slotHint(slot.slot) ? `<span class="qualifier">${esc(slotHint(slot.slot))}</span>` : ""}</span>
+              <span class="trail"><input class="sheet-input" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
+                   value="${esc(a.slots?.[slot.slot] ?? "")}" placeholder="—" /></span>
+            </div>`).join("")}
+        </div>`;
+      }).join("") : ""}
+      <div class="ob-foot">
+        <button class="act" id="edit-cancel">Cancel</button>
+        <button class="act primary" id="edit-save">Save</button>
+      </div>
+      <div class="result note" role="status"></div>`;
+
+    // The uniform row is the default the catalogue draws: one provider, one main model, every
+    // tool. Setting them writes through to each tool's assignment at once.
+    pane.querySelector("#uni-provider").addEventListener("change", (e) => {
+      const provider = e.target.value || null;
+      for (const tool of state.tools) {
+        if (!provider) {
+          delete working[tool.tool];
+        } else if (!working[tool.tool]) {
+          working[tool.tool] = { provider, slots: {} };
+        } else {
+          working[tool.tool].provider = provider;
+        }
+      }
+    });
+    pane.querySelector("#uni-main").addEventListener("change", (e) => {
+      const model = e.target.value.trim() || null;
+      for (const tool of state.tools) {
+        if (working[tool.tool]) working[tool.tool].slots.main = model;
+      }
+    });
+    pane.querySelector("#customize").addEventListener("click", () => {
+      custom = !custom;
+      draw();
+    });
+    pane.querySelectorAll("select[data-kind=provider]").forEach((sel) =>
+      sel.addEventListener("change", () => {
+        const tool = sel.dataset.tool;
+        if (!sel.value) {
+          delete working[tool];
+        } else if (!working[tool]) {
+          working[tool] = { provider: sel.value, slots: {} };
+        } else {
+          working[tool].provider = sel.value;
+        }
+      })
+    );
+    pane.querySelectorAll("input[data-slot]").forEach((input) =>
+      input.addEventListener("change", () => {
+        const tool = working[input.dataset.tool];
+        if (!tool) return;
+        // Empty is the ADR's null assignment: a deliberate *no assignment*, which for Claude
+        // Code neutralises a shell export rather than merely declining to write one.
+        tool.slots[input.dataset.slot] = input.value.trim() || null;
+      })
+    );
+    document.getElementById("edit-cancel").addEventListener("click", () => draw());
+    document.getElementById("edit-save").addEventListener("click", async () => {
+      const result = pane.querySelector(".result");
+      const r = await call({
+        version: 1, op: "update_profile",
+        params: { id, tools: working },
+      });
+      if (r.ok) draw();
+      else result.textContent = `${r.failure.kind} — nothing was changed`;
+    });
+  };
+  draw();
 }
 
 // -- The sheet: confirm and ask-text, in page, a real dialog ---------------------------
