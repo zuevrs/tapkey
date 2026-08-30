@@ -8,9 +8,13 @@ fn main() {
         .join(format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX));
     let dst_dir = std::path::Path::new("binaries");
     let _ = std::fs::create_dir_all(dst_dir);
-    // externalBin resolves the per-target triple, not the bare name.
+    // externalBin resolves the per-target triple, not the bare name — and the executable
+    // suffix with it on Windows, where the sidecar must be tapkey-helper-<triple>.exe.
     let target = std::env::var("TARGET").unwrap_or_default();
-    let dst = dst_dir.join(format!("tapkey-helper-{target}"));
+    let dst = dst_dir.join(format!(
+        "tapkey-helper-{target}{}",
+        std::env::consts::EXE_SUFFIX
+    ));
     std::fs::copy(&src, &dst).unwrap_or_else(|_| {
         panic!(
             "the credential helper is not built for the {profile} profile yet — run \
