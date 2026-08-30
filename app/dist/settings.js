@@ -6,6 +6,14 @@ import { call, esc, tile, tools, cap, plural } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
+// Esc closes Settings like every other surface. The in-page sheet dialog swallows its own
+// Esc first (stopPropagation in its handler) so closing a dialog never closes the window
+// under it.
+const { getCurrentWindow } = window.__TAURI__.window;
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") getCurrentWindow().hide();
+});
+
 let tab = "providers";
 
 export function settings() {
@@ -259,7 +267,10 @@ function sheet(html) {
       b.addEventListener("click", () => close(b.dataset.r === "1"))
     );
     host.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close(false);
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        close(false);
+      }
       if (e.key === "Enter" && input) close(true);
       // The trap: tab stays inside the dialog while it exists.
       if (e.key === "Tab") {

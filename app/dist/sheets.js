@@ -6,6 +6,13 @@ import { call, esc, tile, cap, plural } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
+// Esc closes the sheet, as it closes the panel — the one gesture that must work everywhere
+// a window can disappear.
+const { getCurrentWindow } = window.__TAURI__.window;
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") getCurrentWindow().hide();
+});
+
 export function effectiveState() {
   surface.className = "sheet-page";
   drawEffective();

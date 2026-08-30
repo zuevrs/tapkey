@@ -47,7 +47,8 @@ async function panel() {
 
 function render(rows, toolList) {
   surface.innerHTML = `
-    <input id="search" type="text" placeholder="Switch profile…" aria-label="Switch profile" />
+    <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
+           placeholder="Switch profile…" aria-label="Switch profile" />
     <div id="list" role="listbox" aria-label="Profiles"></div>
     <footer id="footer">
       <button id="open-history">History…</button>
@@ -63,8 +64,8 @@ function render(rows, toolList) {
     list.innerHTML = visible
       .map(
         (r, i) => `
-      <div class="row${query && i === 0 ? " active" : ""}" role="option" tabindex="-1"
-           aria-selected="${query && i === 0}" data-id="${esc(r.id)}">
+      <div class="row${i === active ? " active" : ""}" role="option" tabindex="-1" id="opt-${i}"
+           aria-selected="${i === active}" data-id="${esc(r.id)}">
         ${tile(r.name)}
         <span class="label">${esc(r.name)}</span>
         <span class="qualifier">${esc(`${r.tools} of ${toolList.length} tools`)}</span>
@@ -75,13 +76,18 @@ function render(rows, toolList) {
     if (query && !rows.some((r) => r.name.toLowerCase() === query)) {
       list.insertAdjacentHTML(
         "beforeend",
-        `<div class="row" role="option" tabindex="-1" data-create="${esc(search.value.trim())}"
+        `<div class="row${visible.length === active ? " active" : ""}" role="option" tabindex="-1"
+             id="opt-create" aria-selected="${visible.length === active}"
+             data-create="${esc(search.value.trim())}"
              title="Creating opens Settings → Profiles">
            ${tile("+")}
            <span class="label">Create profile “${esc(search.value.trim())}”…</span>
          </div>`
       );
     }
+    // The combobox relationship: focus never leaves the field (typing keeps working), and
+    // the row the keyboard stands on is the one announced.
+    search.setAttribute("aria-activedescendant", active >= 0 ? `opt-${active}` : "");
     list.querySelectorAll(".row").forEach((row) =>
       row.addEventListener("click", () =>
         row.dataset.create ? undefined : switchTo(row.dataset.id)
@@ -89,15 +95,42 @@ function render(rows, toolList) {
     );
   };
 
+  // The row the keyboard stands on. Nothing is active until a key or a query picks one —
+  // an always-lit first row teaches that Enter switches row one when it switches the
+  // walked-to row.
+  let active = -1;
+  const move = (to) => {
+    const count = list.querySelectorAll(".row").length;
+    if (!count) return;
+    active = (to + count) % count;
+    draw();
+  };
+
   search.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const first = list.querySelector(".row");
-      if (first) first.click();
+    const count = list.querySelectorAll(".row").length;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      move(active < 0 ? 0 : active + 1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      move(active < 0 ? count - 1 : active - 1);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      move(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      move(count - 1);
+    } else if (e.key === "Enter") {
+      const row = list.querySelectorAll(".row")[active >= 0 ? active : 0];
+      if (row) row.click();
     }
   });
   document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
   document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
-  search.addEventListener("input", draw);
+  search.addEventListener("input", () => {
+    active = search.value.trim() ? 0 : -1;
+    draw();
+  });
   draw();
   search.focus();
 }
