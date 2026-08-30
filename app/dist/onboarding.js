@@ -1,78 +1,169 @@
-// Onboarding: one screen, three sections. The harvest offer is the engine; this surface offers
-// and never adopts (core ticket 30's rule), the import creates profiles from what the person
-// ticked, and the done section says what the first switch will snapshot.
+// Onboarding: two steps, as the catalogue orders them — Tools & providers, then First
+// profile — plus the nothing-found state and the Keychain explanation when a key is about to
+// travel. Every fact comes through the bridge; the app never probes the machine itself.
 
 import { call, esc, tile, cap, plural } from "./ui.js";
 
+const surface = document.getElementById("surface");
+
+let step = 0; // 0 = found, 1 = first profile, 2 = done
+let presence = null;
+let harvest = null;
+let keys = 0;
+
 export function onboarding(done) {
-  draw(done);
+  load(done);
 }
 
-async function draw(done) {
-  const [presence, harvest] = await Promise.all([
+async function load(done) {
+  const [state, offer] = await Promise.all([
     call({ version: 1, op: "tool_presence", params: {} }),
     call({ version: 1, op: "harvest", params: {} }),
   ]);
-
-  const surface = document.getElementById("surface");
+  presence = state.tools;
+  harvest = offer;
   surface.className = "onboarding";
+  if (!presence.some((t) => t.installed)) {
+    renderNone(done);
+    return;
+  }
+  render(done);
+}
+
+/// The step indicator: the catalogue's two step names, the current one lit.
+function steps() {
+  const names = ["Tools & providers", "First profile"];
+  return `<div class="ob-steps">${names
+    .map(
+      (n, i) =>
+        `<span class="ob-step${i === step ? " on" : ""}"><span class="n">${i + 1}</span>${n}</span>`
+    )
+    .join("")}</div>`;
+}
+
+function renderNone(done) {
   surface.innerHTML = `
-    <h2>Welcome to tapkey</h2>
-
-    <h3>Tools &amp; providers</h3>
-    <p class="note">Current configs are snapshotted before anything changes</p>
-    <div class="chips">
-      ${presence.tools
-        .map((t) => {
-          const chip = !t.installed ? "Not installed" : t.configured ? "Found" : "—";
-          return `<span class="chip ${t.installed && t.configured ? "ok" : ""}">
-            ${esc(cap(t.tool))} <b>${esc(chip)}</b></span>`;
-        })
-        .join("")}
-    </div>
-
-    <div class="candidates">
-      ${harvest.candidates.length ? "<h3>Providers in your configs</h3><p class='note'>Keys go to the Keychain; these files stay untouched</p>" : ""}
-      ${harvest.candidates
+    ${steps() ? "" : ""}
+    <div class="ob-title">No supported tools found</div>
+    <div class="ob-sub">tapkey manages Claude Code, Codex and OpenCode</div>
+    <div class="group">
+      ${presence
         .map(
-          (c, i) => `
-        <label class="row ${c.declined ? "declined" : ""}">
-          <input type="checkbox" data-i="${i}" ${c.declined ? "" : "checked"} />
-          ${tile(c.id)}
-          <span class="label">${esc(c.id)}</span>
-          <span class="qualifier">${esc(cap(c.tool))}</span>
-          <span class="value">${esc(c.credential === "inline" ? "key copies over" : c.credential === "reference" ? "key stays referenced" : "")}</span>
-        </label>`
+          (t) => `<div class="row tall">
+          ${tile(cap(t.tool))}
+          <span class="label">${esc(cap(t.tool))}</span>
+          <span class="trail"><span class="chip miss">Not installed</span></span>
+        </div>`
         )
         .join("")}
     </div>
+    <div class="ob-foot"><span></span><button class="act primary" id="recheck">Check again</button></div>`;
+  document.getElementById("recheck").addEventListener("click", () => load(done));
+}
 
+function render(done) {
+  const inline = harvest.candidates.some((c) => c.credential === "inline");
+  surface.innerHTML = `
+    ${steps()}
+    <div class="ob-title">Found on this Mac</div>
+    <div class="ob-sub">Current configs are snapshotted before anything changes</div>
+    <div class="g-label">Coding tools</div>
+    <div class="group">
+      ${presence
+        .map((t) => {
+          const chip = t.installed && t.configured
+            ? '<span class="chip ok">Found</span>'
+            : t.installed
+              ? '<span class="chip">—</span>'
+              : '<span class="chip miss">Not installed</span>';
+          return `<div class="row tall">
+          ${tile(cap(t.tool))}
+          <span class="label">${esc(cap(t.tool))}</span>
+          <span class="trail">${chip}</span>
+        </div>`;
+        })
+        .join("")}
+    </div>
     ${
-      harvest.candidates.length === 0
-        ? `<h3>No supported tools found</h3>
-           <p class="note">tapkey manages Claude Code, Codex and OpenCode</p>`
+      harvest.candidates.length
+        ? `<div class="g-label">Providers in your configs</div>
+    <div class="group">
+      ${harvest.candidates
+        .map(
+          (c, i) => `<div class="row tall">
+          ${tile(c.id)}
+          <span class="stack"><span class="label">${esc(c.id)}</span>
+            <span class="qualifier">${esc(cap(c.tool))} · ${
+              c.credential === "inline" ? "key copies over" : c.credential === "reference" ? "key stays referenced" : ""
+            }</span></span>
+          <span class="trail"><label class="swl"><input type="checkbox" checked data-i="${i}"><span class="sw"></span></label></span>
+        </div>`
+        )
+        .join("")}
+    </div>
+    ${
+      inline
+        ? `<div class="g-label">Keys go to the Keychain</div>
+    <div class="g-desc">tapkey stores provider keys in the macOS Keychain, never in config files. macOS will ask once — the keys stay on this Mac.</div>
+    <div class="g-desc">Originals in your configs are left untouched; removing them is a separate step</div>`
+        : ""
+    }`
         : ""
     }
-
-    <div class="actions">
-      <button class="act" id="later">Set up later</button>
+    <div class="ob-foot">
+      <button class="act" id="ob-later">Set up later</button>
       <button class="act primary" id="import">Import &amp; continue</button>
     </div>`;
 
-  surface.querySelector("#later").addEventListener("click", () => {
-    // The catalogue's honest consequence, said on the screen before the flag is set.
-    surface.innerHTML = `
-      <h2>Welcome to tapkey</h2>
-      <p class="note">tapkey stays empty until you add a provider</p>
-      <div class="actions"><button class="act primary" id="close">OK</button></div>`;
-    surface.querySelector("#close").addEventListener("click", done);
-  });
-  surface.querySelector("#import").addEventListener("click", () => importAll(harvest, done));
+  document.getElementById("ob-later").addEventListener("click", () => later(done));
+  document.getElementById("import").addEventListener("click", () => importAll(done));
 }
 
-async function importAll(harvest, done) {
+/// The second step: the suggestion the core derived from the live configs becomes the first
+/// profile, named and created here — the import that landed a provider but no profile was the
+/// live pass's finding, and this step is the catalogue's answer to it.
+function renderProfile(done) {
+  const suggestion = harvest.suggested_profile;
+  surface.innerHTML = `
+    ${steps()}
+    <div class="ob-title">First profile &amp; shortcut</div>
+    <div class="ob-sub">Each imported provider is already a profile — pick where to start</div>
+    <div class="g-label">All tools</div>
+    <div class="group">
+      ${
+        suggestion
+          ? `<div class="row tall">
+          ${tile(suggestion.name)}
+          <span class="stack"><span class="label">${esc(suggestion.name)}</span>
+            <span class="qualifier">${suggestion.tools.map((t) => esc(cap(t.tool))).join(" · ")}</span></span>
+          <span class="trail"><span class="chip ok">From your configs</span></span>
+        </div>`
+          : `<div class="row tall"><span class="label">No suggestion — add a provider in Settings first</span></div>`
+      }
+    </div>
+    <div class="g-label">Shortcut</div>
+    <div class="group">
+      <div class="row tall"><span class="label">Open panel</span><span class="trail mono">⌘⇧P</span></div>
+      <div class="row tall"><span class="label">Cycle profiles</span><span class="trail mono">⌥⌘P</span></div>
+    </div>
+    <div class="ob-foot">
+      <button class="act" id="ob-back">Back</button>
+      <button class="act primary" id="start">Start using tapkey</button>
+    </div>`;
+
+  document.getElementById("ob-back").addEventListener("click", () => {
+    step = 0;
+    render(done);
+  });
+  document.getElementById("start").addEventListener("click", () => {
+    done();
+    finish();
+  });
+}
+
+async function importAll(done) {
   const boxes = [...document.querySelectorAll("input[data-i]")].filter((b) => b.checked);
-  let keys = 0;
+  keys = 0;
   for (const box of boxes) {
     const candidate = harvest.candidates[Number(box.dataset.i)];
     const r = await call({
@@ -81,22 +172,41 @@ async function importAll(harvest, done) {
     });
     if (r.ok && candidate.credential === "inline") keys += 1;
   }
-  finish(keys, done);
+  await createSuggested();
+  step = 1;
+  renderProfile(done);
 }
 
-function finish(keys, done) {
-  const surface = document.getElementById("surface");
-  // The originals sentence is earned by the count: some keys travelled and were copied out of
-  // files that still hold them. None travelled — nothing to say about originals.
+/// The suggestion's shape into the wire's profile: slots as the map the core expects.
+async function createSuggested() {
+  const suggestion = harvest.suggested_profile;
+  if (!suggestion) return;
+  const tools = {};
+  for (const t of suggestion.tools) {
+    tools[t.tool] = { provider: t.provider, slots: Object.fromEntries(t.slots) };
+  }
+  const id = suggestion.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "first-profile";
+  await call({
+    version: 1, op: "create_profile",
+    params: { profile: { id, name: suggestion.name, tools } },
+  });
+}
+
+function later(done) {
+  done();
+  surface.innerHTML = `
+    <div class="ob-done"><div class="big">—</div>tapkey stays empty until you add a provider.<br />
+    <span class="note">Open the panel when you are ready — it will offer to add one</span></div>`;
+}
+
+function finish() {
   const copied = keys === 0
     ? ""
-    : `${plural("1 key copied into the Keychain", "{count} keys copied into the Keychain", keys)}`;
+    : plural("1 key copied into the Keychain", "{count} keys copied into the Keychain", keys);
   const originals = keys > 0 ? " · Originals left where they were" : "";
   surface.innerHTML = `
-    <h2>You’re all set — tapkey lives in your menu bar</h2>
-    <p class="note">${esc(copied)}${esc(originals)}</p>
-    <p class="note">⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile</p>
-    <p class="note">Everything else is in Settings</p>
-    <div class="actions"><button class="act primary" id="start">Start using tapkey</button></div>`;
-  surface.querySelector("#start").addEventListener("click", done);
+    <div class="ob-done"><div class="big">✓</div>You’re all set — tapkey lives in your menu bar<br />
+    <span class="note">${esc(copied)}${esc(originals)}</span>
+    <span class="note">⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile</span>
+    <span class="note">Everything else is in Settings</span></div>`;
 }

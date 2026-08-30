@@ -26,7 +26,7 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
 :root{
   --canvas:#f6f7f9; --ink:#1c1c1e; --line:#dcdee3; --card:#fff; --accent:#0a6cd8;
   --muted:#66666b;  /* one step under the prototype's #6b6b70, which held only 4.38 on chip-over-canvas */
-  --attn:#b25e00; --bad:#c9342b; --good:#248a3d; --on-attn:#fff; --on-bad:#fff;
+  --attn:#b25e00; --bad:#c9342b; --good:#1a6d2e; --on-attn:#fff; --on-bad:#fff;  /* good: two steps under the prototype's #248a3d — 4.1 as chip text, 4.46 on a chip over the hover */
   --accent-fill:#0a6cd8; --on-accent:#fff;        /* white on fill: 5.06:1 */
   --sel-fill:#0a6cd8;  --on-sel:#fff;          /* selected row: 5.06:1 */
   --group:#fff; --group-sep:rgba(0,0,0,.07);
