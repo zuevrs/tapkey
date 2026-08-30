@@ -41,7 +41,7 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --canvas:#101013; --ink:#f2f2f5; --muted:#9a9aa1;  /* a step over the prototype's #95959c, which held only 4.33 on chip-over-card */ --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+    --canvas:#101013; --ink:#f2f2f5; --muted:#ababb2; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
     --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
     --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
     --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
@@ -54,7 +54,7 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
   }
 }
 :root[data-theme="dark"]{
-  --canvas:#101013; --ink:#f2f2f5; --muted:#9a9aa1;  /* a step over the prototype's #95959c, which held only 4.33 on chip-over-card */ --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+  --canvas:#101013; --ink:#f2f2f5; --muted:#ababb2; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
   --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
   --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
   --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
