@@ -3,7 +3,7 @@
 
 html, body { height: 100%; }
 body.panel, body.hud { background: transparent; }
-body.settings, body.onboarding { background: var(--canvas); }
+body.settings, body.onboarding, body.effective, body.history { background: var(--canvas); }
 
 /* -- The row primitive: icon, title + description, one trailing element. The label never
    shrinks below its own text; the value truncates instead. -- */
@@ -113,3 +113,25 @@ button.act.danger { border-color: var(--bad); }
 .sheet-head h2 { font-size: 1.7rem; margin: 0 0 2px; }
 .sheet-head { margin-bottom: 14px; }
 .row.attn .note { color: var(--attn); }
+
+/* -- WINDOWS 11 / FLUENT — the structure. Row chrome is a platform decision, not a theme:
+   macOS puts rows inside one rounded container, Windows makes each row its own bordered
+   card (SettingsCard: 68 min-height, 16 padding, icon 20 with 20 to the text). The card
+   dissolves into a 4px-gap stack and every row-shaped thing becomes a card. Palette and
+   the UNVERIFIED label live in tokens.css; the settings tab strip is not ported — below
+   1008px Windows collapses it to Segoe Fluent icons, which need a Windows render. -- */
+[data-platform="win"] body { font-family: var(--fnt); }
+/* Fluent's type ramp: body 14, captions 12, semibold 600 for emphasis */
+[data-platform="win"] .row { font-size: 1.4rem; }
+[data-platform="win"] .note { font-size: 1.2rem; }
+[data-platform="win"] .sheet-head h2 { font-size: 2rem; font-weight: 600; }
+[data-platform="win"] strong, [data-platform="win"] b { font-weight: 600; }
+/* radii: 8 for anything floating, 4 for everything in-page */
+[data-platform="win"] #sheet .box { border-radius: 8px; }
+[data-platform="win"] .act, [data-platform="win"] input, [data-platform="win"] .chip { border-radius: 4px; }
+[data-platform="win"] .card { background: none; border: none; box-shadow: none;
+  display: flex; flex-direction: column; gap: 4px; margin-bottom: 0; }
+[data-platform="win"] .card .row, [data-platform="win"] .card .field {
+  background: var(--card); border: 1px solid var(--card-line); border-radius: 4px;
+  min-height: 6.8rem; padding: 1.6rem; }
+[data-platform="win"] .card .actions { padding: 4px 1.6rem 8px; }
