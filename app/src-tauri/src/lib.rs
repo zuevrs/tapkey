@@ -167,11 +167,14 @@ pub fn run() {
                 if let Some(window) = app.get_webview_window(label) {
                     // Popover material, active: the menubar-flyout glass macOS itself draws,
                     // behind the webview — no window-class swap (measured display-only).
+                    // The radius matters as much as the material: the view is the window's
+                    // size, and an unrounded one left square corners of raw material poking
+                    // out past the card's 22px — the person saw them.
                     let _ = window_vibrancy::apply_vibrancy(
                         &window,
                         window_vibrancy::NSVisualEffectMaterial::Popover,
                         Some(window_vibrancy::NSVisualEffectState::Active),
-                        None,
+                        Some(22.0),
                     );
                 }
             }

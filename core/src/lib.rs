@@ -368,9 +368,15 @@ fn switch(env: &Env, profile_id: &str) -> Response {
             match env.credentials().check(&provider.id) {
                 CredentialState::Found => {}
                 CredentialState::Absent => {
+                    // The name, not the Debug dump: this sentence is what the HUD shows the
+                    // person, and `Provider { id: .., base_url: .. }` is our plumbing, not
+                    // their sentence.
                     return refuse(
                         "credential_unavailable",
-                        format!("no key is stored for {provider:?}"),
+                        format!(
+                            "no key is stored for {} — add one in Settings → Providers",
+                            provider.name
+                        ),
                     );
                 }
                 CredentialState::Denied => {

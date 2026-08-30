@@ -49,7 +49,7 @@ async function panel() {
     tools(),
     call({ version: 1, op: "list_providers", params: {} }),
   ]);
-  surface.className = "panel glass";
+  surface.className = "panel glass appear";
   current = head(profiles.profiles, state);
   panelState = { rows: profiles.profiles, state, toolList, providers: providers.providers ?? [], searchOn: false, query: "", active: -1 };
   drawPanel();
@@ -366,7 +366,12 @@ function hud() {
   // is a session fact the core does not know yet; rendering it would be inventing it.
   const title = rolledBack ? "Switch rolled back" : applied ? profile : "Switch failed";
 
-  surface.className = "hud glass";
+  // The prototype's `.hud` is opacity:0 and takes `.show` to appear — on the page that is
+  // the entrance, and without the class the card is invisible and the window shows nothing
+  // but the raw material (the person called it «чёрное окно»). The window's own appearance
+  // is the entrance here; `.show` is the visible state. Failure rides the root, where the
+  // prototype's `.hud.fail .hh` looks for it.
+  surface.className = `hud glass show${rolledBack || !applied ? " fail" : ""}`;
   if (applied) {
     const rows = (response.tools ?? []).map((t) => `
       <div class="hr">${mark(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
@@ -377,7 +382,7 @@ function hud() {
   } else {
     const why = response.failure?.detail || "";
     surface.innerHTML = `
-      <div class="hh fail"><svg class="ic maconly" aria-hidden="true"><use href="#i-warn"/></svg>${fic("E7BA", "inline")}<span>${esc(title)}</span></div>
+      <div class="hh"><svg class="ic maconly" aria-hidden="true"><use href="#i-warn"/></svg>${fic("E7BA", "inline")}<span>${esc(title)}</span></div>
       ${why ? `<div class="why">${esc(why)}</div>` : ""}
       <button type="button" class="undo" id="dismiss">Dismiss</button>`;
   }
