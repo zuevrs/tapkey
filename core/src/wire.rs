@@ -90,6 +90,8 @@ pub enum Request {
     ListProviders {},
     /// Which managed tools are on this machine, and which are configured. A read, no lock.
     ToolPresence {},
+    /// The snapshot and every backup, for the History sheet. A read, no lock.
+    ListHistory {},
 }
 
 #[derive(Debug, Deserialize)]
@@ -149,6 +151,10 @@ pub enum Response {
     Presence {
         ok: bool,
         tools: Vec<ToolPresence>,
+    },
+    History {
+        ok: bool,
+        entries: Vec<HistoryRow>,
     },
     Harvested {
         ok: bool,
@@ -319,4 +325,20 @@ pub struct ToolPresence {
     pub installed: bool,
     /// tapkey found a config file of this tool's on the machine.
     pub configured: bool,
+}
+
+/// One restorable moment, as History lists it. The name is what was recorded, never a
+/// dereference of a current profile — a history that follows renames lies retroactively.
+#[derive(Debug, Serialize)]
+pub struct HistoryRow {
+    /// `snapshot` or `backup`; the sheet's own two sentences hang off this.
+    pub kind: &'static str,
+    /// The restore target's id, exactly as `restore` wants it back.
+    pub id: String,
+    /// The snapshot carries the catalogue's words; a backup, the profile name as it was.
+    pub name: String,
+    pub instant: String,
+    pub restorable: bool,
+    /// How many files the moment holds. The row's own count, from the manifest.
+    pub files: u64,
 }

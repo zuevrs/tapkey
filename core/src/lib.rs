@@ -203,6 +203,42 @@ fn dispatch(env: &Env, request: &str) -> Response {
             provider_id,
             secret,
         } => set_credential(env, &provider_id, secret.as_bytes()),
+        Request::ListHistory {} => {
+            let Ok(store) = store::Store::open(env.store()) else {
+                return Response::History {
+                    ok: true,
+                    entries: Vec::new(),
+                };
+            };
+            let mut entries = Vec::new();
+            if store.has_snapshot() {
+                // The snapshot's instant and file count come from its own manifest; it is
+                // restorable by construction, and its name is the catalogue's, not a profile's.
+                let (instant, files) = store.snapshot_summary().unwrap_or_default();
+                entries.push(wire::HistoryRow {
+                    kind: "snapshot",
+                    id: "snapshot".into(),
+                    name: "Snapshot before tapkey".into(),
+                    instant,
+                    restorable: true,
+                    files,
+                });
+            }
+            // The store already returns newest-first; the ordering is its contract.
+            if let Ok(backups) = store.backups() {
+                for backup in backups {
+                    entries.push(wire::HistoryRow {
+                        kind: "backup",
+                        id: backup.id.as_str().to_owned(),
+                        name: backup.profile.clone(),
+                        instant: backup.instant.clone(),
+                        restorable: backup.restorable,
+                        files: store.backup_files(backup.id.as_str()),
+                    });
+                }
+            }
+            Response::History { ok: true, entries }
+        }
         Request::ToolPresence {} => Response::Presence {
             ok: true,
             tools: adapters::all()

@@ -312,3 +312,35 @@ fn list_profiles_returns_the_store_in_order() {
         "an empty profile is still a row"
     );
 }
+
+/// The History sheet's rows are the store's to give: snapshot first in the catalogue's own words,
+/// then each backup newest-first with the profile name **as it was** — a history that
+/// dereferences current names begins to lie the moment one is renamed.
+#[test]
+fn list_history_returns_the_snapshot_then_the_backups_newest_first() {
+    let machine = Machine::new("sw-history");
+    machine.write_profiles(json!({
+        "providers": [{"id": "zai", "name": "Z.ai", "base_url": "https://api.z.ai/api/anthropic",
+                       "formats": ["anthropic_messages"], "enabled": true}],
+        "profiles": [{"id": "glm", "name": "Z.ai GLM",
+                      "tools": {"claude": {"provider": "zai", "slots": {"main": "glm-5.3"}}}}]
+    }));
+    machine.write_user_settings_raw(b"{}");
+    call(&machine, switch("glm"));
+
+    let response = call(
+        &machine,
+        json!({"version": 1, "op": "list_history", "params": {}}),
+    );
+
+    let rows = response["entries"].as_array().expect("rows");
+    assert!(
+        rows.len() >= 2,
+        "the snapshot and at least one backup: {response}"
+    );
+    assert_eq!(rows[0]["kind"], json!("snapshot"), "the snapshot leads");
+    assert_eq!(rows[0]["name"], json!("Snapshot before tapkey"));
+    assert_eq!(rows[1]["kind"], json!("backup"));
+    assert_eq!(rows[1]["name"], json!("Z.ai GLM"), "the name as it was");
+    assert_eq!(rows[1]["restorable"], json!(true));
+}

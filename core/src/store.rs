@@ -156,6 +156,20 @@ impl Store {
     }
 
     /// Every readable backup, oldest first, sweeping away any interrupted write it finds.
+    /// The snapshot's own instant and file count, for the history row that leads the list.
+    pub fn snapshot_summary(&self) -> Option<(String, u64)> {
+        let manifest: Manifest = read_manifest(&self.snapshot_dir().join("manifest.json")).ok()?;
+        Some((manifest.instant, manifest.files.len() as u64))
+    }
+
+    /// The file count of one backup, for its history row. Zero when the manifest cannot be
+    /// read — the row already says unrestorable in that case.
+    pub fn backup_files(&self, id: &str) -> u64 {
+        read_manifest(&self.backups_dir().join(id).join("manifest.json"))
+            .map(|m: Manifest| m.files.len() as u64)
+            .unwrap_or(0)
+    }
+
     pub fn backups(&self) -> io::Result<Vec<BackupSummary>> {
         let mut out = Vec::new();
         let Ok(entries) = fs::read_dir(self.backups_dir()) else {
