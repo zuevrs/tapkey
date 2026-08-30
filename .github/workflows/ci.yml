@@ -101,6 +101,17 @@ jobs:
       - name: Test
         run: cargo test -p tapkey-core --all-targets
 
+      # ADR-0016's lesson pointed here eventually: the core was compiled for Windows from the
+      # first commit, the app never was — an un-gated macOS-only dependency, a template tray
+      # glyph. Portability that is not compiled has already rotted, so the app compiles and its
+      # tests run here too. The helper must exist first: the app's build script refuses without
+      # it, on any platform.
+      - name: Build the credential helper
+        run: cargo build -p tapkey-core --bin tapkey-helper
+
+      - name: Compile and test the app
+        run: cargo test -p tapkey-app --all-targets
+
   msrv:
     name: oldest supported Rust
     runs-on: ubuntu-latest

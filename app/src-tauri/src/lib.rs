@@ -54,7 +54,7 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
 pub fn run() {
     refresh_helper();
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             // A second launch means the person looked for tapkey again: show the panel.
             if let Some(panel) = app.get_webview_window("panel") {
@@ -63,7 +63,6 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-        .plugin(tauri_nspanel::init())
         .setup(|app| {
             // An accessory app: menu bar, no dock tile — the design-rules Surfaces section in
             // one line, at runtime, because the v2 bundler carries no plist-extension config.
@@ -100,7 +99,15 @@ pub fn run() {
             show_hud,
             show_sheet,
             onboarding_done
-        ])
+        ]);
+
+    // NSPanel is the macOS floating material and the non-activating HUD. There is no such thing
+    // on Windows: its panels are ordinary windows until the Windows shell ticket says otherwise.
+    // Registered last, but plugins initialise before setup in registration order regardless.
+    #[cfg(target_os = "macos")]
+    let builder = builder.plugin(tauri_nspanel::init());
+
+    builder
         .run(tauri::generate_context!())
         .expect("error while running tapkey");
 }
@@ -185,9 +192,18 @@ mod tray {
             ],
         )?;
 
+        // The glyph, per platform, as the design rules draw it: Apple's SF Symbol as a
+        // black+alpha template on macOS, where the system tints it; the copper mark itself
+        // on Windows, where templates do not exist and a black glyph would vanish on a dark
+        // taskbar.
+        #[cfg(target_os = "macos")]
+        let glyph = tauri::include_image!("icons/tray.png");
+        #[cfg(not(target_os = "macos"))]
+        let glyph = tauri::include_image!("icons/32x32.png");
+
         TrayIconBuilder::with_id("main")
-            .icon(tauri::include_image!("icons/tray.png"))
-            .icon_as_template(true)
+            .icon(glyph)
+            .icon_as_template(cfg!(target_os = "macos"))
             .menu(&menu)
             // The menu answers the secondary click only; the primary click is the panel's, and
             // on Windows the flyout rises from the tray rather than hanging from a menu.
