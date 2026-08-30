@@ -52,7 +52,12 @@ async function panel() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      if (panelState.searchOn) {
+      if (toolsOpen) {
+        // One layer per press: the tools section peels before the search, the search before
+        // the panel — a stray Esc never throws away more than one thing.
+        toolsOpen = false;
+        drawPanel();
+      } else if (panelState.searchOn) {
         // Esc in the search returns to the head; Esc in the head closes the panel — the
         // prototype's two-step, so a stray Esc never throws the panel away.
         panelState.searchOn = false;
@@ -121,6 +126,7 @@ function drawPanel() {
   const headHtml = searchOn
     ? `<div class="p-searchrow">
         <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
+               aria-activedescendant="${panelState.active >= 0 ? `opt-${panelState.active}` : ""}"
                placeholder="Switch profile…" aria-label="Switch profile"
                value="${esc(query)}" autocomplete="off" spellcheck="false" /><kbd>esc</kbd>
       </div>`
@@ -137,7 +143,7 @@ function drawPanel() {
 
   const profHtml = visible
     .map((r, i) => `
-      <div class="p-row${i === panelState.active ? " sel" : ""}" role="option"
+      <div class="p-row${i === panelState.active ? " sel" : ""}" role="option" id="opt-${i}"
            tabindex="${i === Math.max(panelState.active, 0) ? "0" : "-1"}"
            aria-selected="${i === panelState.active}" data-id="${esc(r.id)}">
         ${tile(r.name)}
@@ -200,7 +206,6 @@ function drawPanel() {
   surface.querySelectorAll(".p-row[data-id]").forEach((row) =>
     row.addEventListener("click", () => switchTo(row.dataset.id))
   );
-  surface.querySelector(".p-row.create")?.addEventListener("click", () => {});
   const sechead = surface.querySelector(".p-sechead");
   if (sechead) sechead.addEventListener("click", () => { toolsOpen = !toolsOpen; drawPanel(); });
   surface.querySelectorAll("[data-effective]").forEach((el) =>
@@ -287,7 +292,7 @@ function hud() {
   const result = applied
     ? "on next launch"
     : response.outcome === "rolled back"
-      ? "Switch rolled back — restored"
+      ? "Switch rolled back"
       : "Switch failed";
   const timed = applied;
   surface.className = "hud glass";

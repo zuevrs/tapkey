@@ -4,6 +4,9 @@
 
 import { call, esc, tile, cap, plural } from "./ui.js";
 
+// The platform's own words for the shortcuts — the same fact the panel's footer carries.
+const IS_WIN = /Windows NT/.test(navigator.userAgent);
+
 const surface = document.getElementById("surface");
 
 let step = 0; // 0 = found, 1 = first profile, 2 = done
@@ -43,7 +46,6 @@ function steps() {
 
 function renderNone(done) {
   surface.innerHTML = `
-    ${steps() ? "" : ""}
     <div class="ob-title">No supported tools found</div>
     <div class="ob-sub">tapkey manages Claude Code, Codex and OpenCode</div>
     <div class="group">
@@ -156,8 +158,11 @@ function renderProfile(done) {
     render(done);
   });
   document.getElementById("start").addEventListener("click", () => {
-    done();
+    // The all-set screen paints first and the window leaves after a beat — the person reads
+    // what they just gained; the review caught the old order closing the window on a screen
+    // nobody ever saw.
     finish();
+    setTimeout(done, 2600);
   });
 }
 
@@ -207,6 +212,6 @@ function finish() {
   surface.innerHTML = `
     <div class="ob-done"><div class="big">✓</div>You’re all set — tapkey lives in your menu bar<br />
     <span class="note">${esc(copied)}${esc(originals)}</span>
-    <span class="note">⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile</span>
+    <span class="note">${IS_WIN ? "Ctrl+Alt+P opens the panel" : "⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile"}</span>
     <span class="note">Everything else is in Settings</span></div>`;
 }

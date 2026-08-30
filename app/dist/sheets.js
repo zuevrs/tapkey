@@ -29,7 +29,7 @@ async function drawEffective() {
         <div class="row">
           ${tile(cap(tool.tool))}
           <span class="label">${esc(cap(tool.tool))}</span>
-          <span class="value">${esc(tool.endpoint.effective ?? "— not managed")}</span>
+          <span class="value">${tool.endpoint.effective ? esc(tool.endpoint.effective) : "— not managed"}</span>
         </div>
         ${tool.slots
           .filter((slot) => slot.effective !== null || slot.owned)
@@ -37,31 +37,38 @@ async function drawEffective() {
             (slot) => `
           <div class="row">
             <span class="label">${esc(slotName(slot.slot))}</span>
-            <span class="qualifier">${slot.drifted ? "changed outside tapkey" : slot.owned ? "" : "not managed"}</span>
+            <span class="qualifier">${slot.drifted ? `${esc(cap(tool.tool))} — changed outside tapkey` : slot.owned ? "" : "not managed"}</span>
             <span class="value">${esc(slot.effective ?? "—")}</span>
           </div>`
           )
           .join("")}
-        ${tool.attentions?.length ? attentions(tool.attentions) : ""}
+        ${tool.attentions?.length ? attentions(tool, tool.attentions) : ""}
       </section>`
       )
       .join("")}
     <p class="note">Chains name every place that had an opinion</p>`;
 }
 
-function attentions(list) {
+function attentions(tool, list) {
   return `<div class="row attn"><span class="note">${list
-    .map((a) => esc(attentionText(a)))
+    .map((a) => esc(attentionText(cap(tool.tool), a)))
     .join("<br/>")}</span></div>`;
 }
 
-function attentionText(a) {
+/// An attention renders the catalogue's own sentence with its named placeholders filled —
+/// a paraphrase is how the interface starts disagreeing with the catalogue.
+function attentionText(tool, a) {
   switch (a.kind) {
-    case "tool_will_not_start": return `${a.key} in ${a.file} stops this tool starting`;
-    case "slot_provider_ignored": return `${a.key} kept the tool's endpoint — one endpoint serves every slot`;
-    case "format_not_served": return "this provider has no API this tool speaks";
-    case "format_untested": return "switched to a provider nothing has tested";
-    default: return a.kind;
+    case "tool_will_not_start":
+      return `${tool} will not start — \`${a.key}\` in ${a.file} stops it`;
+    case "slot_provider_ignored":
+      return `${tool} put ${a.key} on another provider — it has one endpoint for every slot`;
+    case "format_not_served":
+      return `${tool} stayed on its current provider — the provider has no API this tool speaks`;
+    case "format_untested":
+      return `${tool} switched to a provider nothing has tested`;
+    default:
+      return a.kind;
   }
 }
 

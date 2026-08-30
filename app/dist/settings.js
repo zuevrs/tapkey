@@ -261,7 +261,7 @@ function renderProviderPane(pane, p, using, toolList) {
         }</div>
       </div>
       <div class="g-note" id="disc-out" role="status"></div>
-      <div class="group"><button class="act danger" id="remove-btn">Delete provider…</button></div>
+      <div class="group"><button class="act danger" id="remove-btn">Remove provider…</button></div>
       <div class="g-note">${usedBy ? `${usedBy} ${usedBy === 1 ? "profile uses" : "profiles use"} this provider and will fall back to System default` : ""}</div>
       <div class="g-note" id="pane-result" role="status"></div>`;
 
@@ -270,7 +270,9 @@ function renderProviderPane(pane, p, using, toolList) {
       const started = performance.now();
       const r = await call({ version: 1, op: "test", params: { provider_id: p.id } });
       const note = !r.knowable
-        ? "This endpoint answers everything — its formats can’t be read from here"
+        ? (r.because === "no answer"
+            ? "No response — check the base URL"
+            : "This endpoint answers everything — its formats can’t be read from here")
         : r.formats.some((f) => f.served)
           ? `${Math.round(performance.now() - started)} ms · answers ${r.formats.filter((f) => f.served).map((f) => f.format).join(", ")}`
           : "Serves none of your tools";
@@ -333,7 +335,7 @@ function renderProviderPane(pane, p, using, toolList) {
     });
     document.getElementById("remove-btn").addEventListener("click", () => {
       confirmSheet(
-        "Delete provider…",
+        "Remove provider…",
         `Its entries go from ${toolList.map(cap).join(", ")}; the key tapkey stored is deleted`,
         async () => {
           const r = await call({ version: 1, op: "remove_provider", params: { id: p.id } });
@@ -433,8 +435,7 @@ function general(pane) {
         <span class="gl">Watch configs</span>
         <span class="gv"><span class="hint">Notice edits made outside tapkey</span></span>
       </div>
-      <div class="g-status">Waits on the file-watching ticket — the panel reads state on every
-        open, which is fresh and costs ~150µs</div>
+      <div class="g-status">Waits on the file-watching ticket — the panel reads state on every open, which is fresh and costs ~150µs</div>
       <div class="g-row">
         <span class="gl">Backups</span>
         <span class="gv"><span class="hint">Keep the last 10 switches</span></span>
