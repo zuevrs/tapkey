@@ -43,6 +43,12 @@ async function panel() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") getCurrentWindow().hide();
   });
+  // The panel's whole interaction is the field. The window takes focus when it appears
+  // (the shell calls set_focus); this keeps the field the thing that has it, whatever
+  // path opened the panel or stole focus since.
+  getCurrentWindow().onFocusChanged(({ payload: focused }) => {
+    if (focused) document.getElementById("search")?.focus();
+  });
 }
 
 function render(rows, toolList) {

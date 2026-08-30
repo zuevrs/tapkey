@@ -1,8 +1,11 @@
-/* Surface CSS: consumes tokens, invents nothing. The panel and HUD windows are transparent —
-   the OS draws the floating material — so only settings and onboarding paint var(--canvas). */
+/* Surface CSS: consumes tokens, invents nothing. Every surface paints its background from
+   the token layer — the OS material route (NSPanel) was measured display-only in the live
+   pass, so what paints behind the panel is ours. */
 
 html, body { height: 100%; }
-body.panel, body.hud { background: transparent; }
+/* Once the OS's floating material (the live pass showed its NSPanel route is display-only),
+   the surfaces paint from the token layer: card as the material's nearest token. */
+body.panel, body.hud { background: var(--card); }
 body.settings, body.onboarding, body.effective, body.history { background: var(--canvas); }
 
 /* -- The row primitive: icon, title + description, one trailing element. The label never

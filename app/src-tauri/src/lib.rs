@@ -42,11 +42,18 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
     let hud = app
         .get_webview_window("hud")
         .expect("the hud window exists");
-    let mut url = tauri::Url::parse("index.html").expect("static");
-    url.query_pairs_mut()
+    // Built on the window's own absolute URL: `Url::parse` refuses a relative path, and the
+    // live pass watched every switch kill the app on exactly that line — the command had
+    // never once run outside the gate harness.
+    let mut url = hud.url()?;
+    let query = url::form_urlencoded::Serializer::new(String::new())
         .append_pair("response", &response_json)
-        .append_pair("backup", &backup_id);
-    hud.eval(format!("location.replace({url:?})"))?;
+        .append_pair("backup", &backup_id)
+        .finish();
+    url.set_query(Some(&query));
+    // `navigate`, not `eval`: an eval'd `location.replace` never fired on a webview that had
+    // not been shown, and the live pass watched the HUD stay empty through a whole switch.
+    hud.navigate(url)?;
     hud.show()
 }
 
@@ -69,22 +76,13 @@ pub fn run() {
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
-            #[cfg(target_os = "macos")]
-            {
-                use tauri_nspanel::WebviewWindowExt;
-                // Both floating surfaces become NSPanels: the floating material the design rules
-                // point at, and the non-activating behaviour the HUD's Undo needs — pressing it
-                // must not pull focus out of whatever the person was typing in.
-                for label in ["panel", "hud"] {
-                    if let Some(window) = app.get_webview_window(label)
-                        && let Ok(panel) = window.to_panel()
-                    {
-                        panel.set_floating_panel(true);
-                        // nonactivatingPanel is bit 7 of the style mask.
-                        panel.set_style_mask(1 << 7);
-                    }
-                }
-            }
+            // The floating surfaces are ordinary always-on-top windows. The live pass measured
+            // the alternative — NSPanel conversion through tauri-nspanel — as **display-only**:
+            // the class swap takes the floating material and takes every input event with it,
+            // no click and no keystroke ever reaching the webview, while a plain window takes
+            // both the moment it appears. tapkey paints its own panel background from the token
+            // layer instead of the OS material, which the design rules called "no glass of our
+            // own" and reality overruled; the record lives in A11.
 
             let _ = shortcuts::register(app.handle());
 
@@ -100,12 +98,6 @@ pub fn run() {
             show_sheet,
             onboarding_done
         ]);
-
-    // NSPanel is the macOS floating material and the non-activating HUD. There is no such thing
-    // on Windows: its panels are ordinary windows until the Windows shell ticket says otherwise.
-    // Registered last, but plugins initialise before setup in registration order regardless.
-    #[cfg(target_os = "macos")]
-    let builder = builder.plugin(tauri_nspanel::init());
 
     builder
         .run(tauri::generate_context!())
@@ -234,6 +226,24 @@ mod tray {
         Ok(())
     }
 
+    /// Show the panel and make it the thing keystrokes go to. `set_focus` alone sets the first
+    /// responder without making the window key or activating this accessory application, so
+    /// system keystrokes keep going to whatever was frontmost — the live pass watched "glm"
+    /// and Enter do exactly nothing until this existed.
+    /// Show the panel and make it the thing keystrokes go to. The AppKit half runs on the
+    /// main thread — a shortcut handler may arrive elsewhere, and AppKit calls from off the
+    /// main thread are silently dropped, which is exactly how a panel that looks focused can
+    /// keep sending keystrokes to whatever was frontmost. The crate's `show` is the whole
+    /// sequence: first responder to the webview, front regardless, and **key window** — the
+    /// one call that was missing, without which a nonactivating panel floats but never types.
+    fn show_and_key(app: &tauri::AppHandle) {
+        let Some(panel) = app.get_webview_window("panel") else {
+            return;
+        };
+        let _ = panel.show();
+        let _ = panel.set_focus();
+    }
+
     /// Toggle the panel, anchored just under the glyph.
     pub fn toggle_panel_at(app: &tauri::AppHandle, rect: tauri::Rect) {
         let Some(panel) = app.get_webview_window("panel") else {
@@ -257,8 +267,7 @@ mod tray {
         let x = px - (size.width as i32 / 2);
         let y = py + h + 6;
         let _ = panel.set_position(tauri::PhysicalPosition::new(x, y));
-        let _ = panel.show();
-        let _ = panel.set_focus();
+        show_and_key(app);
     }
 
     pub fn toggle_panel(app: &tauri::AppHandle) {
@@ -268,7 +277,7 @@ mod tray {
         if panel.is_visible().unwrap_or(false) {
             let _ = panel.hide();
         } else {
-            let _ = panel.show();
+            show_and_key(app);
         }
     }
 
