@@ -26,15 +26,19 @@ let selected = null; // the side list's selection: a provider id, or null for th
 
 async function draw() {
   // The prototype's own tab strip: `.tab` items with `.on`, inside the titlebar band — not
-  // <button>s with a class the stylesheet has never heard of. The traffic lights (`.tl`) are
-  // the mock's; a real window has the OS's.
-  const TABS = [["providers", "Providers"], ["profiles", "Profiles"], ["general", "General"]];
+  // <button>s with a class the stylesheet has never heard of. Each tab carries its Fluent
+  // glyph as the prototype draws it (the structure audit measured them missing). The traffic
+  // lights (`.tl`) are the mock's; a real window has the OS's.
+  const TABS = [["providers", "Providers", "E774"],
+                ["profiles", "Profiles", "EA37"],
+                ["general", "General", "E713"]];
   surface.innerHTML = `
-    <div class="titlebar">
+    <div class="titlebar" data-tauri-drag-region>
+      <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
       <div class="tabs">
-        ${TABS.map(([id, name]) =>
+        ${TABS.map(([id, name, cp]) =>
           `<div class="tab${id === tab ? " on" : ""}" data-tab="${id}" tabindex="0"
-                role="tab" aria-selected="${id === tab}">${name}</div>`).join("")}
+                role="tab" aria-selected="${id === tab}">${fic(cp)}${name}</div>`).join("")}
       </div>
     </div>
     <div class="win-body${tab === "general" ? " nosidebar" : ""}" id="win-body">
@@ -82,7 +86,20 @@ async function providers(side, pane) {
     for (const assignment of Object.values(prof.assignments ?? {}))
       if (assignment.provider) using[assignment.provider] = (using[assignment.provider] ?? 0) + 1;
   drawSide(side, all.map((p) => ({ id: p.id, name: p.name, on: selected === p.id })),
-    "Find a provider…", "Add provider…", () => { selected = null; draw(); });
+    "Find a provider…", "Add provider…", () => { selected = null; draw(); },
+    async () => {
+      // The foot's − removes the selection, through the pane's own words and question.
+      const p = all.find((x) => x.id === selected);
+      if (!p) return;
+      const ok = await window.__TAURI__.core.invoke("confirm_dialog", {
+        title: `Remove “${p.name}”?`,
+        body: "Its entries go from your tools; the key tapkey stored is deleted",
+        okLabel: "Remove",
+      });
+      if (!ok) return;
+      const r = await call({ version: 1, op: "remove_provider", params: { id: p.id } });
+      if (r.ok) { selected = null; draw(); }
+    });
   if (!selected || !all.some((p) => p.id === selected)) {
     renderPresets(pane);
   } else {
@@ -90,9 +107,10 @@ async function providers(side, pane) {
   }
 }
 
-/// The side list both tabs share: a find field, the items, and the add foot. Finding filters
-/// the list; nothing here reads or holds a secret.
-function drawSide(side, items, placeholder, addLabel, onAdd) {
+/// The side list both tabs share: a find field, the items, and the prototype's foot — a
+/// glyph pair, ＋ to add and − to remove the selection. Finding filters the list; nothing
+/// here reads or holds a secret.
+function drawSide(side, items, placeholder, addLabel, onAdd, onRemove) {
   side.innerHTML = `
     <input class="side-find" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" />
     <div role="listbox" aria-label="Items">${items
@@ -100,7 +118,11 @@ function drawSide(side, items, placeholder, addLabel, onAdd) {
            aria-selected="${it.on}" title="${esc(it.name)}" data-id="${esc(it.id)}"
            >${mark(it.name)}<span>${esc(it.name)}</span></div>`)
       .join("")}</div>
-    <div class="plus" role="button" tabindex="0">＋ ${esc(addLabel)}</div>`;
+    <div class="side-foot">
+      <button type="button" title="Add provider" aria-label="Add provider">＋</button>
+      <span class="sep"></span>
+      <button type="button" title="Remove provider" aria-label="Remove provider" id="side-remove">−</button>
+    </div>`;
   const find = side.querySelector(".side-find");
   find.addEventListener("input", () => {
     const q = find.value.trim().toLowerCase();
@@ -111,7 +133,8 @@ function drawSide(side, items, placeholder, addLabel, onAdd) {
   side.querySelectorAll(".s-item").forEach((el) =>
     el.addEventListener("click", () => { selected = el.dataset.id; draw(); })
   );
-  side.querySelector(".plus").addEventListener("click", onAdd);
+  side.querySelector(".side-foot button").addEventListener("click", onAdd);
+  side.querySelector("#side-remove").addEventListener("click", onRemove);
 }
 
 /// The presets view: official providers as rows, the add-what group, the note.
@@ -381,6 +404,19 @@ async function profilesTab(side, pane) {
       pane.innerHTML = `
         <div class="pane-head">New profile</div>
         <div class="g-desc">New profiles come from the panel — type an unknown name</div>`;
+    },
+    async () => {
+      // The foot's − deletes the selection, through the pane's own words and question.
+      const p = profiles.find((x) => x.id === selected);
+      if (!p) return;
+      const ok = await window.__TAURI__.core.invoke("confirm_dialog", {
+        title: `Delete “${p.name}”?`,
+        body: "Tools on this profile fall back to System default",
+        okLabel: "Delete",
+      });
+      if (!ok) return;
+      const r = await call({ version: 1, op: "delete_profile", params: { id: p.id } });
+      if (r.ok) { selected = null; draw(); }
     });
   const profile = profiles.find((p) => p.id === selected);
   if (!profile) {

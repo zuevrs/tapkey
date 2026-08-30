@@ -15,6 +15,7 @@ document.addEventListener("keydown", (e) => {
 
 export function effectiveState() {
   surface.className = "sheet";
+  surface.setAttribute("data-tauri-drag-region", "");
   drawEffective();
 }
 
@@ -96,6 +97,7 @@ function attentionText(tool, a) {
 
 export function history() {
   surface.className = "sheet";
+  surface.setAttribute("data-tauri-drag-region", "");
   drawHistory();
 }
 

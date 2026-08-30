@@ -20,7 +20,8 @@
         "skipTaskbar": true,
         "hiddenTitle": true,
         "width": 352,
-        "height": 320
+        "height": 320,
+        "shadow": false
       },
       {
         "label": "hud",
@@ -33,7 +34,8 @@
         "skipTaskbar": true,
         "hiddenTitle": true,
         "width": 280,
-        "height": 64
+        "height": 64,
+        "shadow": false
       },
       {
         "label": "settings",
@@ -41,7 +43,8 @@
         "visible": false,
         "title": "tapkey",
         "width": 720,
-        "height": 480
+        "height": 480,
+        "decorations": false
       },
       {
         "label": "onboarding",
@@ -50,7 +53,8 @@
         "title": "Welcome to tapkey",
         "width": 480,
         "height": 660,
-        "resizable": false
+        "resizable": false,
+        "decorations": false
       },
       {
         "label": "effective",
@@ -58,7 +62,8 @@
         "visible": false,
         "title": "What is in effect right now",
         "width": 460,
-        "height": 520
+        "height": 520,
+        "decorations": false
       },
       {
         "label": "history",
@@ -66,7 +71,8 @@
         "visible": false,
         "title": "Switch history",
         "width": 460,
-        "height": 520
+        "height": 520,
+        "decorations": false
       }
     ],
     "security": {

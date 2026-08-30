@@ -19,6 +19,14 @@ html, body { height: 100%; }
    own vibrancy behind the webview (window-vibrancy, NSVisualEffectMaterial::Popover). The
    prototype's `.glass` tint, rim and inner light still paint on top — that is the recipe. */
 body[data-surface="panel"], body[data-surface="hud"] { background: transparent; }
+/* The floating cards never scroll as pages — the fit sizes the window to the card, and any
+   overflow belongs inside the card's own scroll areas. Without this, a rounding difference
+   between the measured card and the fitted window grew a webview scrollbar the prototype
+   does not have («видно вертикальную прокрутку»). */
+body[data-surface="panel"], body[data-surface="hud"] { overflow: hidden; }
+/* The overlay scrollbars of the prototype's own scroll areas (the rows cap, the settings
+   columns) read as chrome the prototype does not draw; the scroll stays, the bar goes. */
+#surface ::-webkit-scrollbar { display: none; }
 /* The window-shaped surfaces carry the page background the prototype's stand provided. */
 body[data-surface="settings"], body[data-surface="onboarding"],
 body[data-surface="effective"], body[data-surface="history"] { background: var(--win-bg); }

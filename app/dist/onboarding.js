@@ -26,6 +26,7 @@ async function load(done) {
   presence = state.tools;
   harvest = offer;
   surface.className = "window";
+  surface.setAttribute("data-tauri-drag-region", "");
   if (!presence.some((t) => t.installed)) {
     renderNone(done);
     return;
