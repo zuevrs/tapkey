@@ -57,6 +57,39 @@ fn show_hud(app: tauri::AppHandle, response_json: String, backup_id: String) -> 
     hud.show()
 }
 
+/// Open at login, through the autostart plugin — the one General toggle that needs the OS.
+#[tauri::command]
+fn set_autostart(app: tauri::AppHandle, enabled: bool) -> Result<bool, String> {
+    use tauri_plugin_autostart::ManagerExt as _;
+    let autostart = app.autolaunch();
+    if enabled {
+        autostart.enable().map_err(|e| e.to_string())?;
+    } else {
+        autostart.disable().map_err(|e| e.to_string())?;
+    }
+    autostart.is_enabled().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn get_autostart(app: tauri::AppHandle) -> Result<bool, String> {
+    use tauri_plugin_autostart::ManagerExt as _;
+    app.autolaunch().is_enabled().map_err(|e| e.to_string())
+}
+
+/// Run setup again: the flag goes, the onboarding window returns — the same flow the first
+/// run took, nothing special about it.
+#[tauri::command]
+fn run_setup_again(app: tauri::AppHandle) {
+    use tauri_plugin_store::StoreExt as _;
+    if let Ok(store) = app.store("prefs.json") {
+        store.delete("onboarded");
+    }
+    if let Some(window) = app.get_webview_window("onboarding") {
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     refresh_helper();
@@ -69,6 +102,10 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             // An accessory app: menu bar, no dock tile — the design-rules Surfaces section in
@@ -96,7 +133,10 @@ pub fn run() {
             invoke,
             show_hud,
             show_sheet,
-            onboarding_done
+            onboarding_done,
+            set_autostart,
+            get_autostart,
+            run_setup_again
         ]);
 
     builder

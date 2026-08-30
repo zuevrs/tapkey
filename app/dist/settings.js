@@ -350,13 +350,72 @@ async function profilesTab(side, pane) {
 // -- General ---------------------------------------------------------------------------
 
 function general(pane) {
-  // Read-only this ticket, recorded in the map: capture-and-rebind is its own ticket.
   pane.innerHTML = `
-    <div class="card">
-      <div class="row"><span class="label">Shortcuts</span></div>
-      <div class="row"><span class="label">Open panel</span><span class="value">⌘⇧P</span></div>
-      <div class="row"><span class="label">Cycle profiles</span><span class="value">⌥⌘P</span></div>
+    <div class="pane-head">General</div>
+    <div class="g-label">Menu bar</div>
+    <div class="group">
+      <div class="g-row">
+        <span class="gl">Show profile name</span>
+        <span class="gv"><span class="hint">The glyph alone stays legible anywhere</span></span>
+      </div>
+      <div class="g-status">Waits on the glyph-menu ticket — the tooltip names the profile once
+        the tray keeps live state</div>
+    </div>
+    <div class="g-label">Shortcuts</div>
+    <div class="group">
+      <div class="g-row"><span class="gl">Open panel</span><span class="gv"><span class="tfield mono">⌘⇧P</span></span></div>
+      <div class="g-row"><span class="gl">Cycle profiles</span><span class="gv"><span class="tfield mono">⌥⌘P</span></span></div>
+    </div>
+    <div class="g-label">Safety</div>
+    <div class="group">
+      <div class="g-row">
+        <span class="gl">Watch configs</span>
+        <span class="gv"><span class="hint">Notice edits made outside tapkey</span></span>
+      </div>
+      <div class="g-status">Waits on the file-watching ticket — the panel reads state on every
+        open, which is fresh and costs ~150µs</div>
+      <div class="g-row">
+        <span class="gl">Backups</span>
+        <span class="gv"><span class="hint">Keep the last 10 switches</span></span>
+      </div>
+    </div>
+    <div class="g-label">Notifications</div>
+    <div class="group">
+      <div class="g-row">
+        <span class="gl">Switch failed</span>
+        <span class="gv"><span class="hint">Rare, and needs a decision</span></span>
+      </div>
+      <div class="g-row">
+        <span class="gl">Low balance</span>
+      </div>
+      <div class="g-status">Both wait on the notification machinery — the HUD carries failures
+        until then</div>
+    </div>
+    <div class="g-label">Startup</div>
+    <div class="group">
+      <div class="g-row">
+        <span class="gl">Open at login</span>
+        <span class="gv"><label class="swl"><input type="checkbox" id="g-autostart" /><span class="sw"></span></label></span>
+      </div>
+      <div class="g-row">
+        <span class="gl">Run setup again…</span>
+        <span class="gv"><button class="act" id="g-setup">Run setup again…</button></span>
+      </div>
     </div>`;
+  window.__TAURI__.core.invoke("get_autostart").then((on) => {
+    document.getElementById("g-autostart").checked = on;
+  });
+  document.getElementById("g-autostart").addEventListener("change", async (e) => {
+    try {
+      const now = await window.__TAURI__.core.invoke("set_autostart", { enabled: e.target.checked });
+      e.target.checked = now;
+    } catch {
+      e.target.checked = !e.target.checked;
+    }
+  });
+  document.getElementById("g-setup").addEventListener("click", () => {
+    window.__TAURI__.core.invoke("run_setup_again");
+  });
 }
 
 // -- The profile editor -----------------------------------------------------------------
