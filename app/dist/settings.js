@@ -389,7 +389,7 @@ async function profilesTab(side, pane) {
       <div class="g-desc">New profiles come from the panel — type an unknown name</div>`;
     return;
   }
-  editProfile(profile.id, pane, toolList);
+  editProfile(profile.id, pane);
   pane.insertAdjacentHTML("beforeend", `
     <div class="group">
       <div class="g-row"><span class="gl">Name</span>
@@ -502,11 +502,14 @@ function general(pane) {
 // an empty slot meaning the ADR's own null assignment — *no assignment*, an instruction, not
 // an absence of one.
 
-async function editProfile(id, paneArg, toolListArg) {
-  const pane = paneArg ?? document.getElementById("tab");
-  const [{ profiles, providers }, state] = await Promise.all([
+async function editProfile(id, pane) {
+  const [{ profiles }, state, { providers }] = await Promise.all([
     call({ version: 1, op: "list_profiles", params: {} }),
     call({ version: 1, op: "effective_state", params: {} }),
+    // The providers come from their own operation — the wire's list_profiles carries no
+    // providers field, and reading `providers` from its row made the editor's first draw
+    // reject (the gate that opens the editor caught it; the landing never did).
+    call({ version: 1, op: "list_providers", params: {} }),
   ]);
   const profile = profiles.find((p) => p.id === id);
   if (!profile) return;
@@ -514,6 +517,21 @@ async function editProfile(id, paneArg, toolListArg) {
   const working = JSON.parse(JSON.stringify(profile.assignments ?? {}));
   let custom = false;
   const enabled = providers.filter((p) => p.enabled);
+
+  // The lightest enabled model of a provider: the measure is context — the only "lightness"
+  // the provider record carries; price data does not exist (that is A12.7's) — and the tie
+  // is the catalogue's own order. ADR-0013's uniform mode puts this model in the utility
+  // slots; the catalogue's auto sentence (prof.background.auto) names it the same way.
+  const lightestOf = (id) => {
+    const models = (providers.find((p) => p.id === id)?.models ?? []).filter((m) => m.enabled);
+    if (!models.length) return "";
+    let best = models[0];
+    for (const m of models) {
+      const kb = best.context_k ?? Infinity, km = m.context_k ?? Infinity;
+      if (km < kb) best = m;
+    }
+    return best.id;
+  };
 
   const draw = () => {
     const first = state.tools[0];
@@ -548,7 +566,7 @@ async function editProfile(id, paneArg, toolListArg) {
             })()
           }
         </div>
-        <div class="g-status">The tools this profile changes; the rest keep what they have</div>
+        <div class="g-status">Utility slots take the cheapest enabled model</div>
       </div>
       <div class="g-label">Actions</div>
       <div class="group">
@@ -576,6 +594,10 @@ async function editProfile(id, paneArg, toolListArg) {
             const models = (providers.find((x) => x.id === a.provider)?.models ?? [])
               .filter((mo) => mo.enabled);
             const current = a.slots?.[slot.slot] ?? "";
+            // The utility slot's auto state: unassigned means the tool's own default, which
+            // the catalogue explains as the lightest enabled model — the sentence rides the
+            // row (grilled, A12) and names the resolution, so "auto" never reads as a blank.
+            const auto = slot.slot === "utility" && !current ? lightestOf(a.provider) : "";
             return `
             <div class="g-row">
               <span class="gl">${esc(slotName(slot.slot))}${
@@ -592,7 +614,7 @@ async function editProfile(id, paneArg, toolListArg) {
                      </select>`
                   : `<input class="tinput" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
                        value="${esc(current)}" placeholder="—" />`
-              }</span>
+              }${auto ? `<span class="hint">Background model: ${esc(auto)}, the lightest enabled</span>` : ""}</span>
             </div>`;
           }).join("")}
         </div>`;
@@ -606,16 +628,20 @@ async function editProfile(id, paneArg, toolListArg) {
       <div class="g-status" role="status"></div>`;
 
     // The uniform row is the default the catalogue draws: one provider, one main model, every
-    // tool. Setting them writes through to each tool's assignment at once.
+    // tool. Setting them writes through to each tool's assignment at once — and ADR-0013's
+    // uniform mode fills the utility slot with the cheapest enabled model, which the person
+    // can still re-pin or un-pin per tool in the matrix.
     pane.querySelector("#uni-provider").addEventListener("change", (e) => {
       const provider = e.target.value || null;
+      const light = provider ? lightestOf(provider) : "";
       for (const tool of state.tools) {
         if (!provider) {
           delete working[tool.tool];
         } else if (!working[tool.tool]) {
-          working[tool.tool] = { provider, slots: {} };
+          working[tool.tool] = { provider, slots: light ? { utility: light } : {} };
         } else {
           working[tool.tool].provider = provider;
+          if (light) working[tool.tool].slots.utility = light;
         }
       }
     });

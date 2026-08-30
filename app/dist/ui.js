@@ -51,10 +51,13 @@ export async function tools() {
   return state.tools.map((t) => t.tool);
 }
 
-// A slot's display name, from the catalogue's `prof.slot.*`. The slot inventory itself is the
-// adapter's fact — effective_state names the slots; this only names them for a person.
+// A slot's display name, from the catalogue's `prof.slot.*` and `prof.tool.*`. The slot
+// inventory itself is the adapter's fact — effective_state names the slots; this only names
+// them for a person. The utility slot is the cheap-background-work slot; the catalogue's
+// per-tool row label for it is `Background` (grilled, A12) — the same word its auto sentence
+// (prof.background.auto) uses.
 export const slotName = (slot) => ({
-  main: "Main model", utility: "Utility model", subagent: "Subagent model",
+  main: "Main model", utility: "Background", subagent: "Subagent model",
   review: "Review model", effort: "Effort level", verbosity: "Verbosity",
   opus: "Opus pin", sonnet: "Sonnet pin", fable: "Fable pin",
   advisor: "Advisor model", fallback: "Fallback model",
