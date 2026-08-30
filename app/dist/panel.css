@@ -1,12 +1,23 @@
-/* Surface CSS: consumes tokens, invents nothing. Every surface paints its background from
-   the token layer — the OS material route (NSPanel) was measured display-only in the live
-   pass, so what paints behind the panel is ours. */
+/* Surface CSS: consumes tokens, invents nothing. The floating surfaces are glass cards —
+   the prototype's `.glass` recipe on a transparent window: tint, blur, rim, inner light.
+   The blur samples whatever the transparent window shows through, which on macOS is the
+   desktop itself: the material the OS would not give us without taking input away. */
 
 html, body { height: 100%; }
-/* Once the OS's floating material (the live pass showed its NSPanel route is display-only),
-   the surfaces paint from the token layer: card as the material's nearest token. */
-body.panel, body.hud { background: var(--card); }
+body.panel, body.hud { background: transparent; }
 body.settings, body.onboarding, body.effective, body.history { background: var(--canvas); }
+
+.glass {
+  height: 100%;
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(42px) saturate(112%) brightness(1.02);
+  backdrop-filter: blur(42px) saturate(112%) brightness(1.02);
+  border-radius: var(--r-lg);
+  border: var(--hairline) solid var(--glass-rim);
+  box-shadow: inset 0 1px 0 var(--glass-inner);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
 
 /* -- The row primitive: icon, title + description, one trailing element. The label never
    shrinks below its own text; the value truncates instead. -- */
@@ -28,32 +39,40 @@ body.settings, body.onboarding, body.effective, body.history { background: var(-
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
+/* The search row, as the prototype draws it: a borderless 1.5rem field on the glass, a
+   hairline under the row, the magnifier at its left. */
 #search {
-  /* The panel honours the token's ceiling even where the OS window is wider. */
-  width: 100%; max-width: var(--panel-w); padding: 8px 12px; font: inherit; font-size: 1.3rem; color: var(--ink);
-  background: var(--field); border: 0; border-bottom: var(--hairline) solid var(--line);
+  width: 100%; padding: 12px 16px; font: inherit; font-size: 1.5rem; color: var(--ink);
+  background: none; border: 0; border-bottom: var(--hairline) solid var(--glass-rim);
   outline: none;
 }
-#list { padding: 6px; overflow: hidden; }
+#search::placeholder { color: var(--muted); }
+#list { padding: 4px 8px 8px; overflow: hidden; }
 #footer {
-  display: flex; gap: 12px; align-items: center;
+  display: flex; gap: 12px; align-items: center; margin-top: auto;
   padding: 6px 12px; font-size: 1.1rem; color: var(--muted);
-  border-top: var(--hairline) solid var(--line);
+  border-top: var(--hairline) solid var(--glass-rim);
 }
 #footer span { margin-left: auto; }
 #footer button {
   border: 0; background: none; color: var(--accent); font: inherit; font-size: 1.1rem;
 }
 
+/* -- The panel's head: the profile the tools are on, named. -- */
+.p-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px 0; }
+.p-head .nm { font-size: 1.5rem; font-weight: 600; }
+.p-head .sub { margin-left: auto; font-size: 1.1rem; color: var(--muted); }
+
 /* -- Motion: three moments, all from the tokens, all surrendered under Reduce Motion. -- */
-#surface.panel { max-width: var(--panel-w); animation: materialise var(--dur-normal) var(--ease-entrance); }
+#surface.panel { animation: materialise var(--dur-normal) var(--ease-entrance); }
 @keyframes materialise { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
 #surface.hud { animation: materialise var(--dur-fast) var(--ease-entrance); }
 @media (prefers-reduced-motion: reduce) { #surface { animation: none; } }
 
 /* -- The HUD: one line of result and, when there is a backup to undo, one control. -- */
 body.hud { display: grid; place-items: center; }
-#surface.hud { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+#surface.hud { display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  width: auto; height: auto; border-radius: var(--r-lg); }
 #surface.hud .result { font-size: 1.3rem; }
 #surface.hud button {
   font-size: 1.2rem; border: 1px solid var(--line); border-radius: 6px;

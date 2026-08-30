@@ -34,6 +34,9 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
   --sw-off:#d3d3d9; --sw-knob:#fff; --press-fill:#0a4fa0; --dim-text:#9a9aa1;
   --mark-knockout:#fff;
   --shadow:0 16px 40px rgba(18,22,34,.28), 0 1px 3px rgba(18,22,34,.18);
+  /* The glass system, verbatim from the prototype's material layer: the tint the card is
+     washed with, the rim that outlines it, the inner top light it is lit by. */
+  --glass-tint:rgba(247,247,250,.76); --glass-rim:rgba(255,255,255,.7); --glass-inner:rgba(255,255,255,.55);
   --r-lg:22px; --r-md:14px;
 }
 @media (prefers-color-scheme: dark){
@@ -47,6 +50,7 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
     --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
     --mark-knockout:#1d1d21;
     --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+    --glass-tint:rgba(46,46,51,.74); --glass-rim:rgba(255,255,255,.26); --glass-inner:rgba(255,255,255,.14);
   }
 }
 :root[data-theme="dark"]{
@@ -59,6 +63,7 @@ html{font-size:calc(10px * min(var(--text-scale), 2))}
   --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
   --mark-knockout:#1d1d21;
   --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+  --glass-tint:rgba(46,46,51,.74); --glass-rim:rgba(255,255,255,.26); --glass-inner:rgba(255,255,255,.14);
 }
 
 /* WINDOWS 11 / FLUENT — the palette. From Microsoft's documentation, not from memory:

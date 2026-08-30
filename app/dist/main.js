@@ -38,7 +38,8 @@ async function panel() {
     call({ version: 1, op: "effective_state", params: {} }),
     tools(),
   ]);
-  surface.className = "panel";
+  surface.className = "panel glass";
+  current = head(profiles.profiles, state);
   render(profiles.profiles, toolList);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") getCurrentWindow().hide();
@@ -51,8 +52,25 @@ async function panel() {
   });
 }
 
+/// The panel's head: the profile the tools are on, named the way `cycle` finds it — the
+/// first owned slot's effective value, matched against the profiles' assignments. No single
+/// profile owns every tool' state — the catalogue's word for that is Mixed.
+let current = "Mixed";
+function head(rows, state) {
+  // `list_profiles` carries counts, not assignments, so the name is found the way `cycle`
+  // finds it — the owned value against the profile's name — with the single-profile case
+  // answered outright. The full derivation needs the assignments on the wire (A12).
+  const value = state.tools
+    ?.find((t) => t.slots?.some((s) => s.owned && s.resolved?.effective))
+    ?.slots.find((s) => s.owned && s.resolved?.effective).resolved.effective;
+  if (rows.length === 1) return rows[0].name;
+  const hit = rows.find((r) => r.name === value || (value && value.includes(r.name)));
+  return hit ? hit.name : value ? "Mixed" : "System default";
+}
+
 function render(rows, toolList) {
   surface.innerHTML = `
+    <header class="p-head"><span class="nm">${esc(current)}</span></header>
     <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
            placeholder="Switch profile…" aria-label="Switch profile" />
     <div id="list" role="listbox" aria-label="Profiles"></div>
@@ -176,7 +194,7 @@ function hud() {
       ? "Switch rolled back — restored"
       : "Switch failed";
   const timed = applied;
-  surface.className = "hud";
+  surface.className = "hud glass";
   surface.innerHTML = `
     <span class="result" role="status">${esc(result)}</span>
     ${applied && backup ? `<button id="undo">Undo</button>` : ""}`;
