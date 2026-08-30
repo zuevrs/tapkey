@@ -17,7 +17,7 @@
         "transparent": true,
         "skipTaskbar": true,
         "hiddenTitle": true,
-        "width": 380,
+        "width": 352,
         "height": 320
       },
       {
@@ -60,6 +60,9 @@
     "targets": "all",
     "icon": [
       "icons/icon.png"
+    ],
+    "externalBin": [
+      "binaries/tapkey-helper"
     ]
   }
 }

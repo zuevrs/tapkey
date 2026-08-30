@@ -26,7 +26,8 @@ body.settings, body.onboarding { background: var(--canvas); }
 }
 
 #search {
-  width: 100%; padding: 8px 12px; font: inherit; font-size: 1.3rem; color: var(--ink);
+  /* The panel honours the token's ceiling even where the OS window is wider. */
+  width: 100%; max-width: var(--panel-w); padding: 8px 12px; font: inherit; font-size: 1.3rem; color: var(--ink);
   background: var(--field); border: 0; border-bottom: var(--hairline) solid var(--line);
   outline: none;
 }
@@ -37,7 +38,7 @@ body.settings, body.onboarding { background: var(--canvas); }
 }
 
 /* -- Motion: three moments, all from the tokens, all surrendered under Reduce Motion. -- */
-#surface.panel { animation: materialise var(--dur-normal) var(--ease-entrance); }
+#surface.panel { max-width: var(--panel-w); animation: materialise var(--dur-normal) var(--ease-entrance); }
 @keyframes materialise { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
 #surface.hud { animation: materialise var(--dur-fast) var(--ease-entrance); }
 @media (prefers-reduced-motion: reduce) { #surface { animation: none; } }
@@ -96,3 +97,8 @@ button.act.danger { border-color: var(--bad); }
 .chip b { font-weight: 500; color: var(--muted); margin-left: 4px; }
 .candidates .row.declined { opacity: 0.45; }
 #surface.onboarding .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.sheet-input {
+  width: 100%; padding: 7px 10px; margin-top: 8px; font: inherit; font-size: 1.3rem;
+  color: var(--ink); background: var(--field);
+  border: 1px solid var(--field-line); border-radius: 6px;
+}

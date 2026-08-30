@@ -2,13 +2,7 @@
 // and never adopts (core ticket 30's rule), the import creates profiles from what the person
 // ticked, and the done section says what the first switch will snapshot.
 
-const { invoke } = window.__TAURI__.core;
-
-const call = (request) =>
-  invoke("invoke", { request: JSON.stringify(request) }).then(JSON.parse);
-
-const esc = (text) =>
-  String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+import { call, esc, tile, cap, plural } from "./ui.js";
 
 export function onboarding(done) {
   draw(done);
@@ -44,7 +38,7 @@ async function draw(done) {
           (c, i) => `
         <label class="row ${c.declined ? "declined" : ""}">
           <input type="checkbox" data-i="${i}" ${c.declined ? "" : "checked"} />
-          <div class="tile">${esc(c.id.slice(0, 1).toUpperCase())}</div>
+          ${tile(c.id)}
           <span class="label">${esc(c.id)}</span>
           <span class="qualifier">${esc(cap(c.tool))}</span>
           <span class="value">${esc(c.credential === "inline" ? "key copies over" : c.credential === "reference" ? "key stays referenced" : "")}</span>
@@ -66,8 +60,12 @@ async function draw(done) {
     </div>`;
 
   surface.querySelector("#later").addEventListener("click", () => {
-    // The catalogue's honest consequence: empty until a provider is added.
-    done();
+    // The catalogue's honest consequence, said on the screen before the flag is set.
+    surface.innerHTML = `
+      <h2>Welcome to tapkey</h2>
+      <p class="note">tapkey stays empty until you add a provider</p>
+      <div class="actions"><button class="act primary" id="close">OK</button></div>`;
+    surface.querySelector("#close").addEventListener("click", done);
   });
   surface.querySelector("#import").addEventListener("click", () => importAll(harvest, done));
 }
@@ -83,18 +81,22 @@ async function importAll(harvest, done) {
     });
     if (r.ok && candidate.credential === "inline") keys += 1;
   }
-  finish(keys, boxes.length, done);
+  finish(keys, done);
 }
 
-function finish(keys, count, done) {
+function finish(keys, done) {
   const surface = document.getElementById("surface");
+  // The originals sentence is earned by the count: some keys travelled and were copied out of
+  // files that still hold them. None travelled — nothing to say about originals.
+  const copied = keys === 0
+    ? ""
+    : `${plural("1 key copied into the Keychain", "{count} keys copied into the Keychain", keys)}`;
+  const originals = keys > 0 ? " · Originals left where they were" : "";
   surface.innerHTML = `
-    <h2>You're all set — tapkey lives in your menu bar</h2>
-    <p class="note">⌘⇧P opens the panel; ⌥⌘P cycles profiles</p>
-    <p class="note">${esc(`${keys} ${keys === 1 ? "key" : "keys"} copied into the Keychain`)}${count > keys ? " · originals left where they were" : ""}</p>
+    <h2>You’re all set — tapkey lives in your menu bar</h2>
+    <p class="note">${esc(copied)}${esc(originals)}</p>
+    <p class="note">⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile</p>
     <p class="note">Everything else is in Settings</p>
     <div class="actions"><button class="act primary" id="start">Start using tapkey</button></div>`;
   surface.querySelector("#start").addEventListener("click", done);
 }
-
-const cap = (s) => s.slice(0, 1).toUpperCase() + s.slice(1);

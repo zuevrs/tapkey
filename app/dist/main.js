@@ -1,6 +1,8 @@
 // One surface per window; the label decides. The panel is a list read in half a second:
 // it composes from the row primitive, filters, and switches. Nothing caches.
 
+import { call, esc, plural, tile, tools } from "./ui.js";
+
 const { getCurrentWindow } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.core;
 
@@ -8,15 +10,9 @@ const surface = document.getElementById("surface");
 const label = getCurrentWindow().label;
 
 // The platform layer is a token swap, and the OS is the only honest source of which one.
-// Windows WebView2's UA carries "Windows NT"; nothing else needs distinguishing yet.
-document.documentElement.dataset.platform = /Windows NT/.test(navigator.userAgent) ? "win" : "mac";
+const IS_WIN = /Windows NT/.test(navigator.userAgent);
+document.documentElement.dataset.platform = IS_WIN ? "win" : "mac";
 document.body.classList.add(label);
-
-const call = (request) =>
-  invoke("invoke", { request: JSON.stringify(request) }).then(JSON.parse);
-
-const esc = (text) =>
-  String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 if (label === "panel") {
   panel();
@@ -33,22 +29,23 @@ if (label === "panel") {
 // -- The panel -------------------------------------------------------------------------
 
 async function panel() {
-  const [profiles, state] = await Promise.all([
+  const [profiles, state, toolList] = await Promise.all([
     call({ version: 1, op: "list_profiles", params: {} }),
     call({ version: 1, op: "effective_state", params: {} }),
+    tools(),
   ]);
   surface.className = "panel";
-  render(profiles.profiles, state);
+  render(profiles.profiles, toolList);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") getCurrentWindow().hide();
   });
 }
 
-function render(rows, state) {
+function render(rows, toolList) {
   surface.innerHTML = `
-    <input id="search" type="text" placeholder="Switch profile…" />
-    <div id="list"></div>
-    <div id="footer">Type to filter · Enter to switch · Esc to close</div>`;
+    <input id="search" type="text" placeholder="Switch profile…" aria-label="Switch profile" />
+    <div id="list" role="listbox" aria-label="Profiles"></div>
+    <div id="footer" aria-hidden="true">Type to filter · Enter to switch · Esc to close</div>`;
   const search = document.getElementById("search");
   const list = document.getElementById("list");
 
@@ -58,10 +55,11 @@ function render(rows, state) {
     list.innerHTML = visible
       .map(
         (r, i) => `
-      <div class="row${query && i === 0 ? " active" : ""}" data-id="${esc(r.id)}">
-        <div class="tile">${esc(r.name.slice(0, 1).toUpperCase())}</div>
+      <div class="row${query && i === 0 ? " active" : ""}" role="option" tabindex="-1"
+           aria-selected="${query && i === 0}" data-id="${esc(r.id)}">
+        ${tile(r.name)}
         <span class="label">${esc(r.name)}</span>
-        <span class="qualifier">${esc(`${r.tools} of ${state.tools.length} tools`)}</span>
+        <span class="qualifier">${esc(`${r.tools} of ${toolList.length} tools`)}</span>
         <span class="value">↩</span>
       </div>`
       )
@@ -69,8 +67,9 @@ function render(rows, state) {
     if (query && !rows.some((r) => r.name.toLowerCase() === query)) {
       list.insertAdjacentHTML(
         "beforeend",
-        `<div class="row" data-create="${esc(search.value.trim())}">
-           <div class="tile">＋</div>
+        `<div class="row" role="option" tabindex="-1" data-create="${esc(search.value.trim())}"
+             title="Creating opens Settings → Profiles">
+           ${tile("+")}
            <span class="label">Create profile “${esc(search.value.trim())}”…</span>
          </div>`
       );
@@ -95,7 +94,7 @@ function render(rows, state) {
 
 async function switchTo(id) {
   // The response names the backup the switch took (core ticket 33); the HUD's Undo restores
-  // exactly that. The shell shows the HUD window; the HUD drives itself from the params.
+  // exactly that. The HUD drives itself from the query parameters.
   const response = await call({ version: 1, op: "switch", params: { profile_id: id } });
   await invoke("show_hud", {
     responseJson: JSON.stringify(response),
@@ -107,26 +106,34 @@ async function switchTo(id) {
 // -- The HUD window --------------------------------------------------------------------
 
 function hud() {
-  const response = JSON.parse(new URLSearchParams(location.search).get("response") || "{}");
-  const backup = new URLSearchParams(location.search).get("backup");
+  const params = new URLSearchParams(location.search);
+  const response = JSON.parse(params.get("response") || "{}");
+  const backup = params.get("backup");
   const applied = response.outcome === "applied";
   // The design rules settle the default: an unmeasured reload behaviour is "on next launch",
-  // in neutral colour — a permanent amber glyph teaches users to ignore amber.
+  // in neutral colour — a permanent amber glyph teaches users to ignore amber. And a notice
+  // reporting a failure carries no timer: only success fades on its own.
   const result = applied
     ? "on next launch"
     : response.outcome === "rolled back"
       ? "Switch rolled back — restored"
       : "Switch failed";
+  const timed = applied;
   surface.className = "hud";
   surface.innerHTML = `
-    <span class="result">${esc(result)}</span>
+    <span class="result" role="status">${esc(result)}</span>
     ${applied && backup ? `<button id="undo">Undo</button>` : ""}`;
   if (applied && backup) {
     document.getElementById("undo").addEventListener("click", async () => {
-      await invoke("undo", { backupId: backup });
-      document.querySelector(".result").textContent = "Restored";
+      // Undo is a core operation like any other: one envelope through the bridge, never a
+      // second marshalling of a request in the app.
+      const r = await call({
+        version: 1, op: "restore",
+        params: { target: { target: "backup", id: backup } },
+      });
+      document.querySelector(".result").textContent = r.outcome === "applied" ? "Restored" : "Switch failed";
       document.getElementById("undo").remove();
     });
   }
-  setTimeout(() => getCurrentWindow().hide(), 4000);
+  if (timed) setTimeout(() => getCurrentWindow().hide(), 4000);
 }

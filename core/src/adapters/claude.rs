@@ -427,6 +427,15 @@ impl super::Adapter for Claude {
         known_providers(env)
     }
 
+    fn install_paths(&self) -> Vec<std::path::PathBuf> {
+        // Homebrew on Apple Silicon: a GUI app inherits a minimal PATH without /opt/homebrew/bin,
+        // and the adapter's own install record says brew is how this machine got the tool.
+        vec![
+            std::path::PathBuf::from("/opt/homebrew/bin"),
+            std::path::PathBuf::from("/usr/local/bin"),
+        ]
+    }
+
     fn plan_removal(&self, env: &Env, provider: &Provider) -> Result<Vec<Action>, String> {
         plan_removal(env, provider)
     }

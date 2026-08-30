@@ -59,10 +59,19 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli --locked --version '^2' || true
+        run: cargo install tauri-cli --locked --version '^2'
 
       # The smoke build per ADR-0016: the bundle exists. The backend is already covered by the
       # core's tests, and launching a GUI in CI is flake that would only re-prove them.
+      # The app bundles the helper (externalBin): it must exist before the app's build script
+      # runs, and the app's own tests must actually execute here — a check-only job left them
+      # never running once already.
+      - name: Build the credential helper
+        run: cargo build -p tapkey-core --bin tapkey-helper
+
+      - name: Test
+        run: cargo test -p tapkey-app --all-targets
+
       - name: Clippy
         run: cargo clippy -p tapkey-app --all-targets -- -D warnings
 

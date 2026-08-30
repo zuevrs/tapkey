@@ -14,16 +14,6 @@ fn invoke(request: String) -> String {
     tapkey_core::handle_with(&Env::real(), &request)
 }
 
-/// Undo one switch: restore the backup the switch itself named.
-#[tauri::command]
-fn undo(backup_id: String) -> String {
-    let request = serde_json::json!({
-        "version": 1, "op": "restore",
-        "params": {"target": {"target": "backup", "id": backup_id}}
-    });
-    tapkey_core::handle_with(&Env::real(), &request.to_string())
-}
-
 /// Route one switch result to the HUD window: it drives itself from the query parameters, and
 /// the panel never touches another window's content.
 #[tauri::command]
@@ -89,12 +79,7 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            invoke,
-            undo,
-            show_hud,
-            onboarding_done
-        ])
+        .invoke_handler(tauri::generate_handler![invoke, show_hud, onboarding_done])
         .run(tauri::generate_context!())
         .expect("error while running tapkey");
 }
@@ -150,9 +135,9 @@ mod shortcuts {
             )?;
             app.global_shortcut().on_shortcut(
                 "Alt+CommandOrControl+P",
-                |app, _shortcut, event| {
+                |_app, _shortcut, event| {
                     if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
-                        super::cycle(app);
+                        super::cycle();
                     }
                 },
             )?;
@@ -258,12 +243,50 @@ mod tray {
     }
 }
 
-/// Cycle profiles: the next profile in the store's order, applied to every tool it covers.
-///
-/// The list of profiles is core state, so cycling is two calls — ask, then switch — and never a
-/// read of the store by the app.
-fn cycle(app: &tauri::AppHandle) {
-    let _ = app; // A3 wires the panel's own list; the shortcut needs a current selection to cycle
+/// Cycle profiles: the next profile in the store's order. The list is core state, so cycling is
+/// two bridge calls — ask, then switch — and never a read of the store by the app. What is
+/// currently in effect decides where "next" starts; the response's chains name it.
+fn cycle() {
+    let env = Env::real();
+    let list = tapkey_core::handle_with(&env, r#"{"version":1,"op":"list_profiles","params":{}}"#);
+    let state =
+        tapkey_core::handle_with(&env, r#"{"version":1,"op":"effective_state","params":{}}"#);
+    let Ok(list) = serde_json::from_str::<serde_json::Value>(&list) else {
+        return;
+    };
+    let Ok(state) = serde_json::from_str::<serde_json::Value>(&state) else {
+        return;
+    };
+    let Some(rows) = list["profiles"].as_array() else {
+        return;
+    };
+    if rows.len() < 2 {
+        return;
+    }
+    // The first owned slot value per tool is what the tool will use; the id whose row it matches
+    // is the current selection. Nothing matches — start at the top.
+    let now = state["tools"].as_array().and_then(|tools| {
+        tools.iter().find_map(|tool| {
+            tool["slots"].as_array().and_then(|slots| {
+                slots
+                    .iter()
+                    .find(|s| s["owned"] == true)
+                    .and_then(|s| s["resolved"]["effective"].as_str().map(str::to_owned))
+            })
+        })
+    });
+    let at = now.and_then(|value| {
+        rows.iter().position(|row| {
+            row["name"].as_str() == Some(value.as_str())
+                || value.contains(row["name"].as_str().unwrap_or_default())
+        })
+    });
+    let next = rows[(at.unwrap_or(rows.len().saturating_sub(1)) + 1) % rows.len()]["id"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    let request = format!(r#"{{"version":1,"op":"switch","params":{{"profile_id":"{next}"}}}}"#);
+    let _ = tapkey_core::handle_with(&env, &request);
 }
 
 /// Copy this bundle's helper into the store, unless the stored one is byte-identical.
@@ -317,14 +340,14 @@ pub fn refresh_helper_from(bundled: &std::path::Path, bin: &std::path::Path) {
 /// The helper as shipped inside this bundle, if it was.
 fn bundled_helper() -> Option<std::path::PathBuf> {
     let exe = format!("tapkey-helper{}", std::env::consts::EXE_SUFFIX);
-    let mut path = std::env::current_exe().ok()?.parent()?.to_path_buf();
-    // Resources sit beside the executable in a Tauri bundle; in a dev build, near the target dir.
-    for candidate in [path.clone(), path.parent()?.to_path_buf()] {
-        path = candidate;
-        let candidate = path.join(&exe);
-        if candidate.exists() {
-            return Some(candidate);
-        }
+    // externalBin lands the helper beside the app executable in a bundle; in a dev build it sits
+    // in the same target dir as this binary.
+    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
+    let beside = dir.join(&exe);
+    if beside.exists() {
+        return Some(beside);
     }
-    None
+    dir.parent()
+        .map(|target| target.join(&exe))
+        .filter(|p| p.exists())
 }

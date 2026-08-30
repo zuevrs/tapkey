@@ -2,19 +2,18 @@
 // the surface composes and never decides. Destructive actions confirm in a page sheet, because
 // WKWebView does not implement window.confirm and the styling is ours anyway.
 
-const { invoke } = window.__TAURI__.core;
+import { call, esc, tile, tools, cap, plural } from "./ui.js";
 
 const surface = document.getElementById("surface");
-const call = (request) =>
-  invoke("invoke", { request: JSON.stringify(request) }).then(JSON.parse);
-
-const esc = (text) =>
-  String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let tab = "providers";
 
 export function settings() {
-  document.getElementById("surface").className = "settings";
+  surface.className = "settings";
+  draw();
+}
+
+async function draw() {
   surface.innerHTML = `
     <nav class="tabs">
       <button data-tab="providers">Providers</button>
@@ -30,10 +29,6 @@ export function settings() {
     })
   );
   surface.querySelector('[data-tab="providers"]').classList.add("active");
-  draw();
-}
-
-async function draw() {
   const pane = document.getElementById("tab");
   if (tab === "providers") await providers(pane);
   else if (tab === "profiles") await profilesTab(pane);
@@ -43,8 +38,10 @@ async function draw() {
 // -- Providers -------------------------------------------------------------------------
 
 async function providers(pane) {
-  const { providers } = await call({ version: 1, op: "list_providers", params: {} });
-  const tools = ["claude", "codex", "opencode"];
+  const [{ providers }, toolList] = await Promise.all([
+    call({ version: 1, op: "list_providers", params: {} }),
+    tools(),
+  ]);
   pane.innerHTML =
     providers
       .map((p) => {
@@ -52,35 +49,30 @@ async function providers(pane) {
           ? "Unknown until you test"
           : p.formats.length === 0
             ? "Serves none of your tools"
-            : p.formats.length === tools.length
+            : p.formats.length === toolList.length
               ? `Serves all ${p.formats.length} tools`
               : `Serves ${p.formats.join(", ")}`;
-        const keyLine =
-          p.formats?.includes("openai_chat") || p.formats?.includes("openai_responses")
-            ? "Claude Code and Codex fetch it through a helper command"
-            : "Stored in the Keychain, never in a config file";
+        // ADR-0007: the credential line is per tool, not per app — and for OpenCode the key is
+        // on disk. A provider serving the chat format reaches OpenCode, so the row must say so
+        // instead of the Keychain reassurance.
+        const reachesOpenCode = p.formats?.some((f) => f === "openai_chat") ?? true;
+        const keyLine = reachesOpenCode
+          ? "OpenCode has no key helper — written to a file only you can read"
+          : "Claude Code and Codex fetch it through a helper command";
         return `
       <div class="card" data-id="${esc(p.id)}">
         <div class="row">
-          <div class="tile">${esc(p.name.slice(0, 1).toUpperCase())}</div>
+          ${tile(p.name)}
           <span class="label">${esc(p.name)}</span>
           <span class="value">${esc(p.enabled ? "" : "off")}</span>
         </div>
-        <div class="row">
-          <span class="label">Endpoint</span>
-          <span class="value">${esc(p.base_url)}</span>
-        </div>
-        <div class="row">
-          <span class="label">API format</span>
-          <span class="value">${esc(format)}</span>
-        </div>
+        <div class="row"><span class="label">Endpoint</span><span class="value">${esc(p.base_url)}</span></div>
+        <div class="row"><span class="label">API format</span><span class="value">${esc(format)}</span></div>
         <div class="row"><span class="note">${esc(keyLine)}</span></div>
-        <div class="actions" style="display:flex;gap:8px;margin-top:8px">
-          <button class="act" data-do="test">Test</button>
+        <div class="actions"><button class="act" data-do="test">Test</button>
           <button class="act" data-do="toggle">${p.enabled ? "Turn off" : "Turn on"}</button>
-          <button class="act danger" data-do="remove">Remove…</button>
-        </div>
-        <div class="result note"></div>
+          <button class="act danger" data-do="remove">Remove provider…</button></div>
+        <div class="result note" role="status"></div>
       </div>`;
       })
       .join("") +
@@ -89,10 +81,15 @@ async function providers(pane) {
       <div class="field"><span>Name</span><input id="np-name" placeholder="e.g. Work OpenRouter" /></div>
       <div class="field"><span>Base URL</span><input id="np-url" placeholder="https://api.example.com/v1" /></div>
       <div class="field"><span>API key</span><input id="np-key" type="password" placeholder="Paste a key" /></div>
-      <label class="field"><input type="checkbox" id="np-auto" checked /> Also create a profile — switchable right away</label>
+      <label class="field"><input type="checkbox" id="np-auto" checked /> Also create a profile</label>
+      <p class="note">Switchable right away</p>
       <button class="act" id="np-add">Add provider</button>
-      <div class="result note"></div>
+      <div class="result note" role="status"></div>
     </div>`;
+
+  const refused = (result, r) => {
+    result.textContent = r.failure ? `${r.failure.kind} — nothing was changed` : "";
+  };
 
   pane.querySelectorAll(".card .actions").forEach((actions) => {
     const card = actions.closest(".card");
@@ -116,14 +113,15 @@ async function providers(pane) {
           const p = providers.find((x) => x.id === id);
           const r = await call({ version: 1, op: "set_provider_enabled", params: { id, enabled: !p.enabled } });
           if (r.ok) draw();
+          else refused(result, r);
         } else if (doing === "remove") {
           confirmSheet(
             "Remove provider…",
-            "Its entries go from your tools; the key tapkey stored is deleted.",
+            `Its entries go from ${toolList.map(cap).join(", ")}; the key tapkey stored is deleted`,
             async () => {
               const r = await call({ version: 1, op: "remove_provider", params: { id } });
               if (r.ok) draw();
-              else result.textContent = r.failure?.detail ?? "Refused";
+              else refused(result, r);
             }
           );
         }
@@ -131,37 +129,32 @@ async function providers(pane) {
     );
   });
 
-  pane.querySelector("#np-add").addEventListener("click", async () => {
-    const result = pane.querySelectorAll(".card .result")[pane.querySelectorAll(".card").length - 1];
-    const name = pane.querySelector("#np-name").value.trim();
-    const base = pane.querySelector("#np-url").value.trim();
-    const key = pane.querySelector("#np-key").value.trim();
+  const form = pane.querySelectorAll(".card")[pane.querySelectorAll(".card").length - 1];
+  const formResult = form.querySelector(".result");
+  form.querySelector("#np-add").addEventListener("click", async () => {
+    const name = form.querySelector("#np-name").value.trim();
+    const base = form.querySelector("#np-url").value.trim();
+    const key = form.querySelector("#np-key").value.trim();
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `provider-${Date.now()}`;
     const created = await call({
       version: 1, op: "create_provider",
       params: { id, name: name || id, base_url: base },
     });
-    if (!created.ok) {
-      result.textContent = created.failure?.detail ?? "Refused";
-      return;
-    }
+    if (!created.ok) return refused(formResult, created);
     if (key) {
       const stored = await call({
         version: 1, op: "set_credential", params: { provider_id: id, secret: key },
       });
-      if (!stored.ok) {
-        result.textContent = stored.failure?.detail ?? "The key was refused";
-        return;
-      }
+      if (!stored.ok) return refused(formResult, stored);
     }
-    if (pane.querySelector("#np-auto").checked) {
+    if (form.querySelector("#np-auto").checked) {
       // Two calls joined by the interface, per ticket 31: a provider without a profile is an
       // ordinary state, so a failed profile creation does not undo the provider.
       await call({
         version: 1, op: "create_profile",
         params: { profile: {
           id, name: name || id,
-          tools: Object.fromEntries(["claude", "codex", "opencode"].map((t) => [t, { provider: id, slots: {} }])),
+          tools: Object.fromEntries(toolList.map((t) => [t, { provider: id, slots: {} }])),
         }},
       });
     }
@@ -172,27 +165,28 @@ async function providers(pane) {
 // -- Profiles --------------------------------------------------------------------------
 
 async function profilesTab(pane) {
-  const { profiles } = await call({ version: 1, op: "list_profiles", params: {} });
+  const [{ profiles }, toolList] = await Promise.all([
+    call({ version: 1, op: "list_profiles", params: {} }),
+    tools(),
+  ]);
   pane.innerHTML =
     profiles
       .map(
         (p) => `
       <div class="card" data-id="${esc(p.id)}">
         <div class="row">
-          <div class="tile">${esc(p.name.slice(0, 1).toUpperCase())}</div>
+          ${tile(p.name)}
           <span class="label">${esc(p.name)}</span>
-          <span class="qualifier">${esc(`${p.tools} of 3 tools`)}</span>
+          <span class="qualifier">${esc(`${p.tools} of ${toolList.length} tools`)}</span>
         </div>
-        <div class="actions" style="display:flex;gap:8px;margin-top:8px">
-          <button class="act" data-do="rename">Rename…</button>
+        <div class="actions"><button class="act" data-do="rename">Rename…</button>
           <button class="act" data-do="duplicate">Duplicate…</button>
-          <button class="act danger" data-do="delete">Delete…</button>
-        </div>
-        <div class="result note"></div>
+          <button class="act danger" data-do="delete">Delete profile…</button></div>
+        <div class="result note" role="status"></div>
       </div>`
       )
       .join("") +
-    `<p class="note">New profiles come from the panel — type an unknown name — or from onboarding.</p>`;
+    `<p class="note">New profiles come from the panel — type an unknown name</p>`;
 
   pane.querySelectorAll(".card").forEach((card) => {
     const id = card.dataset.id;
@@ -200,26 +194,26 @@ async function profilesTab(pane) {
     card.querySelectorAll("button").forEach((button) =>
       button.addEventListener("click", () => {
         const doing = button.dataset.do;
+        const refused = (r) => {
+          result.textContent = r.ok ? "" : `${r.failure.kind} — nothing was changed`;
+        };
         if (doing === "rename") {
           askText("Rename…", async (name) => {
-            const r = await call({ version: 1, op: "rename_profile", params: { id, name } });
-            if (r.ok) draw();
-            else result.textContent = r.failure?.detail ?? "Refused";
+            refused(await call({ version: 1, op: "rename_profile", params: { id, name } }));
+            if (result.textContent === "") draw();
           });
         } else if (doing === "duplicate") {
           askText("Duplicate…", async (asId) => {
-            const r = await call({ version: 1, op: "duplicate_profile", params: { id, as_id: asId } });
-            if (r.ok) draw();
-            else result.textContent = r.failure?.detail ?? "Refused";
+            refused(await call({ version: 1, op: "duplicate_profile", params: { id, as_id: asId } }));
+            if (result.textContent === "") draw();
           });
         } else if (doing === "delete") {
           confirmSheet(
             "Delete profile…",
-            "Your tools keep what it last applied; they stop having a name for it.",
+            `Your tools keep what it last applied across ${plural("{count} tool", "{count} tools", p.tools ?? toolList.length)}`,
             async () => {
-              const r = await call({ version: 1, op: "delete_profile", params: { id } });
-              if (r.ok) draw();
-              else result.textContent = r.failure?.detail ?? "Refused";
+              refused(await call({ version: 1, op: "delete_profile", params: { id } }));
+              if (result.textContent === "") draw();
             }
           );
         }
@@ -240,24 +234,41 @@ function general(pane) {
     </div>`;
 }
 
-// -- The sheet: confirm and ask-text, in page, because WKWebView implements neither ----------------
+// -- The sheet: confirm and ask-text, in page, a real dialog ---------------------------
 
 function sheet(html) {
   return new Promise((resolve) => {
     const host = document.createElement("div");
     host.id = "sheet";
+    host.setAttribute("role", "dialog");
+    host.setAttribute("aria-modal", "true");
     host.innerHTML = `<div class="box">${html}<div class="actions">
       <button class="act" data-r="0">Cancel</button>
       <button class="act" data-r="1">OK</button>
     </div></div>`;
     document.body.appendChild(host);
+    const focusWas = document.activeElement;
+    const input = host.querySelector("input");
+    (input ?? host.querySelector("[data-r='1']")).focus();
+    const close = (ok) => {
+      host.remove();
+      focusWas?.focus?.();
+      resolve(ok ? (input?.value.trim() ?? true) : null);
+    };
     host.querySelectorAll("button").forEach((b) =>
-      b.addEventListener("click", () => {
-        const value = host.querySelector("input")?.value.trim();
-        host.remove();
-        resolve(b.dataset.r === "1" ? (value ?? true) : null);
-      })
+      b.addEventListener("click", () => close(b.dataset.r === "1"))
     );
+    host.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close(false);
+      if (e.key === "Enter" && input) close(true);
+      // The trap: tab stays inside the dialog while it exists.
+      if (e.key === "Tab") {
+        const f = [...host.querySelectorAll("button, input")];
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
   });
 }
 
@@ -270,9 +281,7 @@ function confirmSheet(title, detail, onOk) {
 function askText(title, onOk) {
   sheet(`<strong>${esc(title)}</strong>
     <p class="note">The name is shown; the id never moves.</p>
-    <input style="width:100%;padding:7px 10px;margin-top:8px;font-size:13px;color:inherit;background:transparent;border:1px solid color-mix(in srgb, currentColor 20%, transparent);border-radius:6px" />`).then(
-    (value) => {
-      if (value && value !== true) onOk(value);
-    }
-  );
+    <input class="sheet-input" />`).then((value) => {
+    if (value && value !== true) onOk(value);
+  });
 }

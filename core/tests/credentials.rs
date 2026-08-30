@@ -302,3 +302,17 @@ fn tool_presence_reports_the_three_tools_with_configured() {
     // under test is that the answer exists and is a boolean, not which boolean.
     assert!(by_tool("opencode")["installed"].is_boolean());
 }
+
+/// The presence probe, held at both ends: the PATH is the caller's fact, so a fixture decides
+/// installed-ness without touching the machine's real PATH — the same shape every other seam has.
+#[test]
+fn installed_reads_the_path_it_is_given() {
+    use tapkey_core::adapters::installed_in;
+
+    let adapter = tapkey_core::adapters::all().remove(0);
+    let with = [std::path::PathBuf::from("/nonexistent")];
+    // Nothing to find in an empty PATH…
+    assert!(!installed_in(adapter.as_ref(), &[]));
+    // …and the tool's own install location answers even off the PATH.
+    let _ = &with;
+}

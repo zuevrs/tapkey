@@ -35,17 +35,23 @@ use std::path::PathBuf;
 /// Whether a binary is discoverable the way a person's shell would find it: on the PATH, or in
 /// one of the install locations the adapter recorded. Never a network call.
 pub fn installed(adapter: &dyn Adapter) -> bool {
+    installed_in(
+        adapter,
+        &std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()).collect::<Vec<_>>(),
+    )
+}
+
+/// The probe, split from the environment so a test can hold both ends — the same shape every
+/// other seam in `Env` already has. The PATH is the caller's fact, not this function's.
+pub fn installed_in(adapter: &dyn Adapter, path: &[std::path::PathBuf]) -> bool {
     let binary = adapter.binary();
-    let path = std::env::var_os("PATH").unwrap_or_default();
-    let on_path = std::env::split_paths(&path).any(|dir| {
+    path.iter().any(|dir| {
         let candidate = dir.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX));
         candidate.is_file()
-    });
-    on_path
-        || adapter.install_paths().iter().any(|dir| {
-            dir.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX))
-                .is_file()
-        })
+    }) || adapter.install_paths().iter().any(|dir| {
+        dir.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX))
+            .is_file()
+    })
 }
 
 /// What every managed tool owes the core.
