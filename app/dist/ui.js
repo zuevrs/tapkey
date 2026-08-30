@@ -10,8 +10,26 @@ export const esc = (text) =>
 // The catalogue's plural categories, done as the catalogue demands rather than an English `s`.
 export const plural = (one, other, count) => (count === 1 ? one.replace("{count}", "1") : other.replace("{count}", String(count)));
 
-export const tile = (name) =>
-  `<div class="tile" data-l="${esc(name.slice(0, 1).toUpperCase())}"></div>`;
+// A recognisable provider renders its own mark — the prototype's symbol library, extracted
+// verbatim. Everything else falls back to the lettermark: an unknown brand still deserves a
+// face, and inventing one is not ours to do.
+const BRANDS = [
+  [/z\.ai|^zai|z-ai/i, "i-zai"],
+  [/claude|anthropic/i, "i-claude"],
+  [/openai|codex|gpt/i, "i-openai"],
+  [/opencode/i, "i-opencode"],
+  [/deepseek/i, "i-deepseek"],
+  [/ollama/i, "i-ollama"],
+  [/qwen|dashscope/i, "i-qwen"],
+  [/openrouter/i, "i-openrouter"],
+];
+export const brandIcon = (name) => BRANDS.find(([re]) => re.test(name))?.[1];
+export const tile = (name) => {
+  const icon = brandIcon(name);
+  return icon
+    ? `<div class="tile"><svg class="ticon" aria-hidden="true"><use href="#${icon}"/></svg></div>`
+    : `<div class="tile" data-l="${esc(name.slice(0, 1).toUpperCase())}"></div>`;
+};
 
 export const cap = (s) => s.slice(0, 1).toUpperCase() + s.slice(1);
 

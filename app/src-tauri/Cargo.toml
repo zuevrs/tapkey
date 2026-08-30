@@ -25,6 +25,14 @@ tauri-plugin-single-instance = "2"
 tauri-plugin-autostart = "2"
 tauri-plugin-store = "2"
 
+
+# For the vibrancy material behind the panel and HUD: NSVisualEffectView is a view inserted
+# below the webview — no window-class swap, which the live pass measured as display-only.
+[target.'cfg(target_os = "macos")'.dependencies]
+# The vibrancy material behind the floating surfaces, by the tauri author's own crate —
+# the hand-rolled objc insertion crashed on addSubview's ABI and this exists to be that.
+window-vibrancy = "0.5"
+
 [lib]
 name = "tapkey_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]

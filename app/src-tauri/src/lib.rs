@@ -121,6 +121,25 @@ pub fn run() {
             // layer instead of the OS material, which the design rules called "no glass of our
             // own" and reality overruled; the record lives in A11.
 
+            // The floating material, done as a view rather than a window class: NSVisualEffectView
+            // inserted **below** the webview of each floating surface. The live pass measured the
+            // other route — converting the window to an NSPanel — as display-only, its class swap
+            // taking every input event with it; a background view leaves the window and its input
+            // alone, and the CSS tint then sits over the system's own blur.
+            #[cfg(target_os = "macos")]
+            for label in ["panel", "hud"] {
+                if let Some(window) = app.get_webview_window(label) {
+                    // Popover material, active: the menubar-flyout glass macOS itself draws,
+                    // behind the webview — no window-class swap (measured display-only).
+                    let _ = window_vibrancy::apply_vibrancy(
+                        &window,
+                        window_vibrancy::NSVisualEffectMaterial::Popover,
+                        Some(window_vibrancy::NSVisualEffectState::Active),
+                        None,
+                    );
+                }
+            }
+
             let _ = shortcuts::register(app.handle());
 
             tray::build(app.handle())?;

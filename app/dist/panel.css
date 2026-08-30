@@ -263,3 +263,6 @@ input.tfield { outline: none; }
 .model-row .hint { margin-left: auto; }
 .g-empty { padding: 16px 12px; text-align: center; color: var(--muted); font-size: 1.3rem;
   display: grid; gap: 4px; }
+
+/* The brand mark in a tile: currentColor, like the prototype's icons. */
+.tile .ticon { width: 20px; height: 20px; color: var(--mark-knockout); }
