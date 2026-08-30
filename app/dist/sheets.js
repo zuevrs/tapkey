@@ -2,7 +2,7 @@
 // reads through the bridge — the chains and the moments are the core's to give, and this
 // surface renders what it is told. Everything composes from the row primitive and the tokens.
 
-import { call, esc, tile, cap, plural, slotName } from "./ui.js";
+import { call, esc, mark, tile, cap, plural, slotName } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
@@ -14,45 +14,65 @@ document.addEventListener("keydown", (e) => {
 });
 
 export function effectiveState() {
-  surface.className = "sheet-page";
+  surface.className = "sheet";
   drawEffective();
 }
 
 async function drawEffective() {
   const state = await call({ version: 1, op: "effective_state", params: {} });
+  // The prototype's shape: a lede counting the tools in effect, then one card per tool with
+  // its own head and badge, the rows inside it, and the source line under them.
+  const managed = state.tools.filter((t) => t.endpoint.effective);
+  const off = state.tools.filter((t) => !t.endpoint.effective);
   surface.innerHTML = `
-    <header class="sheet-head"><h2>What is in effect right now</h2></header>
+    <h4>What is in effect right now</h4>
+    <div class="eff-lede">${managed.length} of ${state.tools.length} tools are managed by tapkey${
+      off.length ? ` · ${off.map((t) => esc(cap(t.tool))).join(", ")} is not` : ""
+    }</div>
     ${state.tools
       .map(
         (tool) => `
-      <section class="card">
-        <div class="row">
-          ${tile(cap(tool.tool))}
-          <span class="label">${esc(cap(tool.tool))}</span>
-          <span class="value">${tool.endpoint.effective ? esc(tool.endpoint.effective) : "— not managed"}</span>
+      <section class="card eff-card open">
+        <div class="card-head">
+          ${mark(tool.tool)}${esc(cap(tool.tool))}
+          <span class="badge2 ${tool.endpoint.effective ? "is-live" : "is-next"}">${
+            tool.endpoint.effective ? "In effect" : "Not in effect"
+          }</span>
         </div>
         ${tool.slots
           .filter((slot) => slot.effective !== null || slot.owned)
           .map(
             (slot) => `
-          <div class="row">
-            <span class="label">${esc(slotName(slot.slot))}</span>
-            <span class="qualifier">${slot.drifted ? `${esc(cap(tool.tool))} — changed outside tapkey` : slot.owned ? "" : "not managed"}</span>
-            <span class="value">${esc(slot.effective ?? "—")}</span>
+          <div class="row${slot.drifted ? " bad" : ""}">
+            <span class="main"><span class="title">${esc(slotName(slot.slot))}</span>
+              ${slot.drifted
+                ? `<span class="desc">${esc(cap(tool.tool))} — changed outside tapkey</span>`
+                : slot.owned ? "" : `<span class="desc">not managed</span>`}</span>
+            <span class="trail"><span class="val mono">${esc(slot.effective ?? "—")}</span></span>
           </div>`
           )
           .join("")}
+        <div class="card-note">${
+          tool.endpoint.effective
+            ? `Endpoint <span class="mono">${esc(tool.endpoint.effective)}</span>`
+            : "Endpoint — not managed"
+        }</div>
         ${tool.attentions?.length ? attentions(tool, tool.attentions) : ""}
       </section>`
       )
       .join("")}
-    <p class="note">Chains name every place that had an opinion</p>`;
+    <div class="card-note">Chains name every place that had an opinion</div>`;
 }
 
 function attentions(tool, list) {
-  return `<div class="row attn"><span class="note">${list
-    .map((a) => esc(attentionText(cap(tool.tool), a)))
-    .join("<br/>")}</span></div>`;
+  // The prototype's attention block, the panel's own shape reused inside a card.
+  return list
+    .map(
+      (a) => `<div class="p-attn" style="margin:8px"><span>⚠ ${esc(
+        attentionText(cap(tool.tool), a)
+      )}</span></div>`
+    )
+    .join("");
 }
 
 /// An attention renders the catalogue's own sentence with its named placeholders filled —
@@ -75,7 +95,7 @@ function attentionText(tool, a) {
 // -- History ---------------------------------------------------------------------------
 
 export function history() {
-  surface.className = "sheet-page";
+  surface.className = "sheet";
   drawHistory();
 }
 
@@ -83,34 +103,37 @@ async function drawHistory() {
   const { entries } = await call({ version: 1, op: "list_history", params: {} });
   if (!entries.length) {
     surface.innerHTML = `
-      <header class="sheet-head"><h2>Switch history</h2></header>
-      <p class="note">Nothing switched yet</p>`;
+      <h4>Switch history</h4>
+      <div class="card-note">Nothing switched yet</div>`;
     return;
   }
+  // The prototype's history: one group of tall rows, each a mark, a name, the instant and the
+  // file count as its description, and Restore in the trail.
   surface.innerHTML = `
-    <header class="sheet-head"><h2>Switch history</h2>
-      <p class="note">Last 50 switches are restorable</p></header>
-    ${entries
-      .map(
-        (e) => `
-      <div class="card">
-        <div class="row">
+    <h4>Switch history</h4>
+    <div class="eff-lede">Last 50 switches are restorable</div>
+    <div class="group">
+      ${entries
+        .map(
+          (e) => `
+        <div class="row tall${e.kind === "snapshot" ? " snap" : ""}">
           ${tile(e.name)}
-          <span class="label">${esc(e.name)}</span>
-          <span class="qualifier">${esc(when(e.instant))}</span>
-          <button class="act" data-id="${esc(e.id)}" data-kind="${esc(e.kind)}"
+          <span class="main"><span class="title">${esc(e.name)}</span>
+            <span class="desc">${esc(when(e.instant))} · ${esc(
+              plural("1 file", "{count} files", e.files)
+            )}</span>
+            <span class="desc" role="status"></span></span>
+          <span class="trail"><button class="btn sm" data-id="${esc(e.id)}" data-kind="${esc(e.kind)}"
                   data-name="${esc(e.name)}" ${e.restorable ? "" : "disabled"}>
-            ${e.restorable ? "Restore" : "Can’t be restored"}</button>
-        </div>
-        <div class="row"><span class="qualifier">${esc(plural("1 file", "{count} files", e.files))}</span></div>
-        <div class="result note" role="status"></div>
-      </div>`
-      )
-      .join("")}`;
+            ${e.restorable ? "Restore" : "Can’t be restored"}</button></span>
+        </div>`
+        )
+        .join("")}
+    </div>`;
 
   surface.querySelectorAll("button[data-id]").forEach((button) =>
     button.addEventListener("click", async () => {
-      const result = button.closest(".card").querySelector(".result");
+      const result = button.closest(".row").querySelector('[role="status"]');
       // The envelope is the one shape the core knows; a restore names its target.
       const target = button.dataset.kind === "snapshot"
         ? "snapshot"

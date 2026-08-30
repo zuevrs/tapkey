@@ -22,14 +22,25 @@ const BRANDS = [
   [/ollama/i, "i-ollama"],
   [/qwen|dashscope/i, "i-qwen"],
   [/openrouter/i, "i-openrouter"],
+  [/^system default$|^tapkey$/i, "i-sys"],
 ];
 export const brandIcon = (name) => BRANDS.find(([re]) => re.test(name))?.[1];
-export const tile = (name) => {
+
+/// The prototype's `ico()`, verbatim in shape: a mark inside a tile, or the lettermark when
+/// there is no mark to draw. The classes are the prototype's — `.tile`, `.ic`, `.lettermark`
+/// with its `data-l` — because they are what its stylesheet paints.
+export const mark = (name, cls = "ic") => {
   const icon = brandIcon(name);
   return icon
-    ? `<div class="tile"><svg class="ticon" aria-hidden="true"><use href="#${icon}"/></svg></div>`
-    : `<div class="tile" data-l="${esc(name.slice(0, 1).toUpperCase())}"></div>`;
+    ? `<svg class="${cls}" aria-hidden="true"><use href="#${icon}"/></svg>`
+    : `<span class="lettermark" data-l="${esc(String(name).slice(0, 1).toUpperCase())}"></span>`;
 };
+export const tile = (name) => `<span class="tile">${mark(name)}</span>`;
+
+/// A Segoe Fluent codepoint, the prototype's `fic()`: the win layer swaps these in where macOS
+/// draws an SF Symbol, and the css decides which one is visible per platform.
+export const fic = (cp, cls) =>
+  `<svg class="fic${cls ? ` ${cls}` : ""}" aria-hidden="true"><use href="#f-${cp}"/></svg>`;
 
 export const cap = (s) => s.slice(0, 1).toUpperCase() + s.slice(1);
 

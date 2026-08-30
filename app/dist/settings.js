@@ -3,7 +3,7 @@
 // catalogue's words, the OS's geometry — through the confirm_dialog command; the one shape
 // this stack has no native dialog for (ask-with-field) stays an in-page sheet.
 
-import { call, esc, tile, tools, cap, plural, slotName, slotHint, PRESETS } from "./ui.js";
+import { call, esc, fic, mark, tools, cap, slotName, slotHint, PRESETS } from "./ui.js";
 
 const surface = document.getElementById("surface");
 
@@ -18,31 +18,43 @@ document.addEventListener("keydown", (e) => {
 let tab = "providers";
 
 export function settings() {
-  surface.className = "settings";
+  surface.className = "window";
   draw();
 }
 
 let selected = null; // the side list's selection: a provider id, or null for the presets view
 
 async function draw() {
+  // The prototype's own tab strip: `.tab` items with `.on`, inside the titlebar band — not
+  // <button>s with a class the stylesheet has never heard of. The traffic lights (`.tl`) are
+  // the mock's; a real window has the OS's.
+  const TABS = [["providers", "Providers"], ["profiles", "Profiles"], ["general", "General"]];
   surface.innerHTML = `
-    <nav class="tabs">
-      <button data-tab="providers">Providers</button>
-      <button data-tab="profiles">Profiles</button>
-      <button data-tab="general">General</button>
-    </nav>
-    <div class="win-body" id="win-body">
-      <aside class="side" id="side-list" ${tab === "general" ? 'style="display:none"' : ""}></aside>
-      <section class="pane" id="pane-content"></section>
+    <div class="titlebar">
+      <div class="tabs">
+        ${TABS.map(([id, name]) =>
+          `<div class="tab${id === tab ? " on" : ""}" data-tab="${id}" tabindex="0"
+                role="tab" aria-selected="${id === tab}">${name}</div>`).join("")}
+      </div>
+    </div>
+    <div class="win-body${tab === "general" ? " nosidebar" : ""}" id="win-body">
+      ${tab === "general" ? "" : '<aside class="side" id="side-list"></aside>'}
+      <section class="content" id="pane-content"></section>
     </div>`;
-  surface.querySelectorAll(".tabs button").forEach((b) =>
-    b.addEventListener("click", () => {
-      tab = b.dataset.tab;
+  surface.querySelectorAll(".tab").forEach((el) => {
+    const go = () => {
+      tab = el.dataset.tab;
       selected = null;
       draw();
-    })
-  );
-  surface.querySelector(`[data-tab="${tab}"]`).classList.add("active");
+    };
+    el.addEventListener("click", go);
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        go();
+      }
+    });
+  });
   const side = document.getElementById("side-list");
   const pane = document.getElementById("pane-content");
   if (tab === "providers") await providers(side, pane);
@@ -84,8 +96,9 @@ function drawSide(side, items, placeholder, addLabel, onAdd) {
   side.innerHTML = `
     <input class="side-find" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" />
     <div role="listbox" aria-label="Items">${items
-      .map((it) => `<div class="s-item${it.on ? " on" : ""}" role="option" tabindex="-1"
-           aria-selected="${it.on}" data-id="${esc(it.id)}"><span>${esc(it.name)}</span></div>`)
+      .map((it) => `<div class="s-item${it.on ? " on" : ""}" role="option" tabindex="${it.on ? "0" : "-1"}"
+           aria-selected="${it.on}" title="${esc(it.name)}" data-id="${esc(it.id)}"
+           >${mark(it.name)}<span>${esc(it.name)}</span></div>`)
       .join("")}</div>
     <div class="plus" role="button" tabindex="0">＋ ${esc(addLabel)}</div>`;
   const find = side.querySelector(".side-find");
@@ -109,7 +122,7 @@ function renderPresets(pane) {
     <div class="group">
       ${PRESETS.map((p, i) => `
         <div class="g-row preset" data-pi="${i}" role="button" tabindex="0" style="cursor:pointer">
-          ${tile(p.name)}
+          ${mark(p.name)}
           <span class="gl" style="min-width:0">${esc(p.name)}</span>
           <span class="gv">${p.opt ? `<span class="hint">${esc(p.opt)}</span>` : ""}<span class="hint">›</span></span>
         </div>`).join("")}
@@ -161,7 +174,7 @@ async function addPreset(pane, preset) {
 /// an input.
 function renderNewProvider(pane) {
   pane.innerHTML = `
-    <div class="pane-head">${tile("+")}New provider</div>
+    <div class="pane-head"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>New provider</div>
     <div class="g-label">Endpoint</div>
     <div class="g-desc">Where requests go, and the key that signs them</div>
     <div class="group">
@@ -176,7 +189,7 @@ function renderNewProvider(pane) {
       <div class="g-status">Test fills this in</div>
       <div class="g-row"><span class="gl">Connection</span>
         <span class="gv"><span class="hint">Not tested yet</span>
-          <button class="act" id="np-add">Add provider</button></span></div>
+          <button class="btn" id="np-add">Add provider</button></span></div>
     </div>
     <div class="g-note">You can add it untested — Test later fills the format</div>
     <div class="g-note" id="np-result" role="status"></div>`;
@@ -222,7 +235,7 @@ function renderProviderPane(pane, p, using, toolList) {
   const draw2 = (testNote) => {
     const usedBy = using[p.id] ?? 0;
     pane.innerHTML = `
-      <div class="pane-head">${tile(p.name)}${esc(p.name)}</div>
+      <div class="pane-head">${mark(p.name)}${esc(p.name)}</div>
       <div class="g-label">Provider</div>
       <div class="group">
         <div class="g-row"><span class="gl">Name</span>
@@ -244,7 +257,7 @@ function renderProviderPane(pane, p, using, toolList) {
         <div class="g-row"><span class="gl">Connection</span>
           <span class="gv">${p.formats ? `<span class="hint"><span class="ok">✓</span> ${esc(testNote ?? "tested")}</span>`
             : '<span class="hint">Not tested yet</span>'}
-            <span class="hint" id="test-out"></span><button class="act" id="test-btn">Test</button></span></div>
+            <span class="hint" id="test-out"></span><button class="btn" id="test-btn">Test</button></span></div>
         <div class="g-row"><span class="gl">Enabled</span>
           <span class="gv"><label class="swl"><input type="checkbox" id="prov-enabled" ${p.enabled ? "checked" : ""}/><span class="sw"></span></label></span></div>
       </div>
@@ -253,7 +266,7 @@ function renderProviderPane(pane, p, using, toolList) {
       <div class="group">
         <div class="g-row"><span class="gv grow">
           <input class="tfield grow" id="m-search" placeholder="Filter models…" /></span>
-          <button class="act" id="disc-btn">Discover</button></div>
+          <button class="btn" id="disc-btn">Discover</button></div>
         <div class="model-rows" id="m-rows"></div>
         <div class="g-status" id="m-status">${
           p.models?.length
@@ -262,7 +275,7 @@ function renderProviderPane(pane, p, using, toolList) {
         }</div>
       </div>
       <div class="g-note" id="disc-out" role="status"></div>
-      <div class="group"><button class="act danger" id="remove-btn">Remove provider…</button></div>
+      <div class="group"><button class="danger" id="remove-btn">Remove provider…</button></div>
       <div class="g-note">${usedBy ? `${usedBy} ${usedBy === 1 ? "profile uses" : "profiles use"} this provider and will fall back to System default` : ""}</div>
       <div class="g-note" id="pane-result" role="status"></div>`;
 
@@ -379,12 +392,11 @@ async function profilesTab(side, pane) {
   editProfile(profile.id, pane, toolList);
   pane.insertAdjacentHTML("beforeend", `
     <div class="group">
-      <div class="actions">
-        <button class="act" id="pf-rename">Rename…</button>
-        <button class="act" id="pf-duplicate">Duplicate…</button>
-        <button class="act danger" id="pf-delete">Delete profile…</button>
-      </div>
+      <div class="g-row"><span class="gl">Name</span>
+        <span class="gv"><button class="btn" id="pf-rename">Rename…</button>
+          <button class="btn" id="pf-duplicate">Duplicate…</button></span></div>
     </div>
+    <div class="group"><button class="danger" id="pf-delete">Delete profile…</button></div>
     <div class="g-note" id="pf-result" role="status"></div>`);
   const result = pane.querySelector("#pf-result");
   const refused = (r) => { result.textContent = r.failure ? `${r.failure.kind} — nothing was changed` : ""; };
@@ -463,7 +475,7 @@ function general(pane) {
       </div>
       <div class="g-row">
         <span class="gl">Run setup again…</span>
-        <span class="gv"><button class="act" id="g-setup">Run setup again…</button></span>
+        <span class="gv"><button class="btn" id="g-setup">Run setup again…</button></span>
       </div>
     </div>`;
   window.__TAURI__.core.invoke("get_autostart").then((on) => {
@@ -508,21 +520,18 @@ async function editProfile(id, paneArg, toolListArg) {
     const anyProvider = Object.values(working)[0]?.provider ?? "";
     const mainOf = (tool) => working[tool]?.slots?.main ?? "";
     pane.innerHTML = `
-      <header class="ob-title">${esc(profile.name)}</header>
-      <p class="g-desc">The tools this profile changes; the rest keep what they have</p>
-      <div class="g-label">All tools</div>
+      <div class="pane-head">${mark(profile.name)}${esc(profile.name)}</div>
+      <div class="g-label">All slots</div>
+      <div class="g-desc">Every slot tapkey owns, filled from one provider</div>
       <div class="group">
-        <div class="row tall">
-          <span class="label">Provider</span>
-          <span class="trail"><select id="uni-provider">
+        <div class="uniform-row">
+          <b>All slots</b><span class="arrow">→</span>
+          <select id="uni-provider">
             <option value="">Not in this profile</option>
             ${enabled.map((p) =>
               `<option value="${esc(p.id)}"${anyProvider === p.id ? " selected" : ""}>${esc(p.name)}</option>`).join("")}
-          </select></span>
-        </div>
-        <div class="row tall">
-          <span class="stack"><span class="label">Main model</span></span>
-          <span class="trail">${
+          </select>
+          ${
             (() => {
               const models = (providers.find((x) => x.id === anyProvider)?.models ?? [])
                 .filter((mo) => mo.enabled);
@@ -535,19 +544,29 @@ async function editProfile(id, paneArg, toolListArg) {
                      ${current && !models.some((mo) => mo.id === current)
                        ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : ""}
                    </select>`
-                : `<input class="sheet-input" id="uni-main" value="${esc(current)}" placeholder="—" />`;
+                : `<input class="tinput" id="uni-main" value="${esc(current)}" placeholder="—" />`;
             })()
-          }</span>
+          }
+        </div>
+        <div class="g-status">The tools this profile changes; the rest keep what they have</div>
+      </div>
+      <div class="g-label">Actions</div>
+      <div class="group">
+        <div class="g-row rowbtn${custom ? " open" : ""}" id="customize" role="button"
+             tabindex="0" aria-expanded="${custom}">
+          <span class="gl">Slots</span>
+          <span class="gv"><span class="hint">Assign individually, per tool and per slot</span>
+            <span class="chev">›${fic("E76C", "inline")}</span></span>
         </div>
       </div>
-      <div class="actions"><button class="act" id="customize">${custom ? "Hide per-tool detail" : "Customize per tool…"}</button></div>
-      ${custom ? state.tools.map((tool) => {
+      <div class="matrix${custom ? " open" : ""}">
+      ${state.tools.map((tool) => {
         const a = working[tool.tool] ?? { provider: null, slots: {} };
-        return `<div class="g-label">${esc(cap(tool.tool))}</div>
-        <div class="group">
-          <div class="row tall">
-            <span class="label">Provider</span>
-            <span class="trail"><select data-tool="${esc(tool.tool)}" data-kind="provider">
+        return `<div class="group">
+          <div class="tool-head">${mark(tool.tool)}${esc(cap(tool.tool))}</div>
+          <div class="g-row">
+            <span class="gl">Provider</span>
+            <span class="gv"><select data-tool="${esc(tool.tool)}" data-kind="provider">
               <option value="">Not in this profile</option>
               ${enabled.map((p) =>
                 `<option value="${esc(p.id)}"${a.provider === p.id ? " selected" : ""}>${esc(p.name)}</option>`).join("")}
@@ -558,10 +577,11 @@ async function editProfile(id, paneArg, toolListArg) {
               .filter((mo) => mo.enabled);
             const current = a.slots?.[slot.slot] ?? "";
             return `
-            <div class="row tall">
-              <span class="stack"><span class="label">${esc(slotName(slot.slot))}</span>
-                ${slotHint(slot.slot) ? `<span class="qualifier">${esc(slotHint(slot.slot))}</span>` : ""}</span>
-              <span class="trail">${
+            <div class="g-row">
+              <span class="gl">${esc(slotName(slot.slot))}${
+                slotHint(slot.slot) ? `<span class="sub">${esc(slotHint(slot.slot))}</span>` : ""
+              }</span>
+              <span class="gv">${
                 models.length
                   ? `<select data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}" data-kind="slot">
                        <option value="">—</option>
@@ -570,18 +590,20 @@ async function editProfile(id, paneArg, toolListArg) {
                        ${current && !models.some((mo) => mo.id === current)
                          ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : ""}
                      </select>`
-                  : `<input class="sheet-input" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
+                  : `<input class="tinput" data-tool="${esc(tool.tool)}" data-slot="${esc(slot.slot)}"
                        value="${esc(current)}" placeholder="—" />`
               }</span>
             </div>`;
           }).join("")}
         </div>`;
-      }).join("") : ""}
-      <div class="ob-foot">
-        <button class="act" id="edit-cancel">Cancel</button>
-        <button class="act primary" id="edit-save">Save</button>
+      }).join("")}
       </div>
-      <div class="result note" role="status"></div>`;
+      <div class="group">
+        <div class="g-row"><span class="gl">Changes</span>
+          <span class="gv"><button class="btn" id="edit-cancel">Cancel</button>
+            <button class="btn primary" id="edit-save">Save</button></span></div>
+      </div>
+      <div class="g-status" role="status"></div>`;
 
     // The uniform row is the default the catalogue draws: one provider, one main model, every
     // tool. Setting them writes through to each tool's assignment at once.
@@ -603,9 +625,17 @@ async function editProfile(id, paneArg, toolListArg) {
         if (working[tool.tool]) working[tool.tool].slots.main = model;
       }
     });
-    pane.querySelector("#customize").addEventListener("click", () => {
+    const disc = pane.querySelector("#customize");
+    const toggle = () => {
       custom = !custom;
       draw();
+    };
+    disc.addEventListener("click", toggle);
+    disc.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
     });
     pane.querySelectorAll("select[data-kind=provider]").forEach((sel) =>
       sel.addEventListener("change", () => {
@@ -637,7 +667,7 @@ async function editProfile(id, paneArg, toolListArg) {
     );
     document.getElementById("edit-cancel").addEventListener("click", () => draw());
     document.getElementById("edit-save").addEventListener("click", async () => {
-      const result = pane.querySelector(".result");
+      const result = pane.querySelector('[role="status"]');
       const r = await call({
         version: 1, op: "update_profile",
         params: { id, tools: working },
@@ -649,17 +679,21 @@ async function editProfile(id, paneArg, toolListArg) {
   draw();
 }
 
-// -- The sheet: confirm and ask-text, in page, a real dialog ---------------------------
+// -- The sheet: ask-text, in page, in the prototype's own alert shape -------------------
+//
+// The prototype draws this as `.alert-veil` over `.alert` — a title, a body, a button row
+// where the default is filled. tauri-plugin-dialog has no text input (grilled, recorded in
+// A13), so the two naming dialogs stay in the page and wear the prototype's alert.
 
 function sheet(html) {
   return new Promise((resolve) => {
     const host = document.createElement("div");
-    host.id = "sheet";
+    host.className = "alert-veil";
     host.setAttribute("role", "dialog");
     host.setAttribute("aria-modal", "true");
-    host.innerHTML = `<div class="box">${html}<div class="actions">
-      <button class="act" data-r="0">Cancel</button>
-      <button class="act" data-r="1">OK</button>
+    host.innerHTML = `<div class="alert">${html}<div class="al-btns">
+      <button class="btn" data-r="0">Cancel</button>
+      <button class="btn defaulted" data-r="1">OK</button>
     </div></div>`;
     document.body.appendChild(host);
     const focusWas = document.activeElement;
@@ -694,8 +728,8 @@ function askText(title, onOk) {
   // The one shape this stack has no native dialog for: an in-page field carrying the
   // catalogue's words, the default the catalogue names.
   const def = title.startsWith("Duplicate") ? `${title.replace(/^Duplicate\s+|”$/g, "")} copy`.replace("“", "") : "";
-  sheet(`<strong>${esc(title)}</strong>
-    <label class="field"><span>Name</span><input class="sheet-input" value="${esc(def)}" /></label>`).then((value) => {
+  sheet(`<div class="al-t">${esc(title)}</div>
+    <div class="al-b">Name</div><input class="tinput grow" value="${esc(def)}" />`).then((value) => {
     if (value && value !== true) onOk(value);
   });
 }

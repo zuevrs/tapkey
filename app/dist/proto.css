@@ -1,0 +1,1104 @@
+/* Extracted verbatim from internal/prototype/tapkey-prototype.html by
+   .scratch/app/app-gate/extract-css.py — do not hand-edit.
+
+   The prototype is the specification for anything user-visible, and a hand-rewritten
+   stylesheet drifts from it by construction: three review passes in a row found the app's
+   own css carrying 170 of the prototype's 573 product rules. So the prototype's bytes are
+   the app's bytes, and the app adds only what a real window needs and a page cannot have
+   (transparent surfaces, the window-sized layout, the sheets' scroll containers) in
+   panel.css, which loads after this file.
+
+   Re-extract after any prototype change:  python3 .scratch/app/app-gate/extract-css.py
+   The css gate asserts this file is current. */
+/* ============================================================
+     tokens — everything below derives from these
+     type      macOS  11 caption · 12 meta · 13 body · 15 title · 22 section
+               Win11  12 caption · 14 body · 14 semibold emphasis · 20 subtitle · 28 title
+                      — Fluent's own ramp; the two ladders do not merge, they swap
+               10 micro: badges, chips, disclosure chevrons, letter-marks, step numbers,
+                  the file path under an attention row
+     radius    22 floating (panel, HUD) · 14 windows, sheets, cards · 12 groups & rows
+               8 fields, buttons, chips · 2 meter bars
+               nested shapes derive: inner = outer − padding (ConcentricRectangle)
+     spacing   2 pt grid. 4 is the default step; 2 and 6 tighten badges, chips and dense rows;
+               odd values (5 · 7 · 9 · 11 · 13 · 15) exist only where a control is optically
+               centred against a neighbour and the even step reads off by a hair
+     icons     16 lists, search, menu bar · 20 settings pane head · 13 scope chip
+               12 HUD & metadata · 6 status dots
+     rows      32 panel, nested and sidebar · 40 settings group
+     ============================================================ */
+  /* ── MOTION ──────────────────────────────────────────────────────────────────
+     Three tiers, because WinUI publishes exactly three and no more. Windows takes
+     its numbers from the source; macOS has none to take (the HIG publishes no
+     durations at all) so `normal` is anchored on Core Animation's own 0.25 default
+     and the other two step down from it.
+
+     The rule: an entrance is one tier slower than the exit it pairs with. The
+     absolute tier comes from the weight of the surface, so no surface needs an
+     exception of its own. A state change has no direction and is symmetric.
+     Elements that move together share a tier or they visibly desync.
+
+     Three declared exceptions, and the motion probe fails anything else:
+       1. the HUD's spring entrance (its exit is the ordinary faster tier)
+       2. the shimmer's 1.1s loop, which is a looping indicator, not a transition
+       3. that shimmer becoming static under reduced motion
+     ──────────────────────────────────────────────────────────────────────────── */
+  :root{
+    --dur-faster:100ms; --dur-fast:150ms; --dur-normal:250ms;
+    --ease-entrance:cubic-bezier(.2,.9,.25,1); --ease-exit:cubic-bezier(.2,.9,.25,1);
+    /* one number, not two hard-coded ones: Windows sets 14px where macOS sets 13, so the
+       same width holds less text, and a long locale holds less again */
+    --panel-w:min(35.2rem, 92vw);
+    /* a half-pixel border is a Retina idiom: Fluent strokes are 1px, and at 125% or 150%
+       display scaling .5px rounds unpredictably and the line flickers in and out */
+    --hairline:0.5px;
+    /* The OS text-size setting (Windows Accessibility scales text 100–225% independently of
+       display scaling) has to be able to reach the type, and in a webview it does not arrive
+       for free. Type and row heights are rem; everything else — icons, padding, hairlines —
+       stays in px, because text scaling scales text, not furniture.
+       Capped at 2: past that the panel scrolls rather than reflowing into nonsense. */
+    --text-scale:1;
+  }
+  :root[data-platform="win"]{
+    /* ControlFasterAnimationDuration / ControlFastAnimationDuration /
+       ControlNormalAnimationDuration, and Fluent's Fast Out Slow In / Slow Out Fast In */
+    --dur-faster:83ms; --dur-fast:167ms; --dur-normal:250ms;
+    --ease-entrance:cubic-bezier(0,0,0,1); --ease-exit:cubic-bezier(1,0,1,1);
+    --panel-w:min(37.6rem, 92vw);
+    --hairline:1px;
+  }
+  html{font-size:calc(10px * min(var(--text-scale), 2))}
+  :root{
+    --canvas:#f6f7f9; --ink:#1c1c1e; --muted:#6b6b70; --line:#dcdee3; --card:#fff; --accent:#0a6cd8;
+    --attn:#b25e00; --bad:#c9342b; --good:#248a3d; --on-attn:#fff; --on-bad:#fff;
+    --wall:radial-gradient(120% 90% at 16% 4%, rgba(255,255,255,.55), transparent 56%),
+           radial-gradient(95% 75% at 88% 96%, rgba(255,171,120,.26), transparent 62%),
+           linear-gradient(155deg,#5878b4 0%,#8878b8 48%,#b28fa8 100%);
+    --sys-bg:rgba(244,244,247,.92); --sys-text:#1c1c1e; --sys-dim:#65656A;
+    --sys-sep:rgba(0,0,0,.09); --sys-hi:#0a6cd8;
+    --accent-fill:#0a6cd8; --on-accent:#fff;        /* white on fill: 5.06:1 */
+    --sel-fill:#0a6cd8;  --on-sel:#fff;          /* selected row: 5.06:1 */
+    --glass-tint:rgba(247,247,250,.76); --glass-rim:rgba(255,255,255,.7); --glass-inner:rgba(255,255,255,.55);
+    --win-bg:#ebedf1; --win-side:rgba(255,255,255,.52); --win-content:#ebedf1;
+    --group:#fff; --group-sep:rgba(0,0,0,.07);
+    --field:#fff; --field-line:#d3d3d9; --chip:rgba(0,0,0,.055);
+    --sw-off:#d3d3d9; --sw-knob:#fff; --press-fill:#0a4fa0; --dim-text:#9a9aa1;
+    --bar-attn:#ffb340; --mark-knockout:#fff;
+    --sw-on:var(--sys-hi); --bar-glyph:#fff;   /* macOS switches are accent, not iOS green */
+    --shadow:0 16px 40px rgba(18,22,34,.28), 0 1px 3px rgba(18,22,34,.18);
+    --r-lg:22px; --r-md:14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]){
+      --canvas:#101013; --ink:#f2f2f5; --muted:#95959c; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+      --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
+      --wall:radial-gradient(120% 90% at 18% 4%, rgba(126,158,224,.34), transparent 58%),
+           radial-gradient(95% 75% at 88% 96%, rgba(196,96,142,.28), transparent 62%),
+           linear-gradient(155deg,#131d35 0%,#211936 50%,#2c1b2f 100%);
+      --sys-bg:rgba(42,42,47,.9); --sys-text:#f2f2f5; --sys-dim:#B0B0B8;
+      --sys-sep:rgba(255,255,255,.12); --sys-hi:#2f7cf6;
+    --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
+    --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
+      --glass-tint:rgba(46,46,51,.74); --glass-rim:rgba(255,255,255,.26); --glass-inner:rgba(255,255,255,.14);
+      --win-bg:#232327; --win-side:rgba(255,255,255,.05); --win-content:#232327;
+      --group:#2c2c31; --group-sep:rgba(255,255,255,.09);
+      --field:#37373d; --field-line:#48484f; --chip:rgba(255,255,255,.09);
+      --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
+      --bar-attn:#ffb340; --mark-knockout:#1d1d21;
+      --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --canvas:#101013; --ink:#f2f2f5; --muted:#95959c; --line:#2e2e34; --card:#1d1d21; --accent:#57a6ff;
+    --attn:#ffb340; --bad:#ff6b60; --good:#30d158; --on-attn:#2a1e06; --on-bad:#2b0f0c;
+    --wall:radial-gradient(120% 90% at 18% 4%, rgba(126,158,224,.34), transparent 58%),
+           radial-gradient(95% 75% at 88% 96%, rgba(196,96,142,.28), transparent 62%),
+           linear-gradient(155deg,#131d35 0%,#211936 50%,#2c1b2f 100%);
+    --sys-bg:rgba(42,42,47,.9); --sys-text:#f2f2f5; --sys-dim:#B0B0B8;
+    --sys-sep:rgba(255,255,255,.12); --sys-hi:#2f7cf6;
+    --accent-fill:#57a6ff; --on-accent:#121214;   /* dark on bright fill: 7.40:1 */
+    --sel-fill:#1a5fd6;  --on-sel:#fff;          /* 5.75:1 — #2f7cf6 gave only 3.94 */
+    --glass-tint:rgba(46,46,51,.74); --glass-rim:rgba(255,255,255,.26); --glass-inner:rgba(255,255,255,.14);
+    --win-bg:#232327; --win-side:rgba(255,255,255,.05); --win-content:#232327;
+    --group:#2c2c31; --group-sep:rgba(255,255,255,.09);
+    --field:#37373d; --field-line:#48484f; --chip:rgba(255,255,255,.09);
+    --sw-off:rgba(255,255,255,.16); --sw-knob:#c9c9ce; --press-fill:#6fb2ff; --dim-text:#6e6e76;
+    --bar-attn:#ffb340; --mark-knockout:#1d1d21;
+    --shadow:0 16px 40px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--canvas);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
+  .num{font-variant-numeric:tabular-nums}
+  
+  .ic{width:16px;height:16px;flex:none;display:inline-block;vertical-align:-2px}
+  .lettermark{width:16px;height:16px;flex:none;border-radius:8px;position:relative;
+    display:inline-block;vertical-align:-2px;background:currentColor}
+  .lettermark::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;font-size:1rem;font-weight:700;color:var(--mark-knockout)}
+  /* on an inverted row the tile takes the row's colour, so the letter takes the row's fill */
+  .p-row.sel .lettermark::after,.mini .mi.sel .lettermark::after,
+  .side .s-item.on .lettermark::after{color:var(--sys-hi)}
+  .p-row.prs .lettermark::after{color:var(--press-fill)}
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  /* The panel section carries ten notes against a 448 px specimen. Beside each other, one of
+     the two always has to be stretched, and whichever loses shows a hole — first under the
+     stage, then under the editor once the stage was stretched instead. So the hero goes full
+     width at a desktop's own proportions and the commentary runs beneath it in columns:
+     nothing is stretched to match anything, and the specimen gets the size it deserves. */
+
+  
+  /* the heading of a breakout section shares the specimen's left edge — otherwise a 524 px
+     column of prose floats 160 px inboard of a 1384 px hero with nothing tying them together */
+
+  
+
+  
+
+  
+
+  .bal{font-variant-numeric:tabular-nums}
+  .bal.low{color:var(--attn)}
+  .ok{color:var(--sys-text)} .bad{color:var(--bad)}
+  .attn-chip{color:var(--attn);flex:none;display:inline-flex;align-items:center;gap:3px;font-size:1rem;
+    font-weight:700;letter-spacing:.06em;border:1px solid currentColor;border-radius:8px;padding:0 4px}
+
+  /* ---------- transparent Tahoe bar ---------- */
+
+  
+
+  /* faux editor behind the glass, so lensing has something to bend */
+
+  
+
+  
+
+  /* ---------- THE ONE PANEL (glass) ---------- */
+  .glass{position:relative;background:var(--glass-tint);
+    backdrop-filter:blur(42px) saturate(112%) brightness(1.02);
+    -webkit-backdrop-filter:blur(42px) saturate(112%) brightness(1.02);
+    border-radius:var(--r-lg);border:var(--hairline) solid var(--glass-rim);
+    box-shadow:var(--shadow), inset 0 1px 0 var(--glass-inner);overflow:hidden}
+  .glass::before{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
+    background:radial-gradient(120% 80% at 12% -10%, rgba(255,255,255,.5), transparent 58%),
+               radial-gradient(90% 60% at 105% 8%, rgba(255,255,255,.22), transparent 60%)}
+  .glass > *{position:relative;z-index:1}
+
+  .panel{width:var(--panel-w);color:var(--sys-text);user-select:none}
+  /* the panel names the file, the key and the line; that is what a user carries to a
+     terminal or an issue, so it is the one thing in here they can select */
+  .p-attn .why{user-select:text;cursor:text}
+  .p-head{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:var(--hairline) solid var(--glass-rim)}
+  .p-head .nm{font-size:1.5rem;font-weight:600}
+  .p-head .delta{margin-left:auto}
+  .p-head .srch{color:var(--sys-dim);cursor:pointer;display:flex;align-items:center;padding:2px;border-radius:8px}
+  .p-head .srch:hover{color:var(--sys-text);background:var(--chip)}
+  .p-meter{padding:0 15px 11px;display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:1.1rem;
+    color:var(--sys-dim);border-bottom:var(--hairline) solid var(--glass-rim)}
+  .mm-bar{grid-column:1/3;height:4px;border-radius:2px;background:var(--sys-sep);overflow:hidden}
+  .mm-bar span{display:block;height:100%;border-radius:2px;background:var(--sys-hi)}
+  .mm-bar.warn span{background:var(--attn)}
+  .p-searchrow{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:var(--hairline) solid var(--glass-rim)}
+  .p-searchrow .ic{width:16px;height:16px;color:var(--sys-dim)}
+  .p-searchrow input{flex:1;background:none;border:none;outline:none;font-size:1.5rem;color:var(--sys-text);font-family:inherit}
+  .p-searchrow input::placeholder{color:var(--sys-dim)}
+  .p-sec{font-size:1.1rem;font-weight:700;letter-spacing:.06em;color:var(--sys-dim);padding:8px 20px 4px}
+  .p-rows{padding:4px 8px 8px}
+  .p-row{display:flex;align-items:center;gap:10px;min-height:3.2rem;padding:4px 12px;border-radius:12px;
+    cursor:pointer;font-size:1.3rem}
+  .p-row:hover{background:var(--chip)}
+  .p-row.sel{background:var(--sel-fill);color:var(--on-sel)}
+  /* 92% is the floor: at 88% the secondary text on the light-theme fill was 4.28:1 */
+  .p-row.sel .sub,.p-row.sel .bal,.p-row.sel .scope,.p-row.sel .chev{
+    color:color-mix(in srgb, var(--on-sel) 92%, transparent)}
+  .p-row.dim{opacity:.62}
+  .p-row .check{width:12px;flex:none;font-size:1.2rem;visibility:hidden}
+  .p-row.active .check{visibility:visible}
+  /* Marks differ wildly in ink — a hairline llama beside a solid slab. One tile of one
+     size around every mark makes them read as one set, which is what Raycast's palette
+     does and what Control Center does with its circles. */
+  .tile{width:22px;height:22px;border-radius:8px;flex:none;display:flex;align-items:center;
+    justify-content:center;background:var(--chip);box-shadow:inset 0 0 0 var(--hairline) var(--sys-sep)}
+  .tile .ic,.tile svg{width:14px;height:14px}
+  .tile .lettermark{width:14px;height:14px}
+  .p-row .qual{font-size:1.2rem;color:var(--sys-dim);margin-left:8px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* the same money as .bal, so it gets the same figures: proportional digits make the
+     column shimmy every time a balance refreshes */
+  .p-row .qual .q-bal{font-variant-numeric:tabular-nums}
+  .p-row .qual .q-bal.low{color:var(--attn)}
+  .p-row .kn{margin-left:auto;flex:none;font-size:1.1rem;color:var(--sys-dim);
+    font-variant-numeric:tabular-nums}
+  .p-row.sel .kn,.p-row.sel .qual{color:color-mix(in srgb, var(--on-sel) 92%, transparent)}
+  .p-row .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .p-row .bal{margin-left:auto;font-size:1.2rem;color:var(--sys-dim);width:66px;text-align:right;flex:none}
+  .p-row .scope + .bal{margin-left:8px}
+  .p-row .scope{flex:none;margin-left:auto;background:var(--chip);border-radius:8px;
+    padding:2px 6px;color:var(--sys-dim);font-size:1.1rem;white-space:nowrap}
+  .p-row.sel .scope{background:color-mix(in srgb, var(--on-sel) 22%, transparent)}
+  .p-row .provlogo{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--sys-dim)}
+  .p-row .chev{font-size:1rem;color:var(--sys-dim);transition:transform var(--dur-fast) var(--ease-exit)}
+  .p-row.open .chev{transition:transform var(--dur-normal) var(--ease-entrance)}
+  .p-row.open .chev{transform:rotate(90deg)}
+  .p-sub{overflow:hidden;max-height:0;transition:max-height var(--dur-fast) var(--ease-exit)}
+  .p-sub.open{transition:max-height var(--dur-normal) var(--ease-entrance)}
+  .p-sub.open{max-height:240px}
+  .p-sub .p-row{margin-left:20px;min-height:3.2rem;font-size:1.3rem;padding:4px 12px}
+  .p-attn{display:flex;gap:9px;align-items:flex-start;margin:8px 8px;padding:9px 12px;border-radius:12px;
+    background:color-mix(in srgb, var(--attn) 10%, transparent);font-size:1.2rem;color:var(--sys-text);
+    box-shadow:inset 0 0 0 var(--hairline) color-mix(in srgb, var(--attn) 22%, transparent)}
+  /* Q139/Q140: the second line names the file, the key and the line number */
+  .p-attn .why{display:block;margin-top:3px;font-size:1.1rem;color:var(--sys-dim);
+    overflow:hidden;text-overflow:ellipsis}
+  .p-attn .why .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1rem;
+    color:var(--sys-text)}
+  .p-attn .acts{display:flex;gap:8px;margin-top:7px}
+  /* these five controls are real buttons so Enter, Space, focus and the AX role come from
+     the platform rather than from handlers; the reset keeps the appearance they had as spans */
+  .p-attn .act,.p-foot .fi,.p-head .srch{font:inherit;border:none;background:none;
+    -webkit-appearance:none;appearance:none;text-align:inherit}
+  .p-attn svg{width:12px;height:12px;flex:none;margin-top:1px;color:var(--attn)}
+  .p-attn.bad svg{color:var(--bad)}
+  /* a resolved precedence question is information, not a warning */
+  .p-attn.ok{background:var(--chip);box-shadow:inset 0 0 0 var(--hairline) var(--sys-sep)}
+  .p-attn.ok svg{color:var(--sys-dim)}
+  .p-attn.bad{background:color-mix(in srgb, var(--bad) 10%, transparent);
+    box-shadow:inset 0 0 0 var(--hairline) color-mix(in srgb, var(--bad) 24%, transparent)}
+  .p-attn .act{cursor:pointer;font-size:1.2rem;font-weight:500;border-radius:8px;padding:2px 10px;
+    background:transparent;box-shadow:inset 0 0 0 var(--hairline) var(--sys-sep);color:var(--sys-text);
+    white-space:nowrap}
+  .p-attn .act:hover{background:var(--field)}
+  .p-attn .act:active{background:color-mix(in srgb, var(--field) 88%, var(--sys-text))}
+  .p-attn .act.pri{background:var(--attn);color:var(--on-attn);box-shadow:none;font-weight:600}
+  .p-attn .act.pri:hover{filter:brightness(1.06)}
+  .p-attn.bad .act.pri{background:var(--bad);color:var(--on-bad);box-shadow:none}
+  .p-foot{display:flex;align-items:center;gap:10px;padding:7px 20px 10px;
+    font-size:1.1rem;color:var(--sys-dim);border-top:var(--hairline) solid var(--sys-sep)}
+  .p-foot .tip{margin-right:auto}
+  .p-foot kbd,.p-row .kn{font-family:inherit;font-size:1rem;background:var(--chip);
+    border-radius:4px;padding:1px 5px;box-shadow:inset 0 0 0 var(--hairline) var(--sys-sep)}
+  .p-foot .fi{cursor:pointer;color:var(--sys-text);border-radius:8px;padding:2px 8px;margin:0 -8px}
+  .p-foot .fi:hover{background:var(--chip)}
+  .p-foot .right{margin-left:auto;display:flex;gap:14px}
+  kbd{font-family:inherit;font-size:1.1rem;color:var(--sys-dim);border:var(--hairline) solid var(--sys-sep);border-radius:8px;
+    padding:2px 4px;background:transparent}
+
+  /* tools summary row (Q76) */
+    .p-sechead{display:flex;align-items:center;gap:7px;padding:8px 16px 8px;cursor:pointer;
+    font-size:1.1rem;font-weight:600;color:var(--sys-dim)}
+  .p-sechead:hover{color:var(--sys-text)}
+  .p-sechead.sel{color:var(--sys-text)}
+  .p-sechead .meta{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:1.2rem;font-weight:400}
+  .p-sechead .meta .ic{width:12px;height:12px}
+  .p-sechead .chev{transition:transform var(--dur-fast) var(--ease-entrance);font-size:1rem}
+  .p-sechead.open .chev{transform:rotate(90deg)}
+  @keyframes appear{from{opacity:0;transform:scale(.985) translateY(-3px)}to{opacity:1;transform:none}}
+  .panel.appear{animation:appear var(--dur-fast) var(--ease-entrance)}
+
+  /* panel dismiss contract (Q68) */
+  .panel{transition:opacity var(--dur-faster) var(--ease-exit), transform var(--dur-faster) var(--ease-exit)}
+  .panel.dismiss{opacity:0;transform:scale(.97) translateY(-4px);pointer-events:none}
+  /* long lists scroll */
+  .p-rows.scroll{max-height:236px;overflow-y:auto}   /* exactly 7 rows of 32 + list padding */
+  /* mixed header (Q71) */
+  .mixlogos{display:flex;align-items:center;gap:5px}
+  .mixlogos .pair{display:inline-flex;align-items:center;gap:2px;opacity:.85}
+  .mixlogos .pair .ic{width:12px;height:12px}
+  .mixlogos .pair .to{font-size:1rem;color:var(--sys-dim)}
+  /* spend delta (Q72) */
+  .delta{color:var(--sys-dim);font-size:1.2rem;font-variant-numeric:tabular-nums}
+  /* effective state sheet (Q69) */
+  /* The chip carries file name plus scope, never the absolute path: the full path made the
+     endpoint truncate, and stacking it under the value cost the sheet 40% of its height.
+     The path belongs on the attention line below, which has a whole row to spend. */
+  .eff{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:7px 12px;
+    align-items:baseline;font-size:1.3rem;padding:12px 12px}
+  .eff .k2{color:var(--sys-dim);font-size:1.2rem}
+  .eff .v2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .eff .src{color:var(--sys-dim);font-size:1.1rem;text-align:right;white-space:nowrap}
+  /* a note explains the row above it and owns a full-width row of its own, so the source
+     column is left holding exactly one kind of thing: a source */
+  .eff .note{grid-column:1/-1;font-size:1.1rem;color:var(--sys-dim);margin:-4px 0 2px;line-height:1.4}
+  .eff .tag{font-size:1rem;font-weight:600;letter-spacing:.02em;color:var(--sys-dim);
+    background:var(--chip);border-radius:8px;padding:1px 5px;margin-left:5px;white-space:nowrap}
+  .eff .v2.dim{color:var(--sys-dim)}
+  .eff-lede{font-size:1.3rem;color:var(--sys-dim);margin:-6px 0 12px}
+  .eff-lede b{color:var(--sys-text);font-weight:600}
+  .eff .note.chain{cursor:pointer;color:var(--accent)}
+  .eff .note.chain b{color:var(--sys-text)}
+  .sheet-foot .hint{margin-right:auto}
+  .eff .sub{grid-column:1/-1;font-size:1rem;font-weight:600;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--sys-dim);margin:5px 0 -1px;
+    padding-top:8px;border-top:var(--hairline) solid var(--group-sep)}
+  .eff-head{display:flex;align-items:center;gap:8px;padding:8px 12px;font-weight:600;
+    border-bottom:var(--hairline) solid var(--group-sep)}
+  .eff-head .badge2{margin-left:auto;font-size:1rem;font-weight:700;letter-spacing:.05em;border-radius:8px;padding:2px 8px}
+  .eff-head .badge2.is-live{background:var(--chip);color:var(--sys-text)}
+  .eff-head .badge2.is-next{background:var(--chip);color:var(--sys-dim)}
+  .eff-head .badge2.is-over{background:rgba(255,179,64,.18);color:var(--attn)}
+
+  /* balance shimmer (Q65) */
+  .shimmer{display:inline-block;width:38px;height:10px;border-radius:8px;background:
+    linear-gradient(90deg,var(--sys-sep) 25%,var(--glass-inner) 50%,var(--sys-sep) 75%);
+    background-size:220% 100%;animation:sh 1.1s linear infinite}
+  @keyframes sh{0%{background-position:120% 0}100%{background-position:-120% 0}}
+  /* exception 3 of 3: a pulse that means "loading" cannot simply stop, because the
+     meaning goes with it — under reduced motion it becomes the word instead.
+     panel.balance.loading / a11y.balanceLoading */
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer{background:var(--chip);width:auto;height:auto;font-size:1.2rem;
+      color:var(--sys-dim);padding:0 4px}
+    .shimmer::after{content:attr(data-label)} }
+  /* attention badge on bar glyph (Q67) */
+
+  
+  /* stable number + create row */
+  .p-row .kn{flex:none;font-size:1.1rem;color:var(--sys-dim);min-width:24px;text-align:right}
+  /* the badge carries its own neutral chip fill, which composites over the selection and
+     lightened it enough to drop the text to 4.37:1 — on a selected row the fill is redundant */
+  .p-row.sel .kn{color:color-mix(in srgb, var(--on-sel) 92%, transparent);
+    background:transparent;
+    box-shadow:inset 0 0 0 var(--hairline) color-mix(in srgb, var(--on-sel) 40%, transparent)}
+  .p-row.create .nm{color:var(--sys-hi)}
+  .hud .undo{display:flex;align-items:center;gap:7px;margin-top:9px;padding-top:8px;width:100%;
+    border-top:var(--hairline) solid var(--glass-rim);color:var(--sys-hi);cursor:pointer;font-size:1.2rem;pointer-events:auto;
+    font:inherit;font-size:1.2rem;border-left:none;border-right:none;border-bottom:none;background:none;
+    -webkit-appearance:none;appearance:none;text-align:left}
+  .hud .undo kbd{color:var(--sys-hi);border-color:currentColor}
+  /* the fast path expires with the HUD, so it says where it goes rather than vanishing silently */
+  .hud .undo .fallback{margin-left:auto;color:var(--sys-dim);font-size:1.1rem}
+  .hud .undo .fallback kbd{color:var(--sys-dim);border-color:var(--sys-sep)}
+
+  /* HUD */
+  .hud-wrap{position:absolute;left:0;right:0;bottom:96px;display:flex;justify-content:center;pointer-events:none}
+  /* the Dock: the floor the composition was missing. Windows already had its taskbar, which is
+     the whole reason that stage read as a desktop and this one read as a gradient. */
+
+  
+
+  
+
+  
+  
+  [data-platform="win"] .dock{display:none}
+  .hud{min-width:274px;max-width:340px;padding:12px 16px;color:var(--sys-text);font-size:1.3rem;opacity:0;
+    transform:translateY(8px) scale(.97);
+    transition:opacity var(--dur-faster) var(--ease-exit), transform var(--dur-faster) var(--ease-exit)}
+  /* exception 1 of 3: the spring is the HUD's entrance and only its entrance */
+  .hud.show{opacity:1;transform:none;
+    transition:opacity var(--dur-fast) var(--ease-entrance), transform 320ms cubic-bezier(.2,1.3,.3,1)}
+  .hud .hh{display:flex;align-items:center;gap:8px;font-size:1.3rem;font-weight:600;margin-bottom:8px}
+  .hud .hr{display:flex;align-items:center;gap:8px;color:var(--sys-dim);padding:1.5px 0}
+  .hud .hr .ic{width:12px;height:12px}
+  .hud .hr .st{margin-left:auto;font-size:1.2rem}
+  .hud .hr .st b.ok{font-weight:400;color:var(--good)}
+  .hud.fail .hh{color:var(--bad)}
+
+  /* ---------- settings window ---------- */
+  .win-stage{display:flex;align-items:center;justify-content:center;padding:32px 16px}
+  .window{width:min(720px,100%);background:var(--win-bg);border-radius:var(--r-md);box-shadow:var(--shadow);
+    border:var(--hairline) solid var(--sys-sep);overflow:hidden;font-size:1.3rem;color:var(--sys-text)}
+  .titlebar{display:flex;align-items:center;gap:8px;padding:11px 16px;background:var(--win-side);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:var(--hairline) solid var(--sys-sep)}
+
+  .titlebar .t{flex:1;text-align:center;font-weight:600;color:var(--sys-dim);font-size:1.3rem;margin-right:52px}
+  .tabs{display:flex;justify-content:center;gap:2px;flex:1;margin-right:52px}
+  .tab{padding:4px 16px;border-radius:8px;font-size:1.3rem;cursor:pointer;color:var(--sys-dim)}
+  .tab.on{background:var(--group);color:var(--sys-text);font-weight:590;
+    box-shadow:inset 0 0 0 var(--hairline) var(--sys-sep)}
+  .win-body{display:grid;grid-template-columns:198px 1fr}   /* Q96: height follows content */
+  .win-body.nosidebar{grid-template-columns:1fr}
+  @media(max-width:660px) {.win-body{grid-template-columns:1fr}}
+  .side{background:var(--win-side);padding:8px 8px;display:flex;flex-direction:column;gap:2px;
+    border-right:var(--hairline) solid var(--sys-sep)}
+  .side .s-item{padding:0 8px;min-height:3.2rem;border-radius:8px;cursor:pointer;display:flex;
+    align-items:center;gap:9px;font-size:1.3rem}
+  .side .s-item > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .side .s-item.on{background:color-mix(in srgb, var(--sys-hi) 14%, transparent);
+    box-shadow:inset 0 0 0 var(--hairline) color-mix(in srgb, var(--sys-hi) 24%, transparent);font-weight:590}
+  .side .s-item:not(.on):hover{background:var(--chip)}
+  .side .s-item .adot{width:6px;height:6px;border-radius:50%;background:var(--sys-hi);flex:none;margin-left:auto}
+  .side .s-item .awarn{margin-left:auto;flex:none;width:14px;height:14px;color:var(--bad)}
+  .side{position:relative}
+  .side .plus{color:var(--sys-dim);font-size:1.2rem;padding:6px 8px;cursor:pointer;margin-top:2px}
+  /* Q223: twenty providers cannot be found by scrolling. Windows puts this in the pane by
+     convention; the gap was ours on both platforms. */
+  .side-find{background:var(--field);border:var(--hairline) solid var(--field-line);border-radius:8px;
+    padding:5px 8px;font-size:1.2rem;font-family:inherit;color:var(--sys-text);
+    margin:0 0 6px;flex:none;outline:none}
+  [data-platform="win"] .side-find{border-radius:4px;font-size:1.4rem;padding:6px 10px;min-height:3.2rem}
+  .side-foot{margin-top:auto;display:flex;align-items:center;gap:0;padding-top:6px;
+    border-top:var(--hairline) solid var(--sys-sep);margin-left:-8px;margin-right:-8px;padding-left:4px}
+  .side-foot button{background:none;border:none;font:inherit;font-size:1.5rem;line-height:1;
+    color:var(--sys-dim);cursor:pointer;padding:4px 9px;border-radius:8px}
+  .side-foot button:hover{background:var(--chip);color:var(--sys-text)}
+  .side-foot .sep{width:var(--hairline);height:14px;background:var(--sys-sep)}
+  .content{padding:20px 24px 24px;background:var(--win-content);overflow:hidden}
+  .pane-head{display:flex;align-items:center;gap:10px;font-size:1.9rem;font-weight:700;
+    letter-spacing:-.01em;margin-bottom:18px}
+  .pane-head .ic,.pane-head .lettermark{width:24px;height:24px}
+  .pane-head .lettermark::after{font-size:1.1rem}
+  .g-label{font-size:1.3rem;color:var(--sys-text);padding:0 4px 4px;font-weight:590}
+  .g-desc{font-size:1.2rem;color:var(--sys-dim);padding:0 4px 7px;margin-top:-2px;line-height:1.4}
+  .g-empty{padding:16px 12px;text-align:center;color:var(--sys-dim);font-size:1.3rem}
+  .g-empty b{display:block;color:var(--sys-text);font-weight:590;margin-bottom:2px}
+  .group{background:var(--group);border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 var(--hairline) 1.5px rgba(0,0,0,.06)}
+  .g-row{display:flex;align-items:center;gap:12px;padding:8px 12px;min-height:4rem;position:relative}
+  .g-row + .g-row::before,
+  .g-status + .g-row::before{content:"";position:absolute;top:0;left:12px;right:0;height:var(--hairline);
+    background:var(--group-sep)}
+  .g-status + .g-row{margin-top:9px}
+  .g-row .gl{flex:none;min-width:96px;font-size:1.3rem}
+  .g-row .gl .sub{display:block;color:var(--sys-dim);font-size:1.1rem;margin-top:1px}   /* Q99: hint under the label */
+  .g-row.wide .gl{flex:1;min-width:0}
+
+  
+  .danger{color:var(--bad);background:none;border:none;font:inherit;font-size:1.3rem;cursor:pointer;padding:8px 12px;text-align:left}
+  .eff-mini{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:baseline;padding:8px 12px;font-size:1.3rem}
+  .eff-mini .k3{color:var(--sys-dim)}
+  .eff-mini .v3{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .eff-mini .b3{font-size:1rem;font-weight:700;border-radius:8px;padding:0 6px;white-space:nowrap}
+  .eff-mini .b3.is-live{background:var(--chip);color:var(--sys-text)}
+  .eff-mini .b3.is-next{background:var(--chip);color:var(--sys-dim)}
+  .g-row .gv{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0;justify-content:flex-end;flex-wrap:wrap}
+  .g-row .gv.grow{flex:1}
+  .g-note{font-size:1.2rem;color:var(--sys-dim);padding:0 5px 14px;margin-top:-11px}
+  /* Not a flex row: as flex, every inline element inside became its own item and the spaces
+     between them collapsed \u2014 "take glm-5.3-air, the cheapest" lost its space and gained a
+     6px gap before the comma. Block keeps the sentence a sentence. */
+  .g-status{font-size:1.2rem;padding:0 12px 9px;margin-top:-5px;line-height:1.4;color:var(--sys-dim)}
+  /* the icon gets a column so a wrapped note lines up under its own first line — a hanging
+     indent, not flex: flex would make every inline element in the sentence its own column and
+     the path would break out of the text */
+  .g-status:has(svg){padding-left:29px;text-indent:-17px}
+  .g-status .mono,.g-status b{color:var(--sys-text)}
+  .g-status svg{width:12px;height:12px;margin-right:5px;vertical-align:-2px;color:var(--sys-dim)}
+  .g-status.attn svg{color:var(--attn)}
+  .g-status.bad svg{color:var(--bad)}
+  .g-status.top{margin-top:0;padding-top:9px}
+  .model-rows + .g-status{margin-top:0;padding-top:9px;
+    border-top:var(--hairline) solid var(--group-sep)}
+  /* an editable field looks editable: filled well + hairline, unlike the read-only tfield */
+  .tinput{background:var(--field);border:var(--hairline) solid var(--field-line);border-radius:8px;
+    padding:5px 9px;font:inherit;font-size:1.3rem;color:var(--sys-text);min-width:0}
+  .tinput.grow{flex:1 1 auto;width:100%}
+  .tinput.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:1.2rem}
+  .tinput::placeholder{color:var(--sys-dim)}
+  .gv.grow{flex:1 1 auto;display:flex}
+  [data-platform="win"] .tinput{border-radius:4px;font-size:1.4rem;
+    border-bottom:1px solid var(--sys-dim)}   /* the Fluent underline that thickens on focus */
+  .chip.miss{background:var(--chip);color:var(--sys-dim)}
+  .tfield{background:var(--chip);border:var(--hairline) solid transparent;border-radius:8px;padding:4px 8px;font-size:1.3rem;
+    color:var(--sys-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .tfield.grow{flex:1}
+  .keychain{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:1.2rem;color:var(--sys-dim)}
+  .keychain svg{width:12px;height:12px}
+  .btn{background:var(--field);border:var(--hairline) solid var(--field-line);border-radius:8px;padding:4px 12px;font-size:1.3rem;
+    cursor:pointer;color:var(--sys-text);font-family:inherit;flex:none}
+  .btn.primary{background:var(--accent-fill);border-color:transparent;color:var(--on-accent)}
+  .btn.sm{padding:2px 8px;font-size:1.2rem}
+  .btn:hover{background:color-mix(in srgb, var(--field) 92%, var(--sys-text))}
+  .btn:active{background:color-mix(in srgb, var(--field) 84%, var(--sys-text))}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.primary:hover{background:color-mix(in srgb, var(--accent-fill) 92%, var(--sys-text))}
+  .btn.primary:active{background:color-mix(in srgb, var(--accent-fill) 84%, var(--sys-text))}
+  .btn.primary:disabled{opacity:.45;cursor:default}
+  select{background:var(--field);border:var(--hairline) solid var(--field-line);border-radius:8px;padding:4px 8px;font-size:1.3rem;
+    color:var(--sys-text);font-family:inherit;max-width:100%;min-width:0}
+  .hint{font-size:1.2rem;color:var(--sys-dim)}
+  .swl{display:inline-flex;align-items:center;cursor:pointer;flex:none}
+  .swl input{position:absolute;opacity:0;width:0;height:0}
+  .sw{position:relative;width:38px;height:22px;border-radius:12px;background:var(--sw-off);transition:background var(--dur-fast) var(--ease-entrance);flex:none}
+  .sw::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:var(--sw-knob);top:2px;left:2px;
+    transition:left var(--dur-fast) var(--ease-entrance);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .swl input:checked + .sw{background:var(--sw-on)}
+  .swl input:checked + .sw::after{background:#fff}
+  .swl input:checked + .sw::after{left:18px}
+  .model-search{flex:1;background:var(--chip);border:var(--hairline) solid transparent;border-radius:8px;padding:4px 8px;
+    font-size:1.3rem;color:var(--sys-text);font-family:inherit;outline:none;min-width:0}
+  .model-rows{max-height:150px;overflow-y:auto;display:flex;flex-direction:column;
+    border-top:var(--hairline) solid var(--group-sep)}
+  .model-row{display:flex;align-items:center;gap:9px;padding:6px 12px;font-size:1.3rem}
+  .model-row .hint{margin-left:auto;flex:none}
+  .model-row{position:relative}
+  .model-row + .model-row::before{content:"";position:absolute;top:0;left:12px;right:0;height:var(--hairline);
+    background:var(--group-sep)}
+  .model-row .mono{font-size:1.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .model-row .swl{margin-left:auto}
+  .uniform-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 12px}
+  .uniform-row select,.g-row select{flex:0 1 auto;min-width:0;max-width:230px}
+  .uniform-row .arrow{color:var(--sys-dim)}
+  .disclose{display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
+    color:var(--accent);font-size:1.3rem;font-family:inherit;padding:2px 4px;margin-bottom:10px}
+  .disclose .chev{display:inline-block;transition:transform var(--dur-fast) var(--ease-entrance);font-size:1rem}
+  .disclose.open .chev{transform:rotate(90deg)}
+  /* a row that opens something is still a row: same shape as every other one in the pane */
+  .g-row.rowbtn{cursor:pointer}
+  .g-row.rowbtn:hover{background:var(--chip)}
+  .g-row.rowbtn .chev{display:inline-block;transition:transform var(--dur-fast) var(--ease-entrance);font-size:1.1rem;
+    color:var(--sys-dim);margin-left:2px}
+  .g-row.rowbtn.open .chev{transform:rotate(90deg)}
+  .matrix{display:none}.matrix.open{display:block}
+  /* a tool the profile does not switch keeps its header and loses its slots */
+  .group.off .tool-head{color:var(--sys-dim)}
+  .group.off .tool-head .ic,.group.off .tool-head svg{opacity:.5}
+  .group.off .tool-head .hint{margin-left:auto;margin-right:8px;font-weight:400;color:var(--sys-dim)}
+  .tool-head{display:flex;align-items:center;gap:8px;font-weight:600;padding:8px 12px;border-bottom:var(--hairline) solid var(--group-sep)}
+  .tool-head .swl{margin-left:auto}
+
+  /* history sheet */
+  .sheet-stage{position:relative;display:flex;justify-content:center;padding:24px 16px 32px}
+  .sheet{width:min(520px,100%);background:var(--win-bg);border-radius:var(--r-md);box-shadow:var(--shadow);
+    border:var(--hairline) solid var(--sys-sep);padding:16px 20px 16px;font-size:1.3rem;color:var(--sys-text)}
+  .sheet h4{font-size:1.5rem;margin-bottom:12px}
+  .sheet-foot{display:flex;justify-content:flex-end;margin-top:12px}
+
+  /* onboarding */
+  .ob-steps{display:flex;gap:14px;justify-content:center;flex:1;margin-right:52px;
+    font-size:1.2rem;color:var(--sys-dim)}
+  .ob-step{display:flex;align-items:center;gap:5px}
+  .ob-step .n{width:16px;height:16px;border-radius:50%;background:var(--chip);display:flex;align-items:center;
+    justify-content:center;font-size:1rem;font-weight:700}
+  .ob-step.on{color:var(--sys-text)}
+  .ob-step.on .n{background:var(--sys-hi);color:#fff}
+  .ob-title{font-size:1.5rem;font-weight:700;margin-bottom:4px}
+  .ob-sub{font-size:1.3rem;color:var(--sys-dim);margin-bottom:14px;max-width:52ch}
+  .chip{font-size:1.2rem;color:var(--sys-dim)}
+  .chip.ok{color:var(--sys-text)}
+  .chip.miss{color:var(--sys-dim)}
+  .ob-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+  .ob-acts{display:flex;gap:8px;align-items:center}
+  .ob-done{text-align:center;padding:44px 8px;font-size:1.5rem}
+  /* the macOS security dialog, mocked: narrow, centred, icon on top, stacked pill buttons */
+  /* Q2: a delete confirmation is structure, not just copy, and the two platforms invert it.
+     NSAlert stacks title over body with the buttons bottom-right, action rightmost.
+     ContentDialog is a wide sheet whose buttons sit left-to-right, primary FIRST.
+     Drawing one specimen fixes the button order, which is the classic thing to get wrong. */
+  /* Q2: secondary click on the glyph. On Windows this is THE way to a tray menu, so its
+     absence reads as breakage; Quit lives here and nowhere else. */
+  .ctx{position:absolute;z-index:40;min-width:13rem;padding:5px;border-radius:8px;
+    background:var(--sys-bg);backdrop-filter:blur(40px) saturate(180%);
+    -webkit-backdrop-filter:blur(40px) saturate(180%);
+    border:var(--hairline) solid var(--glass-rim);box-shadow:0 12px 32px rgba(0,0,0,.26)}
+  .ctx button{display:flex;align-items:center;gap:8px;width:100%;font:inherit;font-size:1.3rem;
+    text-align:left;background:none;border:none;color:var(--sys-text);padding:4px 8px;
+    border-radius:5px;cursor:pointer;-webkit-appearance:none;appearance:none}
+  .ctx button:hover{background:var(--accent-fill);color:var(--on-accent)}
+  .ctx .tick{width:1.2rem;flex:none;opacity:0}
+  .ctx button.checked .tick{opacity:1}
+  .ctx .sep{height:var(--hairline);background:var(--sys-sep);margin:4px 6px}
+  [data-platform="win"] .ctx{border-radius:8px;padding:4px;min-width:15rem}
+  [data-platform="win"] .ctx button{border-radius:4px;font-size:1.4rem;padding:7px 10px}
+  .alert-veil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.18);border-radius:14px;z-index:5}
+  .alert{width:274px;background:var(--sys-bg);backdrop-filter:blur(40px) saturate(180%);
+    -webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:12px;padding:18px 16px 14px;
+    box-shadow:0 18px 50px rgba(0,0,0,.34);text-align:center}
+  .alert .al-t{font-size:1.3rem;font-weight:600;color:var(--sys-text);margin-bottom:6px}
+  .alert .al-b{font-size:1.2rem;line-height:1.45;color:var(--sys-dim);margin-bottom:14px}
+  .alert .al-btns{display:flex;gap:8px;justify-content:flex-end}
+  .alert .al-btns .btn{flex:1}
+  /* the destructive action is tinted, never the default: on macOS Cancel keeps the default ring */
+  .alert .btn.destructive{color:var(--bad);font-weight:600}
+  .alert .btn.defaulted{background:var(--accent-fill);border-color:transparent;color:var(--on-accent)}
+  [data-platform="win"] .alert{width:340px;border-radius:8px;text-align:left;padding:20px}
+  [data-platform="win"] .alert .al-t{font-size:2rem;font-weight:600;margin-bottom:8px}
+  [data-platform="win"] .alert .al-btns{justify-content:stretch}
+  /* the non-destructive action stays the default, so macOS puts it rightmost while
+     ContentDialog puts the primary first — this is where the order actually inverts */
+  [data-platform="win"] .alert .btn.defaulted{order:-1}
+  
+  #obContent{position:relative}
+
+  
+
+  .skbtn{font:inherit;font-size:1.25rem;padding:5px 10px;border-radius:8px;cursor:pointer;
+    background:var(--field);border:var(--hairline) solid var(--sys-sep);color:var(--sys-text)}
+  .skbtn.pri{background:var(--accent);border-color:transparent;color:#fff;font-weight:600}
+  .ob-done .big{font-size:2.2rem;margin-bottom:10px;color:var(--sys-text)}
+
+  /* states */
+
+  
+
+  
+
+  
+
+  
+
+  /* identity */
+  
+  /* ADR-0016: the core is Rust. The backdrop showed Swift for as long as the stack did. */
+
+  /* the editor behind the panel keeps its own theme on either OS, so the backdrop stays dark:
+     that is what lets a light Fluent flyout show its shadow and its material at all */
+
+  
+
+  
+
+  
+
+  
+
+  .layers{display:flex;flex-direction:column;gap:8px;font-size:1.3rem;color:var(--muted);max-width:330px}
+  .layers b{color:var(--ink)}
+
+  
+
+  /* degradation */
+  
+  /* subgrid so a two-line caption cannot push its swatch out of line with the others */
+
+  
+
+  
+     /* label sits above the cell, not on the code */
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  /* audit table */
+
+  
+
+  
+
+  
+
+  /* ---- states matrix (Q114) ---- */
+
+  
+
+  
+
+  /* the Windows row carries 16px of its own padding, which the specimen box cannot spare:
+     at 180px the provider name truncated to "DeepS…" and the matrix stopped showing a row */
+  [data-platform="win"] .demo .p-row{padding:0 12px}
+  /* the balance column is 66px so balances line up down the real panel; inside a 172px
+     specimen that width is what truncated the provider name to "Deep…" */
+  .model-rows{-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 18px),transparent);
+    mask-image:linear-gradient(180deg,#000 calc(100% - 18px),transparent)}
+
+  [data-platform="win"] .demo{border-radius:4px}
+  
+  .p-row.hov{background:color-mix(in srgb, var(--sys-hi) 12%, transparent)}
+  .p-row.prs{background:var(--press-fill);color:#fff}
+  .p-row.prs .bal{color:rgba(255,255,255,.85)}
+  .p-row.foc{box-shadow:inset 0 0 0 2px var(--accent)}
+  .p-row.dis{color:var(--dim-text);opacity:.72}
+  .btn.hov{background:var(--chip)}
+  .btn.prs{background:var(--press-fill);color:#fff;border-color:transparent}
+  .btn.foc{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.dis{color:var(--dim-text);opacity:.72}
+  .sw.hov{background:color-mix(in srgb, var(--sw-off) 72%, var(--sys-text))}
+  .swl input:checked + .sw.prs{background:var(--press-fill)}
+  .sw.prs{background:color-mix(in srgb, var(--sw-off) 60%, var(--sys-text))}
+  .sw.foc{outline:2px solid var(--accent);outline-offset:2px}
+
+  .next{margin-top:84px;border-top:1px solid var(--line);padding-top:28px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .next .card{border-top:1px solid var(--line);padding:16px 0 0}
+  .next h3{font-size:1.5rem;margin-bottom:6px}
+  .next p{font-size:1.3rem;color:var(--muted)}
+  .p-row,.btn,.s-item,.tab{transition:background var(--dur-faster) var(--ease-entrance)}
+  /* One dampener instead of nine targeted blocks. Nine got forgotten once already —
+     the switch animated straight past all of them. .01ms rather than none is WinUI's
+     own approach: the animation still formally completes, so completion handlers fire. */
+  @media (prefers-reduced-motion: reduce) {
+    *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;
+      animation-iteration-count:1!important;scroll-behavior:auto!important} }
+  a{color:var(--accent)}
+  input:focus-visible,.p-row:focus-visible,.btn:focus-visible,.s-item:focus-visible,.tab:focus-visible,
+  .act:focus-visible,.fi:focus-visible,.srch:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px}
+  /* ============================================================================
+     WINDOWS 11 / FLUENT LAYER                                    data-platform="win"
+
+     From Microsoft's documentation, not from memory:
+       type    12/16 caption · 14/20 body · 14/20 semibold body-strong · 20/28 subtitle
+               28/36 title. Minimum legible: 14 semibold, 12 regular. Sentence case.
+               Semibold instead of bold for emphasis; italic is excluded deliberately.
+       radius  8 top-level windows, flyouts, dialogs (OverlayCornerRadius)
+               4 in-page controls, buttons, list backplates, bars (ControlCornerRadius)
+       font    Segoe UI Variable, weight axis 400 regular / 600 semibold
+       text    TextFillColorPrimary, ARGB #E4000000 light / #FFFFFFFF dark
+               = CSS rgba(0,0,0,.894) and #FFFFFF
+
+     UNVERIFIED: every surface colour below is derived, and the whole layer has never
+     been composited against a screenshot of real Windows 11 — unlike the macOS layer,
+     which was measured against macOS 26.5.1 all through the design. Treat it as a
+     structural proposal, not a specification, until it is checked on the real thing.
+     ============================================================================ */
+  :root[data-platform="win"]{
+    /* Microsoft publishes ARGB, CSS reads RGBA: #E4000000 as a CSS hex is transparent red,
+       which made every label invisible. Same eight digits, different meaning. */
+    --sys-text:rgba(0,0,0,.894); --sys-dim:rgba(0,0,0,.606); --sys-sep:rgba(0,0,0,.0578);
+    --sys-hi:#0067C0; --accent:#0067C0;
+    --accent-fill:#0067C0; --on-accent:#FFFFFF;    /* AccentFillColorDefault + TextOnAccent: 5.67:1 */
+    --sel-fill:#0067C0;  --on-sel:#FFFFFF;      /* 5.67:1 */
+    --win-bg:#F3F3F3; --win-side:#F3F3F3; --win-content:#F9F9F9;
+    --card:#FFFFFF; --card-line:rgba(0,0,0,.0578);
+    --field:rgba(255,255,255,.7); --field-line:rgba(0,0,0,.0578);
+    --chip:rgba(0,0,0,.0373); --group-sep:transparent;
+    --r-float:8px; --r-win:8px; --r-group:4px; --r-ctl:4px;
+    /* On Windows the first two win. On a Mac neither exists and the stack fell through to
+       system-ui = SF Pro, so the whole layer rendered in the macOS face. Tahoma is the
+       nearest thing installed here: not Segoe, but not Apple either. */
+    --fnt:"Segoe UI Variable","Segoe UI Variable Text","Segoe UI",Tahoma,Verdana,sans-serif;
+  }
+  :root[data-platform="win"][data-theme="dark"],
+  :root[data-platform="win"]:not([data-theme="light"]){
+    --sys-text:#FFFFFF; --sys-dim:rgba(255,255,255,.786); --sys-sep:rgba(255,255,255,.0698);
+    --sys-hi:#60CDFF; --accent:#60CDFF;
+    --accent-fill:#60CDFF; --on-accent:#000000;    /* Fluent dark puts black on the accent fill */
+    --sel-fill:#60CDFF;  --on-sel:#000000;      /* 11.67:1 — white here was 1.80 */
+    --win-bg:#202020; --win-side:#202020; --win-content:#272727;
+    --card:#2D2D2D; --card-line:rgba(255,255,255,.0698);
+    --field:rgba(255,255,255,.0605); --field-line:rgba(255,255,255,.0698);
+    --chip:rgba(255,255,255,.0605);
+  }
+  [data-platform="win"] body,[data-platform="win"] .panel,[data-platform="win"] .win,
+  [data-platform="win"] .sheet,[data-platform="win"] .hud{font-family:var(--fnt)}
+  /* Fluent's ramp: body is 14, not 13, and captions are 12 */
+  [data-platform="win"] .p-row,[data-platform="win"] .g-row,[data-platform="win"] .eff,
+  [data-platform="win"] .model-row,[data-platform="win"] .s-item{font-size:1.4rem}
+  [data-platform="win"] .hint,[data-platform="win"] .g-desc,[data-platform="win"] .g-status,
+  [data-platform="win"] .src,[data-platform="win"] .why{font-size:1.2rem}
+  [data-platform="win"] .g-label,[data-platform="win"] .pane-head,
+  [data-platform="win"] .p-head .nm{font-weight:600}
+  [data-platform="win"] .pane-head{font-size:2rem}
+  [data-platform="win"] h4{font-size:2rem;font-weight:600}
+  [data-platform="win"] b,[data-platform="win"] strong{font-weight:600}
+  /* radii: 8 for anything floating, 4 for everything in-page */
+  [data-platform="win"] .panel,[data-platform="win"] .hud,[data-platform="win"] .sheet,
+  [data-platform="win"] .win{border-radius:8px}
+  [data-platform="win"] .btn,[data-platform="win"] .tfield,[data-platform="win"] select,
+  [data-platform="win"] .chip,[data-platform="win"] .act,[data-platform="win"] .p-row,
+  [data-platform="win"] .s-item,[data-platform="win"] .model-search,
+  [data-platform="win"] .srch,[data-platform="win"] .fi{border-radius:4px}
+  /* Structural variant 1 of 4: a group is not a container, each row is its own card */
+  [data-platform="win"] .group{background:none;box-shadow:none;border-radius:0;
+    display:flex;flex-direction:column;gap:4px}
+  /* Q229: SettingsCard is a composition, not a bordered row — 68 min-height, 16 padding,
+     icon 20 with 20 to the text, 24 from text to content, content pinned right.
+     ONE rule for every row-shaped thing: a platform decision here is paid once. */
+  [data-platform="win"] :is(.row,.g-row,.model-row,.tool-head){
+    background:var(--card);border:1px solid var(--card-line);border-radius:4px;
+    min-height:6.8rem;padding:16px;font-size:1.4rem}
+  [data-platform="win"] .row{gap:20px}
+  [data-platform="win"] :is(.g-row,.model-row,.tool-head){gap:24px}
+  [data-platform="win"] .g-row .gl{font-weight:400}
+  [data-platform="win"] .g-row .ic{width:20px;height:20px;margin-right:20px}
+  [data-platform="win"] :is(.row + .row, .g-row + .g-row, .model-row + .model-row,
+    .g-status + .g-row){margin-top:4px}
+  [data-platform="win"] :is(.row + .row, .g-row + .g-row)::before{display:none}
+  [data-platform="win"] .row > .main{margin-right:24px;gap:2px}
+  [data-platform="win"] .row .desc{font-size:1.2rem}
+  [data-platform="win"] .row > .trail{font-size:1.4rem}
+  [data-platform="win"] .row .trail .val{font-size:1.4rem}
+  [data-platform="win"] .card{background:none;box-shadow:none;border-radius:0;overflow:visible}
+  [data-platform="win"] .card + .card{margin-top:20px}
+  [data-platform="win"] .card-head{border:none;padding:0 0 8px;font-size:1.4rem}
+  [data-platform="win"] .card-note{border:none;padding:8px 4px 0;font-size:1.2rem}
+  /* a macOS status sits under its row, outside the card; Windows has no such thing, so
+     the two are joined visually into the one card the platform expects */
+  [data-platform="win"] .g-row:has(+ .g-status){border-bottom:none;
+    border-radius:4px 4px 0 0;margin-bottom:0}
+  [data-platform="win"] .g-status{background:var(--card);border:1px solid var(--card-line);
+    border-top:none;border-radius:0 0 4px 4px;margin:0;padding:0 16px 14px;font-size:1.2rem;
+    margin-top:-4px}                      /* cancel the 4px the group puts between cards */
+  /* two notes under one row are still one card: only the last one closes it */
+  [data-platform="win"] .g-status:has(+ .g-status){border-radius:0;padding-bottom:10px}
+  /* the nav pane's foot item is not inside .side .tabs, so its glyph kept the 20px the
+     settings rows use and General sat 20px to the right of every item above it */
+  [data-platform="win"] .side .navfoot .tab .fic{margin-right:0;width:16px;height:16px}
+  /* a bare red link floats loose on a surface made of cards */
+  [data-platform="win"] .danger{border:1px solid var(--card-line);border-radius:4px;
+    background:var(--card);padding:7px 14px;font-size:1.4rem}
+  .fic{display:none}
+  /* the file already emits Segoe glyphs unconditionally and hides them on macOS.
+     The same trick in reverse gives service icons a platform each, with no JS branch:
+     .maconly carries the drawn mark, .fic.inline carries the system glyph. */
+  [data-platform="win"] .maconly{display:none}
+  [data-platform="win"] .fic.inline{width:16px;height:16px;margin-right:0;flex:none}
+  [data-platform="win"] .p-attn .fic.inline{width:14px;height:14px;margin-top:1px;color:var(--attn)}
+  [data-platform="win"] .p-attn.bad .fic.inline{color:var(--bad)}
+  [data-platform="win"] .chev .fic.inline{width:12px;height:12px}
+  /* Segoe Fluent Icons ships with Windows and exists nowhere else, so a codepoint rendered
+     as a placeholder box on every machine this prototype is reviewed on. The glyphs are drawn
+     instead, on the same 20-unit grid the font uses; the symbol id keeps the codepoint so the
+     implementation still reaches for the real font. */
+  [data-platform="win"] .fic{display:inline-flex;width:20px;height:20px;margin-right:20px;
+    flex:none;color:var(--sys-text);fill:none;stroke:currentColor;stroke-width:1.3;
+    stroke-linecap:round;stroke-linejoin:round}
+  [data-platform="win"] .model-row + .model-row::before,
+  [data-platform="win"] .g-status + .g-row::before{display:none}
+  [data-platform="win"] .g-status,[data-platform="win"] .g-note{padding-left:16px;margin-top:0}
+  /* Structural variant 2: sidebar selection is a fill plus a left accent pill */
+  [data-platform="win"] .side .s-item.on{background:var(--chip);position:relative}
+  [data-platform="win"] .side .s-item.on::after{content:"";position:absolute;left:0;top:50%;
+    transform:translateY(-50%);width:3px;height:16px;border-radius:2px;background:var(--accent)}
+  /* Structural variant 3: ToggleSwitch is 40x20 with a 12 pt knob, not 38x22 with 18 */
+  [data-platform="win"] .sw{width:40px;height:20px;border-radius:10px}
+  [data-platform="win"] .sw::after{width:12px;height:12px;top:3px;left:4px}
+  [data-platform="win"] input:checked + .sw::after{left:24px}
+  /* Structural variant 4: the panel is a window, not a popover riding the menu bar */
+  /* window chrome sits on the right and is square, not three coloured circles */
+  [data-platform="win"] .titlebar{background:var(--win-bg);padding:0 0 0 16px;min-height:3.6rem}
+  [data-platform="win"] .titlebar .tl{display:none}
+  /* the tab strip is the app's own, not a macOS toolbar item: left-aligned */
+  [data-platform="win"] .titlebar .tabs{margin:0}
+  /* nav pane, not a toolbar: full-width rows with a label, ~36 pt tall */
+  [data-platform="win"] .side .tabs{display:flex;flex-direction:column;gap:2px;width:100%;
+    background:none;padding:0;margin:0 0 12px;border-radius:0;box-shadow:none;
+    flex:0 0 auto;align-self:stretch}
+  [data-platform="win"] .side .tabs .tab{width:100%;text-align:left;padding:0 10px;min-height:3rem;
+    display:flex;align-items:center;gap:12px;border-radius:4px;background:none;box-shadow:none;
+    font-size:1.4rem;font-weight:400;color:var(--sys-text)}
+  [data-platform="win"] .side .tabs .tab .fic{margin-right:0;width:16px;height:16px}
+  [data-platform="win"] .side .tabs .tab.on{background:var(--chip);font-weight:600;position:relative}
+  [data-platform="win"] .side .tabs .tab.on::after{content:"";position:absolute;left:0;top:50%;
+    transform:translateY(-50%);width:3px;height:16px;border-radius:2px;background:var(--accent)}
+  [data-platform="win"] .window{min-width:1008px}
+  /* The Fluent NavigationView keeps its pane expanded at >=1008, so the Windows specimen is
+     1008 wide by construction — and the document's stage column is 742. The window overflowed
+     it by 266 px and .stage{overflow:hidden} cut it off: every Windows section showed a black
+     wall with a sliver of window in it. Wide content breaks out of the text measure; the notes
+     go under the stage rather than beside it. */
+  [data-platform="win"] .board:has(.window){grid-template-columns:minmax(0,1fr);
+    width:calc(100vw - 56px);max-width:1400px;margin-left:calc(50% - min(50vw - 28px, 700px))}
+  [data-platform="win"] .board:has(.window) > .notes{display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px 26px;padding-top:18px}
+  @media(max-width:1120px) {
+    [data-platform="win"] .board:has(.window){width:auto;margin-left:0}
+  }
+  /* below that the specimen still cannot shrink — it scrolls instead of being sliced */
+  [data-platform="win"] .win-stage{overflow:auto hidden}
+  [data-platform="win"] .win-body{grid-template-columns:200px 1fr}
+  [data-platform="win"] .side{padding:12px 8px}
+  [data-platform="win"] .content{padding:24px}
+  [data-platform="win"] .side .s-item{min-height:2.8rem;font-size:1.4rem;padding:0 10px;gap:12px}
+  [data-platform="win"] .side .s-item .ic{width:16px;height:16px}
+  [data-platform="win"] .side .tabs .tab.on::after,
+  [data-platform="win"] .side .s-item.on::after{height:14px}
+  /* Files pins Settings to the foot of the pane, the NavigationView SettingsItem pattern */
+  /* Files pins Settings to the bottom because its window has a fixed height. Ours grows with
+     content, so pinning would leave General 900 px below the list it belongs beside. Separator
+     and normal flow instead — the intent survives, the mechanism does not transfer. */
+  [data-platform="win"] .side .navfoot{margin:6px 0 8px;padding-top:6px;
+    border-top:1px solid var(--card-line)}
+  [data-platform="win"] .side .navfoot .tab{width:100%;text-align:left;padding:0 10px;
+    min-height:3rem;display:flex;align-items:center;gap:12px;border-radius:4px;font-size:1.4rem}
+  /* and Windows windows carry a status bar; macOS uses the +/- strip instead */
+  .win-status{display:none}
+  [data-platform="win"] .win-status{display:flex;align-items:center;gap:14px;
+    padding:0 16px;min-height:2.8rem;font-size:1.2rem;color:var(--sys-dim);
+    border-top:1px solid var(--card-line);background:var(--win-bg)}
+  [data-platform="win"] .btn{min-height:3.2rem;padding:5px 12px}
+  [data-platform="win"] .side-foot{display:none}
+  [data-platform="win"] input:focus-visible,[data-platform="win"] .p-row:focus-visible,
+  [data-platform="win"] .btn:focus-visible,[data-platform="win"] .s-item:focus-visible,
+  [data-platform="win"] .act:focus-visible,[data-platform="win"] .fi:focus-visible,
+  [data-platform="win"] .srch:focus-visible,
+  [data-platform="win"] .tab:focus-visible{
+    outline:2px solid var(--sys-text);outline-offset:1px;
+    box-shadow:0 0 0 1px var(--card) inset,0 0 0 3px var(--card);}
+  [data-platform="win"] .win-title{display:block;font-size:2.8rem;font-weight:600;
+    color:var(--sys-text);padding:6px 0 14px}
+  .win-title{display:none}
+  [data-platform="win"] .titlebar::after{content:"\2013  \25A1  \00D7";margin-left:auto;
+    font-size:1.3rem;letter-spacing:.55em;color:var(--sys-text);padding:0 12px 0 0;opacity:.9}
+  [data-platform="win"] .tabbar{margin-left:0}
+  /* ============================================================================
+     ROW — the one row primitive (Q228)
+
+       [icon]  title              trail
+               description
+
+     Panel, settings, inspector, history and onboarding all compose from this, so a
+     platform variant is written once instead of six times. Modifiers: .row.tall for a
+     row carrying a description, .row.bad / .row.attn for state.
+     ============================================================================ */
+  .row{display:flex;align-items:center;gap:9px;min-height:3.2rem;padding:0 12px;
+    font-size:1.3rem;color:var(--sys-text);position:relative}
+  .row > .main{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:1px}
+  /* the label never shrinks below its own text — no magic minimum, the content is the
+     floor — so a long value is what truncates */
+  .row .title{white-space:nowrap;min-width:fit-content}
+  .row .desc{font-size:1.1rem;color:var(--sys-dim);line-height:1.35}
+  .row > .trail{margin-left:auto;display:flex;align-items:center;gap:8px;
+    flex:0 1 auto;min-width:0;color:var(--sys-dim);font-size:1.2rem}
+  .row .trail .src-x,.row .trail .chev,.row .trail .btn{flex:none}
+  .row .trail .val{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .trail .val{color:var(--sys-text);font-size:1.3rem}
+  .row.tall{min-height:4rem;padding-top:6px;padding-bottom:6px}
+  .row + .row::before{content:"";position:absolute;top:0;left:12px;right:0;height:var(--hairline);
+    background:var(--group-sep)}
+  .row.bad .val{color:var(--bad)}
+  .row.off .title,.row.off .desc{opacity:.62}
+  .row.snap{background:var(--chip)}
+  .row .desc.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:1rem}
+  [data-platform="win"] .row .desc.mono{font-size:1.2rem}
+  .row .btn{opacity:0;transition:opacity var(--dur-faster) var(--ease-entrance)}
+  .row:hover .btn,.row:focus-within .btn{opacity:1}
+  .card{background:var(--card);border-radius:12px;overflow:hidden;
+    box-shadow:0 0 0 var(--hairline) var(--sys-sep)}
+  .card + .card{margin-top:10px}
+  .card-head{display:flex;align-items:center;gap:8px;padding:9px 12px;font-weight:600;
+    font-size:1.3rem;border-bottom:var(--hairline) solid var(--group-sep)}
+  .card-head .badge2{margin-left:auto}
+  .card-note{font-size:1.1rem;color:var(--sys-dim);padding:7px 12px;
+    border-top:var(--hairline) solid var(--group-sep)}
+
+  .eff-card .card-head{cursor:pointer}
+  .eff-card .chev{color:var(--sys-dim)}
+  .eff-card .src-x{font-size:1.1rem;color:var(--attn)}
+  [data-platform="win"] .eff-card .src-x{font-size:1.2rem}
+  .chainbtn{display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;
+    font:inherit;font-size:1.1rem;color:var(--sys-dim);padding:5px 12px 8px;
+    border-top:var(--hairline) solid var(--group-sep)}
+  .chainbtn b{color:var(--attn);font-weight:600;font-family:ui-monospace,"SF Mono",Menlo,monospace}
+  [data-platform="win"] .chainbtn{font-size:1.2rem;padding:0 16px 14px;background:var(--card);
+    border:1px solid var(--card-line);border-top:none;border-radius:0 0 4px 4px;margin-top:-4px}
+
+  /* ---------- Windows shell mock ---------- */
+  [data-platform="win"] .mbar{height:48px;padding:0 8px 0 0;gap:0;
+    background:rgba(243,243,243,.86);color:var(--sys-text);border-bottom:none;
+    border-top:1px solid var(--card-line)}
+  [data-platform="win"] .mbar .left,[data-platform="win"] .mbar .right{display:none}
+  [data-platform="win"] .tb-mid{display:flex;align-items:center;gap:6px;margin:0 auto}
+  [data-platform="win"] .tb-app{width:32px;height:32px;border-radius:6px;
+    background:color-mix(in srgb, var(--sys-text) 12%, transparent);
+    box-shadow:inset 0 0 0 1px var(--card-line)}
+  [data-platform="win"] .tb-app.start{background:color-mix(in srgb, var(--accent) 22%, transparent)}
+  [data-platform="win"] .tb-app.on{position:relative}
+  [data-platform="win"] .tb-app.on::after{content:"";position:absolute;left:50%;bottom:-5px;
+    transform:translateX(-50%);width:14px;height:3px;border-radius:2px;background:var(--accent)}
+  [data-platform="win"] .tb-tray{display:flex;align-items:center;gap:10px;font-size:1.2rem;
+    color:var(--sys-dim);padding-left:12px}
+  [data-platform="win"] .tb-chev{font-size:1.1rem}
+  [data-platform="win"] .tb-clock{text-align:right;line-height:1.25;font-size:1.2rem;
+    font-variant-numeric:tabular-nums;color:var(--sys-text)}
+  /* the stage flips: taskbar at the bottom, flyout above it, right-aligned */
+  [data-platform="win"] .stage{display:flex;flex-direction:column}
+  /* the column rule above is for the desktop stages; a dialog stage still centres its dialog,
+     and without this the inspector sat against the left edge of an otherwise empty stand */
+  [data-platform="win"] .sheet-stage{flex-direction:row;justify-content:center;align-items:flex-start}
+  /* ContentDialog: squared corners, and the primary command comes first, not last */
+  [data-platform="win"] .sheet{border-radius:8px;border:1px solid var(--card-line);
+    box-shadow:0 32px 64px rgba(0,0,0,.28)}
+  [data-platform="win"] .sheet h4{font-size:2rem;font-weight:600}
+  [data-platform="win"] .sheet-foot{border-top:1px solid var(--card-line);
+    margin:16px -20px -16px;padding:20px;gap:8px}
+  [data-platform="win"] .sheet-foot .btn.primary{order:-1}
+  [data-platform="win"] .sheet-foot .hint{order:-2}   /* the note stays left of the commands */
+  [data-platform="win"] .stage .mbar{order:3;margin-top:auto}
+  [data-platform="win"] .stage .editor{order:1}
+  [data-platform="win"] .stage .panel-anchor{order:2;padding:0 12px 8px;align-items:flex-end;flex:1}
+  /* a flyout, per the platform: 8 px radius, Acrylic, its own shadow */
+  [data-platform="win"] .panel{border-radius:8px;box-shadow:0 16px 40px rgba(0,0,0,.28);
+    background:color-mix(in srgb, var(--win-bg) 88%, transparent)}
+  [data-platform="win"] .p-head{min-height:5.6rem;padding:0 16px}
+  [data-platform="win"] .p-sec{font-size:1.2rem;padding:10px 16px 4px}
+  [data-platform="win"] .p-row{min-height:4rem;padding:0 16px;font-size:1.4rem;border-radius:4px}
+  [data-platform="win"] .p-row .qual{font-size:1.2rem}
+  [data-platform="win"] .tile{width:24px;height:24px;border-radius:4px}
+  [data-platform="win"] .tile .ic,[data-platform="win"] .tile svg{width:16px;height:16px}
+  [data-platform="win"] .p-foot{padding:10px 16px;font-size:1.2rem}
+  [data-platform="win"] .p-attn{border-radius:4px;margin:8px 12px}
+  /* Windows toasts rise from the tray corner, they do not drop from the top of the screen */
+  [data-platform="win"] .hud{border-radius:8px}
+  /* Q14: the switch result on Windows is a toast in the corner above the tray — same fact,
+     native anatomy: app row, title, one collapsed line, real action buttons. */
+  [data-platform="win"] .hud-wrap{justify-content:flex-end;padding-right:12px;bottom:60px}
+  [data-platform="win"] .hud{min-width:0;width:300px;padding:12px 14px;
+    background:var(--card);border:1px solid var(--card-line);
+    box-shadow:0 8px 24px rgba(0,0,0,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+  .t-app{display:flex;align-items:center;gap:7px;font-size:1.2rem;color:var(--sys-dim);margin-bottom:6px}
+  .t-app .ic{width:14px;height:14px}
+  .t-app .t-x{margin-left:auto;font-size:1.4rem;cursor:pointer;
+    font-family:inherit;border:none;background:none;-webkit-appearance:none;appearance:none;
+    color:inherit;padding:0 2px;line-height:1}
+  .t-title{font-size:1.4rem;font-weight:600;margin-bottom:2px}
+  .t-line{font-size:1.2rem;color:var(--sys-dim)}
+  .t-acts{display:flex;gap:8px;margin-top:10px}
+  .t-acts .skbtn{flex:1;border-radius:4px;font-size:1.3rem;padding:6px 10px}
+  [data-platform="win"] .hud .hr{font-size:1.2rem;padding:3px 0}
+  /* motion: flyout-derived, since the shell does not publish toast numbers (handoff: derived) */
+  [data-platform="win"] .hud{transform:translateX(24px)}
+  [data-platform="win"] .hud.show{transition:opacity var(--dur-fast) var(--ease-entrance),
+    transform var(--dur-fast) var(--ease-entrance)}
+  [data-platform="win"] .hud.show{transform:none}
+  /* a Windows toast is a squared card with the app name in sentence case, not a macOS
+     banner with a squircle app tile and an all-caps name */
+  [data-platform="win"] .notif{border-radius:8px;border:1px solid var(--card-line);
+    background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.22);padding:14px 16px}
+  [data-platform="win"] .notif .nico{border-radius:4px;width:24px;height:24px}
+  [data-platform="win"] .notif .nap{text-transform:none;letter-spacing:0;font-size:1.2rem}
+  /* Windows notifications rise from the corner above the tray, they do not hang centred over
+     the wallpaper the way a macOS HUD does */
+  [data-platform="win"] .st-backdrop{justify-content:flex-end;align-items:flex-end;
+    padding:16px 16px 40px;position:relative;background:linear-gradient(160deg,#1b3b6f,#2f6fb5 60%,#7ea6d8)}
+  [data-platform="win"] .st-backdrop::after{content:"";position:absolute;left:0;right:0;bottom:0;
+    height:28px;background:rgba(243,243,243,.86);backdrop-filter:blur(12px)}
+  [data-platform="win"] .st-backdrop > *{position:relative;z-index:1}
+  /* the degradation swatches were hard-coded dark: correct for a macOS panel over a
+     wallpaper, wrong for a Windows flyout in light theme. Variants keep their meaning
+     (material / no material / reduced transparency / high contrast), the base changes. */
+  [data-platform="win"] .decell .mini{border-radius:8px;color:var(--sys-text);
+    box-shadow:0 8px 24px rgba(0,0,0,.22)}
+  [data-platform="win"] .decell .mini .mtop{color:var(--sys-dim)}
+  [data-platform="win"] .decell .mini.m-glass{background:rgba(249,249,249,.72);
+    border-color:var(--card-line)}
+  [data-platform="win"] .decell .mini.m-off{background:#F9F9F9;border-color:var(--card-line)}
+  [data-platform="win"] .decell .mini.m-rt{background:#F3F3F3;border-color:var(--card-line)}
+  [data-platform="win"] .decell .mini.m-ic{background:#FFFFFF;border:1px solid #000;color:#000}
+  [data-platform="win"] .mini .mi{border-radius:4px;min-height:3.2rem;font-size:1.4rem}
+  [data-platform="win"] .mini .mq{border-radius:4px}
+  [data-platform="win"] .editor{border-radius:8px}
+  [data-platform="win"] .editor .etitle .d{display:none}
+  [data-platform="win"] .editor .etitle{padding-left:12px}
+  [data-platform="win"] .editor .etitle::after{content:"\2013  \25A1  \00D7";margin-left:auto;
+    letter-spacing:.5em;opacity:.75;font-size:1.1rem}
+
+  .platnote{border-left:2px solid var(--attn);padding-left:10px;margin-top:-8px}
+  .oslab{font-size:1rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--sys-dim);background:var(--chip);border-radius:6px;padding:1px 6px;margin-left:6px;
+    vertical-align:2px}
+  [data-platform="win"] .platnote{border-left-color:var(--bad)}

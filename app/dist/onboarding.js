@@ -25,7 +25,7 @@ async function load(done) {
   ]);
   presence = state.tools;
   harvest = offer;
-  surface.className = "onboarding";
+  surface.className = "window";
   if (!presence.some((t) => t.installed)) {
     renderNone(done);
     return;
@@ -33,19 +33,24 @@ async function load(done) {
   render(done);
 }
 
-/// The step indicator: the catalogue's two step names, the current one lit.
+/// The step indicator, in the titlebar band the prototype puts it in.
 function steps() {
   const names = ["Tools & providers", "First profile"];
-  return `<div class="ob-steps">${names
+  return `<div class="titlebar"><div class="ob-steps">${names
     .map(
       (n, i) =>
         `<span class="ob-step${i === step ? " on" : ""}"><span class="n">${i + 1}</span>${n}</span>`
     )
-    .join("")}</div>`;
+    .join("")}</div></div>`;
+}
+
+/// Every screen is `.content` inside the window; `head` is the titlebar band or nothing.
+function screen(head, body) {
+  surface.innerHTML = `${head}<div class="content">${body}</div>`;
 }
 
 function renderNone(done) {
-  surface.innerHTML = `
+  screen("", `
     <div class="ob-title">No supported tools found</div>
     <div class="ob-sub">tapkey manages Claude Code, Codex and OpenCode</div>
     <div class="group">
@@ -53,20 +58,19 @@ function renderNone(done) {
         .map(
           (t) => `<div class="row tall">
           ${tile(cap(t.tool))}
-          <span class="label">${esc(cap(t.tool))}</span>
+          <span class="main"><span class="title">${esc(cap(t.tool))}</span></span>
           <span class="trail"><span class="chip miss">Not installed</span></span>
         </div>`
         )
         .join("")}
     </div>
-    <div class="ob-foot"><span></span><button class="act primary" id="recheck">Check again</button></div>`;
+    <div class="ob-foot"><span></span><button class="btn primary" id="recheck">Check again</button></div>`);
   document.getElementById("recheck").addEventListener("click", () => load(done));
 }
 
 function render(done) {
   const inline = harvest.candidates.some((c) => c.credential === "inline");
-  surface.innerHTML = `
-    ${steps()}
+  screen(steps(), `
     <div class="ob-title">Found on this Mac</div>
     <div class="ob-sub">Current configs are snapshotted before anything changes</div>
     <div class="g-label">Coding tools</div>
@@ -80,7 +84,7 @@ function render(done) {
               : '<span class="chip miss">Not installed</span>';
           return `<div class="row tall">
           ${tile(cap(t.tool))}
-          <span class="label">${esc(cap(t.tool))}</span>
+          <span class="main"><span class="title">${esc(cap(t.tool))}</span></span>
           <span class="trail">${chip}</span>
         </div>`;
         })
@@ -94,8 +98,8 @@ function render(done) {
         .map(
           (c, i) => `<div class="row tall">
           ${tile(c.id)}
-          <span class="stack"><span class="label">${esc(c.id)}</span>
-            <span class="qualifier">${esc(cap(c.tool))} · ${
+          <span class="main"><span class="title">${esc(c.id)}</span>
+            <span class="desc">${esc(cap(c.tool))} · ${
               c.credential === "inline" ? "key copies over" : c.credential === "reference" ? "key stays referenced" : ""
             }</span></span>
           <span class="trail"><label class="swl"><input type="checkbox" checked data-i="${i}"><span class="sw"></span></label></span>
@@ -113,9 +117,9 @@ function render(done) {
         : ""
     }
     <div class="ob-foot">
-      <button class="act" id="ob-later">Set up later</button>
-      <button class="act primary" id="import">Import &amp; continue</button>
-    </div>`;
+      <button class="btn" id="ob-later">Set up later</button>
+      <button class="btn primary" id="import">Import &amp; continue</button>
+    </div>`);
 
   document.getElementById("ob-later").addEventListener("click", () => later(done));
   document.getElementById("import").addEventListener("click", () => importAll(done));
@@ -126,8 +130,7 @@ function render(done) {
 /// live pass's finding, and this step is the catalogue's answer to it.
 function renderProfile(done) {
   const suggestion = harvest.suggested_profile;
-  surface.innerHTML = `
-    ${steps()}
+  screen(steps(), `
     <div class="ob-title">First profile &amp; shortcut</div>
     <div class="ob-sub">Each imported provider is already a profile — pick where to start</div>
     <div class="g-label">All tools</div>
@@ -136,22 +139,22 @@ function renderProfile(done) {
         suggestion
           ? `<div class="row tall">
           ${tile(suggestion.name)}
-          <span class="stack"><span class="label">${esc(suggestion.name)}</span>
-            <span class="qualifier">${suggestion.tools.map((t) => esc(cap(t.tool))).join(" · ")}</span></span>
+          <span class="main"><span class="title">${esc(suggestion.name)}</span>
+            <span class="desc">${suggestion.tools.map((t) => esc(cap(t.tool))).join(" · ")}</span></span>
           <span class="trail"><span class="chip ok">From your configs</span></span>
         </div>`
-          : `<div class="row tall"><span class="label">No suggestion — add a provider in Settings first</span></div>`
+          : `<div class="row tall"><span class="main"><span class="title">No suggestion — add a provider in Settings first</span></span></div>`
       }
     </div>
     <div class="g-label">Shortcut</div>
     <div class="group">
-      <div class="row tall"><span class="label">Open panel</span><span class="trail mono">⌘⇧P</span></div>
-      <div class="row tall"><span class="label">Cycle profiles</span><span class="trail mono">⌥⌘P</span></div>
+      <div class="row tall"><span class="main"><span class="title">Open panel</span></span><span class="trail mono">⌘⇧P</span></div>
+      <div class="row tall"><span class="main"><span class="title">Cycle profiles</span></span><span class="trail mono">⌥⌘P</span></div>
     </div>
     <div class="ob-foot">
-      <button class="act" id="ob-back">Back</button>
-      <button class="act primary" id="start">Start using tapkey</button>
-    </div>`;
+      <button class="btn" id="ob-back">Back</button>
+      <button class="btn primary" id="start">Start using tapkey</button>
+    </div>`);
 
   document.getElementById("ob-back").addEventListener("click", () => {
     step = 0;
@@ -199,9 +202,9 @@ async function createSuggested() {
 
 function later(done) {
   done();
-  surface.innerHTML = `
+  screen("", `
     <div class="ob-done"><div class="big">—</div>tapkey stays empty until you add a provider.<br />
-    <span class="note">Open the panel when you are ready — it will offer to add one</span></div>`;
+    <span class="note">Open the panel when you are ready — it will offer to add one</span></div>`);
 }
 
 function finish() {
@@ -209,9 +212,9 @@ function finish() {
     ? ""
     : plural("1 key copied into the Keychain", "{count} keys copied into the Keychain", keys);
   const originals = keys > 0 ? " · Originals left where they were" : "";
-  surface.innerHTML = `
+  screen("", `
     <div class="ob-done"><div class="big">✓</div>You’re all set — tapkey lives in your menu bar<br />
     <span class="note">${esc(copied)}${esc(originals)}</span>
     <span class="note">${IS_WIN ? "Ctrl+Alt+P opens the panel" : "⌘⇧P opens the panel; ⌥-click the icon returns to the previous profile"}</span>
-    <span class="note">Everything else is in Settings</span></div>`;
+    <span class="note">Everything else is in Settings</span></div>`);
 }

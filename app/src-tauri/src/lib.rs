@@ -24,10 +24,13 @@ fn onboarding_done(app: tauri::AppHandle) {
 #[tauri::command]
 fn show_sheet(app: tauri::AppHandle, sheet: String) -> tauri::Result<()> {
     // Sheets are windows the shell owns; the panel never touches another window's content, it
-    // asks the shell to show one.
+    // asks the shell to show one. Settings is one of them: `Window.getByLabel` in the JS API is
+    // **async**, so the panel's `getByLabel("settings")?.show()` called `.show()` on a Promise
+    // and the button did nothing at all — measured live.
     let label = match sheet.as_str() {
         "effective" => "effective",
         "history" => "history",
+        "settings" => "settings",
         _ => return Ok(()),
     };
     if let Some(window) = app.get_webview_window(label) {

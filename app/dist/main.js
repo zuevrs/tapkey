@@ -1,7 +1,7 @@
 // One surface per window; the label decides. The panel is a list read in half a second:
 // it composes from the row primitive, filters, and switches. Nothing caches.
 
-import { call, cap, esc, plural, tile, tools } from "./ui.js";
+import { call, cap, esc, fic, mark, tile, tools } from "./ui.js";
 
 const { getCurrentWindow, LogicalSize } = window.__TAURI__.window;
 const { invoke } = window.__TAURI__.core;
@@ -12,7 +12,10 @@ const label = getCurrentWindow().label;
 // The platform layer is a token swap, and the OS is the only honest source of which one.
 const IS_WIN = /Windows NT/.test(navigator.userAgent);
 document.documentElement.dataset.platform = IS_WIN ? "win" : "mac";
-document.body.classList.add(label);
+// The label goes on the body as a data attribute, never as a class: `panel` is also the
+// prototype's word for the panel *card*, and a class collision made `.panel`'s width apply
+// to the body — the card then measured 92vw of the window and left a strip of desktop.
+document.body.dataset.surface = label;
 
 if (label === "panel") {
   panel();
@@ -118,13 +121,13 @@ function drawPanel() {
   if (!rows.length && !searchOn) {
     surface.innerHTML = `
       <div class="p-rows" style="padding:9px 7px">
-        <div class="p-row" tabindex="0">${tile("tapkey")}<span class="nm hi">Add your first provider…</span></div>
+        <div class="p-row create" tabindex="0">${tile("tapkey")}<span class="nm">Add your first provider…</span></div>
       </div>
-      <footer id="footer">
+      <div class="p-foot">
         <span class="tip">Type to filter</span>
-        <button id="open-history">History <kbd>⌘Y</kbd></button>
-        <button id="open-settings">Settings <kbd>⌘,</kbd></button>
-      </footer>`;
+        <button type="button" class="fi" id="open-history">History <kbd>⌘Y</kbd></button>
+        <button type="button" class="fi" id="open-settings">Settings <kbd>⌘,</kbd></button>
+      </div>`;
     document.querySelector(".p-row").addEventListener("click", () => openSheet("settings"));
     document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
     document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
@@ -148,12 +151,13 @@ function drawPanel() {
     ? `<span class="mixlogos">${state.tools.map((t) => {
         const url = t.endpoint.effective || "";
         const prov = (providers ?? []).find((p) => p.base_url && url.startsWith(p.base_url.replace(/\/$/, "")));
-        return `<span class="pair">${tile(t.tool)}<span class="to">›</span>${tile(prov ? prov.id : url || "—")}</span>`;
+        return `<span class="pair">${mark(t.tool)}<span class="to">›</span>${mark(prov ? prov.id : url || "—")}</span>`;
       }).join("")}</span>`
     : "";
 
   const headHtml = searchOn
     ? `<div class="p-searchrow">
+        <svg class="ic maconly" aria-hidden="true"><use href="#i-search"/></svg>${fic("E721", "inline")}
         <input id="search" type="text" role="combobox" aria-expanded="true" aria-controls="list"
                aria-activedescendant="${panelState.active >= 0 ? `opt-${panelState.active}` : ""}"
                placeholder="Switch profile…" aria-label="Switch profile"
@@ -163,12 +167,12 @@ function drawPanel() {
         ${tile(current)}
         <span class="nm">${esc(current)}</span>
         ${mixHtml}
-        <button type="button" class="srch" id="srch-btn" title="Filter profiles" aria-label="Filter profiles">⌕</button>
+        <button type="button" class="srch" id="srch-btn" title="Filter profiles" aria-label="Filter profiles"><svg class="ic maconly" aria-hidden="true"><use href="#i-search"/></svg>${fic("E721", "inline")}</button>
       </header>`;
 
   const createRow = (searchOn && query && !rows.some((r) => r.name.toLowerCase() === query.toLowerCase()))
     ? `<div class="p-row create" role="option" tabindex="-1" data-create="${esc(query)}"
-         title="Creating opens Settings → Profiles">${tile("+")}<span class="nm">Create profile “${esc(query)}”…</span></div>`
+         title="Creating opens Settings → Profiles"><span class="nm">Create profile “${esc(query)}”…</span></div>`
     : "";
 
   const profHtml = visible
@@ -193,7 +197,7 @@ function drawPanel() {
   const why = whyLink ? `${whyLink.key} in ${whyLink.source}` : "";
   const attnHtml = driftedTool && !searchOn
     ? `<div class="p-attn" role="status" aria-live="polite">
-        <span>⚠ ${esc(cap(driftedTool.tool))} — changed outside tapkey
+        <svg class="ic maconly" aria-hidden="true"><use href="#i-warn"/></svg>${fic("E7BA", "inline")}<span>${esc(cap(driftedTool.tool))} — changed outside tapkey
         ${why ? `<span class="why">${esc(why)}</span>` : ""}
         <span class="acts"><button type="button" class="act pri" id="reapply">Re-apply</button>
           <button type="button" class="act" id="accept">Accept</button></span></span>
@@ -209,11 +213,11 @@ function drawPanel() {
       </div>
       ${toolsOpen ? state.tools.map((t) => `
         <div class="p-row tool" style="margin-left:14px">
-          ${tile(cap(t.tool))}<span class="nm">${esc(cap(t.tool))}</span>
+          ${mark(t.tool)}<span class="nm">${esc(cap(t.tool))}</span>
           <span class="provlogo">${esc(t.endpoint.effective ?? "—")} <span class="chev">›</span></span>
         </div>
         <div class="p-row sub"><span class="check"></span>
-          <span class="nm link" data-effective="1">Effective state…</span></div>`).join("") : ""}`
+          <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>`).join("") : ""}`
     : "";
 
   surface.innerHTML = `
@@ -222,11 +226,11 @@ function drawPanel() {
     <div class="p-rows${visible.length > 7 ? " scroll" : ""}" role="listbox" aria-label="Profiles">${profHtml}</div>
     ${toolsHtml}
     ${attnHtml}
-    <footer id="footer">
+    <div class="p-foot">
       <span class="tip">Type to filter</span>
-      <button id="open-history">History <kbd>⌘Y</kbd></button>
-      <button id="open-settings">Settings <kbd>⌘,</kbd></button>
-    </footer>`;
+      <button type="button" class="fi" id="open-history">History <kbd>⌘Y</kbd></button>
+      <button type="button" class="fi" id="open-settings">Settings <kbd>⌘,</kbd></button>
+    </div>`;
 
   const search = document.getElementById("search");
   if (searchOn) {
@@ -321,11 +325,10 @@ function panelKeys(e) {
 }
 
 function openSheet(sheet) {
-  if (sheet === "settings") {
-    window.__TAURI__.window.Window.getByLabel("settings")?.show();
-  } else {
-    window.__TAURI__.core.invoke("show_sheet", { sheet });
-  }
+  // Every window the panel opens goes through the shell, settings included: `getByLabel` is
+  // async in the JS API, so `getByLabel("settings")?.show()` resolved a Promise and the footer's
+  // Settings button did nothing — the live pass caught it.
+  window.__TAURI__.core.invoke("show_sheet", { sheet });
 }
 
 async function switchTo(id) {
@@ -366,15 +369,15 @@ function hud() {
   surface.className = "hud glass";
   if (applied) {
     const rows = (response.tools ?? []).map((t) => `
-      <div class="hr">${tile(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
+      <div class="hr">${mark(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
     surface.innerHTML = `
-      <div class="hh">${tile(profile)}<span>${esc(profile)}</span></div>
+      <div class="hh">${mark(profile)}<span>${esc(profile)}</span></div>
       ${rows}
       ${backup ? `<button type="button" class="undo" id="undo"><kbd>⌘Z</kbd>Undo<span class="fallback">later in History <kbd>⌘Y</kbd></span></button>` : ""}`;
   } else {
     const why = response.failure?.detail || "";
     surface.innerHTML = `
-      <div class="hh fail">⚠ <span>${esc(title)}</span></div>
+      <div class="hh fail"><svg class="ic maconly" aria-hidden="true"><use href="#i-warn"/></svg>${fic("E7BA", "inline")}<span>${esc(title)}</span></div>
       ${why ? `<div class="why">${esc(why)}</div>` : ""}
       <button type="button" class="undo" id="dismiss">Dismiss</button>`;
   }
@@ -386,7 +389,7 @@ function hud() {
       version: 1, op: "restore",
       params: { target: { target: "backup", id: backup } },
     });
-    document.querySelector(".hh").innerHTML = r.outcome === "applied" ? "Restored" : "⚠ Switch failed";
+    document.querySelector(".hh").innerHTML = r.outcome === "applied" ? "Restored" : "Switch failed";
     document.getElementById("undo").remove();
     // The undo leaves the dwell behind: its result stays until the person has read it.
     setTimeout(() => getCurrentWindow().hide(), HUD_DWELL);

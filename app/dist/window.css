@@ -1,0 +1,48 @@
+/* What a real window needs and a page cannot have.
+
+   proto.css carries the prototype's own bytes and is the source of truth for every visual
+   decision. This file holds only the differences a window forces, and each one names the
+   reason it cannot live in the prototype:
+
+     - the prototype's specimens sit on a mocked desktop (`.stage`, `.wall`); a real panel
+       sits on a transparent window and the OS draws the material behind it
+     - the prototype's panel is one card among many on a scrolling page; a real surface fills
+       its window and scrolls inside it
+     - the prototype paints the fake menu bar and dock that a real menu bar app does not have
+
+   Anything else belongs in the prototype first. If a rule here starts describing how
+   something *looks*, it is in the wrong file. */
+
+html, body { height: 100%; }
+
+/* The floating surfaces are transparent: the window is transparent and macOS composites its
+   own vibrancy behind the webview (window-vibrancy, NSVisualEffectMaterial::Popover). The
+   prototype's `.glass` tint, rim and inner light still paint on top — that is the recipe. */
+body[data-surface="panel"], body[data-surface="hud"] { background: transparent; }
+/* The window-shaped surfaces carry the page background the prototype's stand provided. */
+body[data-surface="settings"], body[data-surface="onboarding"],
+body[data-surface="effective"], body[data-surface="history"] { background: var(--win-bg); }
+
+/* Settings, onboarding and the sheets are the prototype's `.window` and `.sheet` cards, and
+   here each one *is* a window: it fills the frame, and the radius, shadow and outer margin the
+   page gave them belong to the OS now. */
+#surface.window, #surface.sheet { width: 100%; height: 100%;
+  border-radius: 0; box-shadow: none; border: 0; }
+#surface.window { display: flex; flex-direction: column; overflow: hidden; }
+#surface.window .content { flex: 1; min-height: 0; overflow-y: auto; }
+#surface.sheet { overflow-y: auto; padding: 16px 18px; }
+/* The panel keeps its content height so `fitWindow` measures the card and not the window it is
+   about to resize; only its width comes from the window. */
+#surface.panel { width: 100%; height: auto; }
+/* The prototype's card has no reason to clip; a window does — the radius must cut the OS's
+   material, not just the tint. */
+#surface.glass { overflow: hidden; }
+
+/* The HUD is centred in its own small window instead of being anchored to a mocked desktop. */
+body[data-surface="hud"] { display: grid; place-items: center; }
+#surface.hud { width: max-content; }
+
+/* The settings window's two columns come from the prototype's own `.win-body` grid; only the
+   height is ours, because a page's grid never had to fit inside a frame. */
+#surface.window .win-body { flex: 1; min-height: 0; }
+#surface.window .side, #surface.window .win-body > .content { overflow-y: auto; min-height: 0; }

@@ -4,8 +4,11 @@
   <meta charset="utf-8" />
   <!-- The panel receives the system's floating material: the window is transparent, the OS
        draws what it thinks is right. tapkey draws no glass of its own. -->
-  <link rel="stylesheet" href="tokens.css" />
-  <link rel="stylesheet" href="panel.css" />
+  <!-- The prototype's own stylesheet, extracted verbatim: it is the specification for
+       anything user-visible, and a hand-rewritten copy drifts from it by construction. -->
+  <link rel="stylesheet" href="proto.css" />
+  <!-- Only what a real window needs and a page cannot have. -->
+  <link rel="stylesheet" href="window.css" />
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -17,6 +20,47 @@
 <symbol id="i-qwen" viewBox="0 0 24 24"><path fill="currentColor" d="M23.919 14.545 20.817 9.17l1.47-2.544a.56.56 0 0 0 0-.566l-1.633-2.83a.57.57 0 0 0-.49-.283h-6.207L12.487.402a.57.57 0 0 0-.49-.284H8.732a.56.56 0 0 0-.49.284L5.139 5.775h-2.94a.56.56 0 0 0-.49.284L.077 8.887a.56.56 0 0 0 0 .567L3.18 14.83l-1.47 2.545a.56.56 0 0 0 0 .566l1.634 2.83a.57.57 0 0 0 .49.283h6.205l1.47 2.545a.57.57 0 0 0 .49.284h3.266a.57.57 0 0 0 .49-.284l3.104-5.375h2.94a.57.57 0 0 0 .49-.283l1.634-2.828a.55.55 0 0 0-.004-.568M8.733.686l1.634 2.828-1.634 2.828H21.8L20.164 9.17H7.425L5.63 6.06Zm1.306 19.801-6.205-.002 1.634-2.83h3.265L2.201 6.344h3.267q3.182 5.517 6.367 11.032zm10.124-5.66L18.53 12l-6.532 11.315-1.634-2.83c2.129-3.673 4.25-7.351 6.373-11.028h3.592l3.102 5.374z"/></symbol>
 <symbol id="i-zai" viewBox="5.7 7.09 18.6 15.82"><!-- z-cdn.chatglm.cn/z-ai/static/logo.svg, glyph cropped out of its plate. The official Z is white on #2D2D2D, so currentColor is the glyph, not the plate. --><path fill="currentColor" d="M15.47,7.1l-1.3,1.85c-0.2,0.29-0.54,0.47-0.9,0.47h-7.1V7.09C6.16,7.1,15.47,7.1,15.47,7.1z"/><polygon fill="currentColor" points="24.3,7.1 13.14,22.91 5.7,22.91 16.86,7.1"/><path fill="currentColor" d="M14.53,22.91l1.31-1.86c0.2-0.29,0.54-0.47,0.9-0.47h7.09v2.33H14.53z"/></symbol>
 <symbol id="i-openrouter" viewBox="0 0 401.4 293.7"><!-- OpenRouter brand refresh, 2026-07-13: the OR monogram replaced the routing arrow --><path fill="currentColor" d="M303.9475,17.19926c42.79734,0,77.48933,34.69327,77.48933,77.48933s-34.69199,77.48933-77.48933,77.48933l76.86166,76.86244c9.76367,9.76313,2.84903,26.45667-10.95697,26.45667h-220.88335c-71.32686,0-129.14889-57.82202-129.14889-129.14889S77.64197,17.19926,148.96884,17.19926h154.97866ZM148.96884,68.85881c-42.79607,0-77.48933,34.69327-77.48933,77.48933s34.69327,77.48933,77.48933,77.48933,77.48933-34.69327,77.48933-77.48933-34.69327-77.48933-77.48933-77.48933Z"/></symbol>
+<!-- The prototype's own non-brand marks: the system glyph, tapkey's mark, search,
+     the warning, and the Segoe Fluent codepoint set the win layer swaps in. -->
+<symbol id="i-sys" viewBox="0 0 24 24">
+    <!-- the tools' own configuration, untouched: a plain machine -->
+    <rect x="2.5" y="4" width="19" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M8.5 20.2h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+<symbol id="i-mark" viewBox="0 0 24 24">
+    <!-- SF Symbol arrow.left.arrow.right. The menu bar is Apple's vocabulary: a custom mark there
+         either collides with a system glyph (our toggle was half of Control Center) or dies at 16 pt. -->
+    <path d="M4 9h15 M15.5 5.5 19 9 15.5 12.5" stroke="currentColor" stroke-width="1.9" fill="none"
+      stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 15H5 M8.5 11.5 5 15 8.5 18.5" stroke="currentColor" stroke-width="1.9" fill="none"
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+<symbol id="i-search" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zm4.8-.2L20 21.5"/>
+  </symbol>
+<symbol id="i-warn" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12 2.5 23 21H1L12 2.5zm-1 7v6h2v-6h-2zm0 8v2h2v-2h-2z"/>
+  </symbol>
+<symbol id="i-settled" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M3.2 8.6l3 3 6.6-7.2"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M6 10V7a6 6 0 0 1 12 0v3h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1zm2 0h8V7a4 4 0 0 0-8 0v3z"/>
+  </symbol>
+<symbol id="i-globe" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="1.8"
+      d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 0c-2.8 2.2-4.2 5.2-4.2 9s1.4 6.8 4.2 9m0-18c2.8 2.2 4.2 5.2 4.2 9s-1.4 6.8-4.2 9M3.5 9h17M3.5 15h17"/>
+  </symbol>
+<symbol id="f-E774" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.9"/><ellipse cx="10" cy="10" rx="3.7" ry="7.9"/><path d="M2.5 7.2h15M2.5 12.8h15"/></symbol>
+<symbol id="f-E72E" viewBox="0 0 20 20"><rect x="3.9" y="8.6" width="12.2" height="8.9" rx="1.6"/><path d="M6.7 8.6V6.3a3.3 3.3 0 0 1 6.6 0v2.3"/></symbol>
+<symbol id="f-E895" viewBox="0 0 20 20"><path d="M2.9 9.6a7 7 0 0 1 11.9-4.8l2 1.9"/><path d="M16.8 2.6v4.4h-4.4"/><path d="M17.1 10.4a7 7 0 0 1-11.9 4.8l-2-1.9"/><path d="M3.2 17.4V13h4.4"/></symbol>
+<symbol id="f-E8AC" viewBox="0 0 20 20"><path d="M13.9 3.1l3 3-9.4 9.4-4 1 1-4z"/><path d="M12.2 4.8l3 3"/></symbol>
+<symbol id="f-E8C7" viewBox="0 0 20 20"><rect x="2.3" y="4.5" width="15.4" height="11" rx="1.7"/><path d="M2.3 8.3h15.4"/><path d="M5.2 12.4h3.3"/></symbol>
+<symbol id="f-E943" viewBox="0 0 20 20"><path d="M7 6.1L2.9 10 7 13.9M13 6.1L17.1 10 13 13.9"/><path d="M11.2 4.4l-2.4 11.2"/></symbol>
+<symbol id="f-E721" viewBox="0 0 20 20"><circle cx="8.4" cy="8.4" r="5.2"/><path d="M12.3 12.3l4.3 4.3"/></symbol>
+<symbol id="f-E7BA" viewBox="0 0 20 20"><path d="M10 2.6 1.9 16.6h16.2z"/><path d="M10 7.4v4.1M10 13.6v.1"/></symbol>
+<symbol id="f-E76C" viewBox="0 0 20 20"><path d="M7.4 4.2 13.2 10l-5.8 5.8"/></symbol>
+<symbol id="f-EA37" viewBox="0 0 20 20"><path d="M3 5.4h1M3 10h1M3 14.6h1"/><path d="M7.4 5.4h9.6M7.4 10h9.6M7.4 14.6h9.6"/></symbol>
+<symbol id="f-E713" viewBox="0 0 20 20" stroke-width="1.15"><circle cx="10" cy="10" r="2.6"/><path d="M15.9 12.3a1.4 1.4 0 0 0 .28 1.55l.05.05a1.7 1.7 0 1 1-2.4 2.4l-.05-.05a1.4 1.4 0 0 0-1.55-.28 1.4 1.4 0 0 0-.85 1.29v.14a1.7 1.7 0 1 1-3.4 0v-.07a1.4 1.4 0 0 0-.92-1.29 1.4 1.4 0 0 0-1.55.28l-.05.05a1.7 1.7 0 1 1-2.4-2.4l.05-.05a1.4 1.4 0 0 0 .28-1.55 1.4 1.4 0 0 0-1.29-.85h-.14a1.7 1.7 0 1 1 0-3.4h.07a1.4 1.4 0 0 0 1.29-.92 1.4 1.4 0 0 0-.28-1.55l-.05-.05a1.7 1.7 0 1 1 2.4-2.4l.05.05a1.4 1.4 0 0 0 1.55.28h.07a1.4 1.4 0 0 0 .85-1.29v-.14a1.7 1.7 0 1 1 3.4 0v.07a1.4 1.4 0 0 0 .85 1.29 1.4 1.4 0 0 0 1.55-.28l.05-.05a1.7 1.7 0 1 1 2.4 2.4l-.05.05a1.4 1.4 0 0 0-.28 1.55v.07a1.4 1.4 0 0 0 1.29.85h.14a1.7 1.7 0 1 1 0 3.4h-.07a1.4 1.4 0 0 0-1.29.85z"/></symbol>
 </svg>
   <main id="surface"></main>
   <script type="module" src="main.js"></script>
