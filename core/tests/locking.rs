@@ -76,3 +76,28 @@ fn the_lock_goes_when_the_holder_does_and_nothing_has_to_notice() {
     }
     assert!(Lock::acquire(dir.path()).is_ok());
 }
+
+/// A holder that lets go within a human-imperceptible window is absorbed rather than reported.
+/// EAGAIN is how a contended file system answers a transient hiccup too — observed once on a
+/// CI runner with no other holder in sight, never reproducible locally across six full rounds
+/// and a million-acquire hammer. The window is bounded so a genuine holder still refuses: only
+/// the hiccup and the milliseconds-holder fall inside it.
+#[test]
+fn a_lock_released_within_the_absorb_window_is_not_reported_busy() {
+    let dir = TempDir::new("lock-brief");
+    std::fs::create_dir_all(dir.path()).expect("mkdir");
+    let path = dir.path().to_path_buf();
+
+    let holder = std::thread::spawn(move || {
+        let _held = Lock::acquire(&path).expect("the first holder gets it");
+        std::thread::sleep(std::time::Duration::from_millis(12));
+    });
+    std::thread::sleep(std::time::Duration::from_millis(2)); // the holder is inside its span
+
+    let second = Lock::acquire(dir.path());
+    assert!(
+        second.is_ok(),
+        "a 12ms holder falls inside the absorb window"
+    );
+    holder.join().unwrap();
+}

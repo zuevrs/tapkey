@@ -24,17 +24,39 @@ pub struct Lock {
 
 impl Lock {
     /// Take the lock, or report that somebody else has it.
+    ///
+    /// A refusal is retried inside a bounded window — three attempts across ~20ms — because
+    /// EAGAIN is how a contended file system answers a transient hiccup as well as a real
+    /// holder: one CI run failed with "Resource temporarily unavailable" where no other
+    /// holder existed, and nothing local reproduced it across six full rounds and a
+    /// million-acquire hammer. The window is human-imperceptible, so a genuine holder is
+    /// still refused as fast as anybody can tell; only the hiccup and a holder that lets go
+    /// within milliseconds fall inside it.
     pub fn acquire(store: &Path) -> Result<Lock, Busy> {
-        let path = store.join("lock");
-        let file = OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&path)
-            .map_err(|e| Busy(e.to_string()))?;
-        take(&file)?;
-        Ok(Lock { file })
+        let mut last = Busy(String::new());
+        for attempt in 0..3 {
+            if attempt > 0 {
+                std::thread::sleep(std::time::Duration::from_millis(10));
+            }
+            last = match acquire_once(store) {
+                Ok(lock) => return Ok(lock),
+                Err(busy) => busy,
+            };
+        }
+        Err(last)
     }
+}
+
+fn acquire_once(store: &Path) -> Result<Lock, Busy> {
+    let path = store.join("lock");
+    let file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&path)
+        .map_err(|e| Busy(e.to_string()))?;
+    take(&file)?;
+    Ok(Lock { file })
 }
 
 /// Somebody else is writing. Not an error in the file system sense — a fact about timing.
