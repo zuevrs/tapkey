@@ -59,6 +59,16 @@ async function draw() {
       }
     });
   });
+  // The window is undecorated so the titlebar is the prototype's one; the prototype's three
+  // dots were mock decoration on a page, but here they are the window's three verbs —
+  // close, minimize, zoom. Without this the lights are dots that do nothing (the person
+  // read that as missing window buttons), and the window itself cannot be moved except by
+  // the drag region on the titlebar.
+  const win = getCurrentWindow();
+  surface.querySelectorAll(".titlebar .tl").forEach((el, i) => {
+    const verbs = [() => win.close(), () => win.minimize(), () => win.toggleMaximize()];
+    el.addEventListener("click", (e) => { e.stopPropagation(); verbs[i]?.(); });
+  });
   const side = document.getElementById("side-list");
   const pane = document.getElementById("pane-content");
   if (tab === "providers") await providers(side, pane);

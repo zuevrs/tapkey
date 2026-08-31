@@ -223,13 +223,19 @@ function drawPanel() {
     ? `<div class="p-sechead${toolsOpen ? " open" : ""}" role="button" aria-expanded="${toolsOpen}">
         ${toolList.length} tools <span class="meta">${summary} <span class="chev">›</span></span>
       </div>
-      ${toolsOpen ? state.tools.map((t) => `
+      ${toolsOpen ? state.tools.map((t) => {
+        const url = t.endpoint.effective || "";
+        const prov = (providers ?? []).find((p) => p.base_url && url.startsWith(p.base_url.replace(/\/$/, "")));
+        // The provlogo is the provider's mark, as the prototype draws it — an icon and a
+        // chevron, not the endpoint's URL text (the person read the URL as a design break).
+        return `
         <div class="p-row tool" style="margin-left:14px">
           ${mark(t.tool)}<span class="nm">${esc(cap(t.tool))}</span>
-          <span class="provlogo">${esc(t.endpoint.effective ?? "—")} <span class="chev">›</span></span>
+          <span class="provlogo">${mark(prov ? prov.id : url || "—")}<span class="chev">›</span></span>
         </div>
         <div class="p-row sub"><span class="check"></span>
-          <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>`).join("") : ""}`
+          <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>`;
+      }).join("") : ""}`
     : "";
 
   surface.innerHTML = `

@@ -50,6 +50,15 @@ body[data-surface="effective"], body[data-surface="history"] { background: var(-
 body[data-surface="hud"] { display: grid; place-items: center; }
 #surface.hud { width: max-content; }
 
+/* The undecorated windowed surfaces wear the prototype's traffic-light dots as their own
+   window verbs — close, minimize, zoom. The dots' styling is the prototype's bytes; the
+   extraction classed them as stand furniture (mock decoration on a page), and here they are
+   real buttons, so the styling must come back. */
+.titlebar .tl { width: 12px; height: 12px; border-radius: 50%; }
+.titlebar .tl.r { background: #ff5f57; }
+.titlebar .tl.y { background: #febc2e; }
+.titlebar .tl.g { background: #28c840; }
+
 /* The settings window's two columns come from the prototype's own `.win-body` grid; only the
    height is ours, because a page's grid never had to fit inside a frame. */
 #surface.window .win-body { flex: 1; min-height: 0; }
