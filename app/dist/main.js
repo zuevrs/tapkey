@@ -84,8 +84,22 @@ async function panel() {
       }
     }
   });
+  // A menu bar flyout light-dismisses: the person clicks anywhere else and it is gone —
+  // the OS's own flyouts do this, and the panel is the same kind of surface. Esc was
+  // already the keyboard half; blur is the outside-click half. (The person read the
+  // missing half as «скрывается она только при клике на иконку».)
+  // A focus-history latch would be wrong here: `Focused(true)` can be emitted before this
+  // listener exists (the webview loads after the window is shown and keyed), so the latch
+  // would swallow the first genuine outside-click blur. Instead the show paths own the
+  // guarantee: every one of them (tray, shortcut, second launch) goes through
+  // show_and_key, which activates the app and keys the window — a blur after that is a
+  // click somewhere else, and hiding is the dismiss.
   getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-    if (focused && !panelState.searchOn) document.getElementById("srch-btn")?.focus();
+    if (focused) {
+      if (!panelState.searchOn) document.getElementById("srch-btn")?.focus();
+    } else {
+      getCurrentWindow().hide();
+    }
   });
 }
 

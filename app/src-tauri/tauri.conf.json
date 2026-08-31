@@ -44,7 +44,9 @@
         "title": "tapkey",
         "width": 720,
         "height": 480,
-        "decorations": false
+        "decorations": false,
+        "transparent": true,
+        "shadow": false
       },
       {
         "label": "onboarding",
@@ -54,7 +56,9 @@
         "width": 480,
         "height": 660,
         "resizable": false,
-        "decorations": false
+        "decorations": false,
+        "transparent": true,
+        "shadow": false
       },
       {
         "label": "effective",
@@ -63,7 +67,9 @@
         "title": "What is in effect right now",
         "width": 460,
         "height": 520,
-        "decorations": false
+        "decorations": false,
+        "transparent": true,
+        "shadow": false
       },
       {
         "label": "history",
@@ -72,7 +78,9 @@
         "title": "Switch history",
         "width": 460,
         "height": 520,
-        "decorations": false
+        "decorations": false,
+        "transparent": true,
+        "shadow": false
       }
     ],
     "security": {

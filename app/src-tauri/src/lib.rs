@@ -145,10 +145,11 @@ pub fn run() {
 
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            // A second launch means the person looked for tapkey again: show the panel.
-            if let Some(panel) = app.get_webview_window("panel") {
-                let _ = panel.show();
-            }
+            // A second launch means the person looked for tapkey again: show the panel —
+            // with the same focus the tray click gives it. Shown without focus, the panel
+            // can neither take a keystroke nor light-dismiss (the blur listener never
+            // fires, so an outside click leaves it hanging).
+            tray::show_and_key(app);
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
@@ -369,7 +370,7 @@ mod tray {
     /// keep sending keystrokes to whatever was frontmost. The crate's `show` is the whole
     /// sequence: first responder to the webview, front regardless, and **key window** — the
     /// one call that was missing, without which a nonactivating panel floats but never types.
-    fn show_and_key(app: &tauri::AppHandle) {
+    pub(crate) fn show_and_key(app: &tauri::AppHandle) {
         let Some(panel) = app.get_webview_window("panel") else {
             return;
         };

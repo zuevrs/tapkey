@@ -27,15 +27,17 @@ body[data-surface="panel"], body[data-surface="hud"] { overflow: hidden; }
 /* The overlay scrollbars of the prototype's own scroll areas (the rows cap, the settings
    columns) read as chrome the prototype does not draw; the scroll stays, the bar goes. */
 #surface ::-webkit-scrollbar { display: none; }
-/* The window-shaped surfaces carry the page background the prototype's stand provided. */
+/* The window-shaped surfaces are the prototype's `.window` and `.sheet` cards in an
+   undecorated, transparent window: the OS draws no chrome for them at all, so the card
+   carries its own radius, rim and background — the prototype's bytes. Without this the
+   window read as a square on screen («карточка сеттингс вообще квадратная»). */
 body[data-surface="settings"], body[data-surface="onboarding"],
-body[data-surface="effective"], body[data-surface="history"] { background: var(--win-bg); }
+body[data-surface="effective"], body[data-surface="history"] { background: transparent; }
 
 /* Settings, onboarding and the sheets are the prototype's `.window` and `.sheet` cards, and
-   here each one *is* a window: it fills the frame, and the radius, shadow and outer margin the
-   page gave them belong to the OS now. */
-#surface.window, #surface.sheet { width: 100%; height: 100%;
-  border-radius: 0; box-shadow: none; border: 0; }
+   here each one *is* a window: it fills the frame. The card's own radius (--r-md), hairline
+   rim and background stay — they are the window's chrome now. */
+#surface.window, #surface.sheet { width: 100%; height: 100%; }
 #surface.window { display: flex; flex-direction: column; overflow: hidden; }
 #surface.window .content { flex: 1; min-height: 0; overflow-y: auto; }
 #surface.sheet { overflow-y: auto; padding: 16px 18px; }

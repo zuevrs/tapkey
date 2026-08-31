@@ -1,7 +1,10 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "The floating surfaces fit their content and close themselves: the panel and the HUD resize to what they drew, and every surface hides itself — the panel after a switch, the HUD on its dwell, the sheets on Esc. hide and set-size are the window permissions beyond the default set; measured live, without allow-hide the panel stayed up after every switch and the HUD's dwell never hid it — the person read that as «висит вечно».",
+  "description": "The floating surfaces fit their content and close themselves: the panel and the HUD resize to what they drew, and every surface hides itself — the panel after a switch, the HUD on its dwell, the sheets on Esc. hide and set-size are the window permissions beyond the default set; measured live, without allow-hide the panel stayed up after every switch and the HUD's dwell never hid it — the person read that as «висит вечно». The window verbs need their permissions too: the dots are real buttons (close, minimize, toggle-maximize) and the titlebar drags the window (start-dragging) — the core:window default set carries none of them, so dead verbs were measured live as «никак не закрыть и не подвинуть».",
   "windows": ["*"],
-  "permissions": ["core:window:allow-set-size", "core:window:allow-hide"]
+  "permissions": ["core:window:allow-set-size", "core:window:allow-hide",
+                  "core:window:allow-close", "core:window:allow-minimize",
+                  "core:window:allow-toggle-maximize", "core:window:allow-start-dragging",
+                  "core:event:default"]
 }
