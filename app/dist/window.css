@@ -50,6 +50,13 @@ body[data-surface="history"] { background: transparent; }
 /* The prototype's card has no reason to clip; a window does — the radius must cut the OS's
    material, not just the tint. */
 #surface.glass { overflow: hidden; }
+/* The prototype's `.glass` drop shadow (`--shadow`, 0 16px 40px) is a card floating on a
+   page. In a flyout the window is exactly the card, so that shadow is clipped by the frame
+   and reads as a square dark edge at the rounded corners («тени вылезает без раунда»). The
+   flyout keeps the hairline rim and the inset top light; the shadow belongs to the page. */
+body[data-surface="panel"] #surface.glass, body[data-surface="hud"] #surface.glass {
+  box-shadow: inset 0 1px 0 var(--glass-inner);
+}
 
 /* The HUD is centred in its own small window instead of being anchored to a mocked desktop. */
 body[data-surface="hud"] { display: grid; place-items: center; }

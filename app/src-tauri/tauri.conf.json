@@ -44,9 +44,7 @@
         "title": "tapkey",
         "width": 720,
         "height": 480,
-        "decorations": true,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true
+        "decorations": true
       },
       {
         "label": "onboarding",

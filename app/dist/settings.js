@@ -28,10 +28,10 @@ async function draw() {
   // The prototype's own tab strip: `.tab` items with `.on`, inside the titlebar band — not
   // <button>s with a class the stylesheet has never heard of. Each tab carries its Fluent
   // glyph as the prototype draws it (the structure audit measured them missing). The window
-  // is decorated with the OS titlebar (overlay style), so the OS draws the traffic lights —
-  // the `.tl` dots were the mock's decoration on a page, and drawing our own here produced
-  // precisely the custom crooked window the person rejected. The prototype's titlebar band
-  // is the tabs' home; the band itself drags the window (the native titlebar does it there).
+  // is a standard decorated macOS window: the OS draws the title, the traffic lights and
+  // the drag header (that band is the clear «шапка» the person asked for). The prototype's
+  // tabs band sits below it as the tab strip; drawing our own `.tl` dots here produced
+  // precisely the custom crooked window the person rejected.
   const TABS = [["providers", "Providers", "E774"],
                 ["profiles", "Profiles", "EA37"],
                 ["general", "General", "E713"]];
