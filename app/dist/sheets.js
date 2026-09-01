@@ -145,6 +145,11 @@ async function drawHistory() {
 
   surface.querySelectorAll("button[data-id]").forEach((button) =>
     button.addEventListener("click", async () => {
+      // The row's Restore is opacity:0 until hover or focus (:hover/.row:focus-within), and a
+      // clicked button keeps keyboard focus — so it stayed visible after the pointer left
+      // («не пропадает когда убираешь»). Release the focus the click took; hover alone keeps
+      // it visible while the pointer is there, and Tab-users still get it via :focus-within.
+      button.blur();
       const result = button.closest(".row").querySelector('[role="status"]');
       // The envelope is the one shape the core knows; a restore names its target.
       const target = button.dataset.kind === "snapshot"

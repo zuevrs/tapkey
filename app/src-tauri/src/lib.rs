@@ -50,16 +50,20 @@ fn show_hud(
     let hud = app
         .get_webview_window("hud")
         .expect("the hud window exists");
-    // The HUD replaces the panel: the switch happened there, and the eye is there. A window
-    // with no position lands on macOS's cascade spot, which the person read as «где-то по
-    // центру экрана»; the panel is still visible at show time (the panel hides after this
-    // command), so its frame is the anchor. Centred on the panel's width.
-    if let Some(panel) = app.get_webview_window("panel")
-        && let (Ok(pp), Ok(ps), Ok(hs)) =
-            (panel.outer_position(), panel.outer_size(), hud.outer_size())
-    {
-        let x = pp.x + (ps.width as i32 - hs.width as i32) / 2;
-        let _ = hud.set_position(tauri::PhysicalPosition::new(x, pp.y));
+    // The prototype's `.hud-wrap` floats the card at the bottom of the screen, centred —
+    // `bottom:96px; justify-content:center`. Anchoring it at the panel put the card where the
+    // switch happened, which the person read as the card replacing the panel: «не понимаю что
+    // за текст и зачем», «я думал что карточка будет внизу». The HUD is a floating notice,
+    // not a hand-off of the panel's spot. Centred on the work area's width, 96px off its
+    // bottom edge — the prototype's own offset (the dock's height, on the mocked desktop).
+    let hud_size = hud.outer_size()?;
+    if let Some(monitor) = hud.primary_monitor()? {
+        let screen = monitor.size();
+        let scale = monitor.scale_factor();
+        let margin = (96.0 * scale) as i32;
+        let x = (screen.width as i32 - hud_size.width as i32) / 2;
+        let y = screen.height as i32 - hud_size.height as i32 - margin;
+        let _ = hud.set_position(tauri::PhysicalPosition::new(x, y));
     }
     // Built on the window's own absolute URL: `Url::parse` refuses a relative path, and the
     // live pass watched every switch kill the app on exactly that line — the command had
@@ -191,6 +195,23 @@ pub fn run() {
                         Some(window_vibrancy::NSVisualEffectState::Active),
                         Some(22.0),
                     );
+                }
+            }
+
+            // Closing a sheet's red traffic light must hide, never destroy: these windows are
+            // re-opened by shortcut and by the panel on every use, and a destroyed window's
+            // `get_webview_window` returns None — the next ⌘Y or ⌘, then silently does nothing
+            // («бывает что History ⌘Y Settings ⌘, не открывают окна»). macOS preferences
+            // windows behave the same way: close = hide, open brings the same window back.
+            for label in ["settings", "onboarding", "effective", "history"] {
+                if let Some(window) = app.get_webview_window(label) {
+                    let w = window.clone();
+                    window.on_window_event(move |event| {
+                        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                            api.prevent_close();
+                            let _ = w.hide();
+                        }
+                    });
                 }
             }
 

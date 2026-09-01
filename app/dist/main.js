@@ -151,7 +151,7 @@ function drawPanel() {
         <div class="p-row create" tabindex="0">${tile("tapkey")}<span class="nm">Add your first provider…</span></div>
       </div>
       <div class="p-foot">
-        <span class="tip">Type to filter</span>
+        <span class="tip">Type to filter · ↑↓ to choose · Enter to switch · Esc to close</span>
         <button type="button" class="fi" id="open-history">History <kbd>⌘Y</kbd></button>
         <button type="button" class="fi" id="open-settings">Settings <kbd>⌘,</kbd></button>
       </div>`;
@@ -165,6 +165,12 @@ function drawPanel() {
   const visible = searchOn
     ? ordered.filter((r) => !query || r.name.toLowerCase().includes(query.toLowerCase()))
     : ordered;
+  // The prototype's search finds profiles **and** tools (Q63: «любая буква — поиск (ищет и
+  // профили, и инструменты)»). Our list only ever searched profiles, so a tool's name found
+  // nothing and search read as broken («поиск профиля кривой и не работает»).
+  const toolHits = searchOn && query
+    ? state.tools.filter((t) => cap(t.tool).toLowerCase().includes(query.toLowerCase()))
+    : [];
   const providerOf = (tool) => {
     // The tool's current endpoint, matched against the providers' base URLs — the core's
     // chain knows the endpoint; the panel knows the name.
@@ -197,7 +203,12 @@ function drawPanel() {
         <button type="button" class="srch" id="srch-btn" title="Filter profiles" aria-label="Filter profiles"><svg class="ic maconly" aria-hidden="true"><use href="#i-search"/></svg>${fic("E721", "inline")}</button>
       </header>`;
 
-  const createRow = (searchOn && query && !rows.some((r) => r.name.toLowerCase() === query.toLowerCase()))
+  // The prototype's create option only replaces the results when the query matches nothing
+  // at all (its `visible()` returns the create row instead of the sections). A query that hits
+  // a tool never offers «Create profile» — the person came looking for a tool and got one.
+  const createRow = (searchOn && query
+      && !rows.some((r) => r.name.toLowerCase() === query.toLowerCase())
+      && !toolHits.length)
     ? `<div class="p-row create" role="option" tabindex="-1" data-create="${esc(query)}"
          title="Creating opens Settings → Profiles"><span class="nm">Create profile “${esc(query)}”…</span></div>`
     : "";
@@ -212,7 +223,7 @@ function drawPanel() {
         <span class="qual">${esc(`${r.tools} of ${toolList.length} tools`)}</span>
         <span class="kn">⌘${i + 1}</span>
       </div>`)
-    .join("") + createRow;
+    .join("");
 
   // The attention block tells the whole story: what changed outside tapkey, where exactly
   // (the why line is the file and the key, from the slot's own resolution chain), and both
@@ -266,6 +277,16 @@ function drawPanel() {
     <div class="p-sec">${searchOn ? "Results" : "Switch to"}</div>
     <div class="p-rows${visible.length > 7 ? " scroll" : ""}" role="listbox" aria-label="Profiles">${profHtml}</div>
     ${toolsHtml}
+    ${searchOn && toolHits.length ? `<div class="p-rows">
+      ${toolHits.map((t) => `
+        <div class="p-row tool" data-tool="${esc(t.tool)}" role="button" tabindex="0" style="margin-left:14px">
+          ${mark(t.tool)}<span class="nm">${esc(cap(t.tool))}</span>
+          <span class="provlogo">${mark(providerOfTool(t)?.id ?? "tapkey")}<span class="chev">›</span></span>
+        </div>
+        <div class="p-row sub"><span class="check"></span>
+          <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>`).join("")}
+    </div>` : ""}
+    ${createRow}
     ${attnHtml}
     <div class="p-foot">
       <span class="tip">Type to filter</span>
@@ -427,7 +448,13 @@ function hud() {
   // The design rules settle the default: an unmeasured reload behaviour is "on next launch",
   // in neutral colour — a permanent amber glyph teaches users to ignore amber. "Applied live"
   // is a session fact the core does not know yet; rendering it would be inventing it.
-  const title = rolledBack ? "Switch rolled back" : applied ? profile : "Switch failed";
+  // A failure names the profile it tried: «Switch to {profile} failed» — the bare «Switch
+  // failed» left the person reading a card with no idea what it was about.
+  const title = rolledBack
+    ? "Switch rolled back"
+    : applied
+      ? profile
+      : `Switch to ${profile} failed`;
 
   // The prototype's `.hud` is opacity:0 and takes `.show` to appear — on the page that is
   // the entrance, and without the class the card is invisible and the window shows nothing
