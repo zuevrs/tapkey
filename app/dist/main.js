@@ -441,8 +441,11 @@ function hud() {
   void surface.offsetWidth;
   surface.classList.add("show");
   if (applied) {
+    // Per tool, from the core's fact: "applied live" (the tool reads config per invocation) or
+    // "on next launch" (a session reads it once at start). The core carries it now (`applies`),
+    // so the HUD no longer under-promises a blanket "on next launch".
     const rows = (response.tools ?? []).map((t) => `
-      <div class="hr">${mark(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">on next launch</span></div>`).join("");
+      <div class="hr">${mark(t.tool)}<span>${esc(cap(t.tool))}</span><span class="st">${t.applies === "live" ? "applied live" : "on next launch"}</span></div>`).join("");
     surface.innerHTML = `
       <div class="hh">${mark(profile)}<span>${esc(profile)}</span></div>
       ${rows}

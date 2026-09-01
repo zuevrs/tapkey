@@ -4,6 +4,7 @@
   "outcome": "applied",
   "tools": [
     {
+      "applies": "next",
       "endpoint": {
         "chain": [
           {
@@ -302,6 +303,7 @@
       "tool": "claude"
     },
     {
+      "applies": "live",
       "attentions": [
         {
           "file": "<home>/.codex/config.toml",
@@ -439,6 +441,7 @@
       "tool": "codex"
     },
     {
+      "applies": "next",
       "endpoint": {
         "chain": [],
         "effective": null

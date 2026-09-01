@@ -96,6 +96,7 @@ pub fn effective_state(env: &Env) -> Result<ToolState, Error> {
         tool: "opencode",
         endpoint: endpoint(&files),
         slots,
+        applies: crate::wire::ApplyMode::Next,
         attentions: Vec::new(),
     })
 }

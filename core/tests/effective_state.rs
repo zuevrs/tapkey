@@ -259,3 +259,16 @@ fn a_link_names_the_file_the_way_a_person_would_write_it() {
         json!("~/.claude/settings.json")
     );
 }
+
+/// A switch is either live (the tool reads config per invocation) or next (per session start),
+/// and the wire says which — the HUD renders the catalogue word per tool, not a hard-coded
+/// "on next launch". Codex is one-shot; Claude Code and OpenCode are long-running sessions.
+#[test]
+fn each_tool_says_how_a_switch_applies() {
+    let machine = Machine::new("es-applies-mode");
+    let response = call(&machine, effective_state());
+
+    assert_eq!(tool(&response, "codex")["applies"], json!("live"));
+    assert_eq!(tool(&response, "claude")["applies"], json!("next"));
+    assert_eq!(tool(&response, "opencode")["applies"], json!("next"));
+}

@@ -261,11 +261,25 @@ pub struct ToolState {
     /// than per slot. It is not a Slot: the glossary reserves that word for where a model goes.
     pub endpoint: Resolved,
     pub slots: Vec<SlotState>,
+    /// Whether a switch to this tool is in effect now (the tool reads its config per
+    /// invocation) or on its next launch (the tool reads its config once at a session's
+    /// start). A static fact per adapter, not a runtime count of running sessions.
+    pub applies: ApplyMode,
     /// Observations about this tool that coexist with a successful outcome. A switch can apply
     /// while one tool shows drift or was skipped; merging these into the failure list would force
     /// every consumer to read "it worked, but note this" as an error.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub attentions: Vec<Attention>,
+}
+
+/// The closed set a UI can render from — the catalogue carries exactly these two words.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ApplyMode {
+    /// The tool reads its config per invocation: the next command uses the switch.
+    Live,
+    /// The tool reads its config once at a session's start: a running session keeps the old.
+    Next,
 }
 
 /// A closed set, because the catalogue is the closed set of what a UI can render: an open code

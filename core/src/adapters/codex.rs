@@ -131,6 +131,7 @@ pub fn effective_state(env: &Env) -> Result<ToolState, Error> {
         tool: "codex",
         endpoint,
         slots,
+        applies: crate::wire::ApplyMode::Live,
         attentions: Vec::new(),
     })
 }

@@ -4,6 +4,7 @@
   "outcome": "applied",
   "tools": [
     {
+      "applies": "next",
       "endpoint": {
         "chain": [
           {
@@ -302,6 +303,7 @@
       "tool": "claude"
     },
     {
+      "applies": "live",
       "endpoint": {
         "chain": [],
         "effective": null
@@ -360,6 +362,7 @@
       "tool": "codex"
     },
     {
+      "applies": "next",
       "endpoint": {
         "chain": [
           {
