@@ -27,14 +27,16 @@ let selected = null; // the side list's selection: a provider id, or null for th
 async function draw() {
   // The prototype's own tab strip: `.tab` items with `.on`, inside the titlebar band — not
   // <button>s with a class the stylesheet has never heard of. Each tab carries its Fluent
-  // glyph as the prototype draws it (the structure audit measured them missing). The traffic
-  // lights (`.tl`) are the mock's; a real window has the OS's.
+  // glyph as the prototype draws it (the structure audit measured them missing). The window
+  // is decorated with the OS titlebar (overlay style), so the OS draws the traffic lights —
+  // the `.tl` dots were the mock's decoration on a page, and drawing our own here produced
+  // precisely the custom crooked window the person rejected. The prototype's titlebar band
+  // is the tabs' home; the band itself drags the window (the native titlebar does it there).
   const TABS = [["providers", "Providers", "E774"],
                 ["profiles", "Profiles", "EA37"],
                 ["general", "General", "E713"]];
   surface.innerHTML = `
     <div class="titlebar" data-tauri-drag-region>
-      <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
       <div class="tabs">
         ${TABS.map(([id, name, cp]) =>
           `<div class="tab${id === tab ? " on" : ""}" data-tab="${id}" tabindex="0"
@@ -58,16 +60,6 @@ async function draw() {
         go();
       }
     });
-  });
-  // The window is undecorated so the titlebar is the prototype's one; the prototype's three
-  // dots were mock decoration on a page, but here they are the window's three verbs —
-  // close, minimize, zoom. Without this the lights are dots that do nothing (the person
-  // read that as missing window buttons), and the window itself cannot be moved except by
-  // the drag region on the titlebar.
-  const win = getCurrentWindow();
-  surface.querySelectorAll(".titlebar .tl").forEach((el, i) => {
-    const verbs = [() => win.close(), () => win.minimize(), () => win.toggleMaximize()];
-    el.addEventListener("click", (e) => { e.stopPropagation(); verbs[i]?.(); });
   });
   const side = document.getElementById("side-list");
   const pane = document.getElementById("pane-content");

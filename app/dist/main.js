@@ -106,6 +106,7 @@ async function panel() {
 let panelState = { rows: [], state: { tools: [] }, toolList: [], searchOn: false, query: "", active: -1 };
 let current = "Mixed";
 let toolsOpen = false;
+let openTool = null; // the tool whose p-sub is expanded, per the prototype's openTool
 
 /// The head: the profile the tools are on, named the way `cycle` finds it — the first owned
 /// slot's effective value, matched against the profiles' assignments. No single profile owns
@@ -157,7 +158,7 @@ function drawPanel() {
     document.querySelector(".p-row").addEventListener("click", () => openSheet("settings"));
     document.getElementById("open-history").addEventListener("click", () => openSheet("history"));
     document.getElementById("open-settings").addEventListener("click", () => openSheet("settings"));
-    fitWindow(352, 120, 490);
+    fitWindow(352, 120, 780);
     return;
   }
   const ordered = mruOrder(rows);
@@ -230,25 +231,33 @@ function drawPanel() {
       </div>`
     : "";
 
+  const providerOfTool = (t) => {
+    const url = t.endpoint.effective || "";
+    return (providers ?? []).find((p) => p.base_url && url.startsWith(p.base_url.replace(/\/$/, "")));
+  };
   const summary = state.tools.every((t) => t.endpoint.effective === state.tools[0]?.endpoint.effective)
     ? `all on ${esc(current)}`
-    : state.tools.map((t) => providerOf(t)).join(" ");
+    : // Mixed: the prototype's meta is the provider marks one per tool, never the URL text.
+      state.tools.map((t) => mark(providerOfTool(t)?.id ?? "tapkey")).join("");
   const toolsHtml = !searchOn
     ? `<div class="p-sechead${toolsOpen ? " open" : ""}" role="button" aria-expanded="${toolsOpen}">
         ${toolList.length} tools <span class="meta">${summary} <span class="chev">›</span></span>
       </div>
       ${toolsOpen ? state.tools.map((t) => {
-        const url = t.endpoint.effective || "";
-        const prov = (providers ?? []).find((p) => p.base_url && url.startsWith(p.base_url.replace(/\/$/, "")));
-        // The provlogo is the provider's mark, as the prototype draws it — an icon and a
-        // chevron, not the endpoint's URL text (the person read the URL as a design break).
+        const isOpen = openTool === t.tool;
+        // The prototype's tool block: the tool row is a disclosure — mark, name, the
+        // provider's mark and a chevron that turns — and its own p-sub (max-height spring)
+        // carries the Effective state row. One row per tool, each expandable, never a flat
+        // list of URL text.
         return `
-        <div class="p-row tool" style="margin-left:14px">
+        <div class="p-row tool${isOpen ? " open" : ""}" data-tool="${esc(t.tool)}" role="button" aria-expanded="${isOpen}" tabindex="0" style="margin-left:14px">
           ${mark(t.tool)}<span class="nm">${esc(cap(t.tool))}</span>
-          <span class="provlogo">${mark(prov ? prov.id : url || "—")}<span class="chev">›</span></span>
+          <span class="provlogo">${mark(providerOfTool(t)?.id ?? "tapkey")}<span class="chev">›</span></span>
         </div>
-        <div class="p-row sub"><span class="check"></span>
-          <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>`;
+        <div class="p-sub${isOpen ? " open" : ""}">
+          <div class="p-row sub"><span class="check"></span>
+            <span class="nm" data-effective="1" style="color:var(--sys-hi)">Effective state…</span></div>
+        </div>`;
       }).join("") : ""}`
     : "";
 
@@ -263,6 +272,11 @@ function drawPanel() {
       <button type="button" class="fi" id="open-history">History <kbd>⌘Y</kbd></button>
       <button type="button" class="fi" id="open-settings">Settings <kbd>⌘,</kbd></button>
     </div>`;
+  // The window is the card, always: the card's height changes on every draw (tools section
+  // opens, attention appears, search shrinks it) and the window must follow on that same
+  // draw or the OS material shows below the card as a grey block with square corners
+  // («под карточкой еще серый блок»). The one-shot fit at panel start could not track it.
+  fitWindow(352, 120, 780);
 
   const search = document.getElementById("search");
   if (searchOn) {
@@ -283,6 +297,14 @@ function drawPanel() {
   );
   const sechead = surface.querySelector(".p-sechead");
   if (sechead) sechead.addEventListener("click", () => { toolsOpen = !toolsOpen; drawPanel(); });
+  // The tool rows are disclosures, one sub per tool — the prototype's openTool. Clicking the
+  // row opens its p-sub; clicking another tool moves the open state to it.
+  surface.querySelectorAll(".p-row.tool").forEach((el) =>
+    el.addEventListener("click", () => {
+      openTool = openTool === el.dataset.tool ? null : el.dataset.tool;
+      drawPanel();
+    })
+  );
   surface.querySelectorAll("[data-effective]").forEach((el) =>
     el.addEventListener("click", () => openSheet("effective"))
   );
@@ -314,15 +336,18 @@ function drawPanel() {
       }
     });
   }
-  fitWindow(352, 120, 490);
+  // fitWindow(352, 120, 780) already ran at the top of this draw — the window follows the
+  // card on every draw (see the note at the innerHTML assignment).
 }
 
 /// The window is not a fixed frame but a card that fits its content, as the prototype's panel
 /// does — growing with its rows and attention, shrinking for the empty invitation, clamped so a
 /// hundred profiles cannot outgrow the screen and a bare panel still reads as a card.
-/// getBoundingClientRect forces the layout synchronously, so the measure is of the drawn card.
+/// offsetHeight, not getBoundingClientRect: the rect carries the appear animation's live
+/// transform (scale .985), so measuring it at draw time under-fits by ~1.5% and the card's
+/// bottom is clipped («низ карточки будто бы обрезан»). offsetHeight is the layout height.
 function fitWindow(width, min, max) {
-  const h = Math.ceil(surface.getBoundingClientRect().height);
+  const h = surface.offsetHeight;
   getCurrentWindow().setSize(new LogicalSize(width, Math.max(min, Math.min(max, h))));
 }
 
@@ -451,12 +476,14 @@ function hud() {
 }
 
 /// The HUD sizes both dimensions from its card, unlike the panel whose width is the spec's own.
+/// offsetHeight for the same reason as fitWindow: the spring entrance is a transform, and the
+/// rect under it under-fits the layout height.
 function fitCard() {
   const r = surface.getBoundingClientRect();
   getCurrentWindow().setSize(
     new LogicalSize(
       Math.max(274, Math.min(340, Math.ceil(r.width))),
-      Math.max(64, Math.min(260, Math.ceil(r.height))),
+      Math.max(64, Math.min(260, Math.ceil(surface.offsetHeight))),
     ),
   );
 }

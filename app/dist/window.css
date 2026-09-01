@@ -27,16 +27,19 @@ body[data-surface="panel"], body[data-surface="hud"] { overflow: hidden; }
 /* The overlay scrollbars of the prototype's own scroll areas (the rows cap, the settings
    columns) read as chrome the prototype does not draw; the scroll stays, the bar goes. */
 #surface ::-webkit-scrollbar { display: none; }
-/* The window-shaped surfaces are the prototype's `.window` and `.sheet` cards in an
-   undecorated, transparent window: the OS draws no chrome for them at all, so the card
-   carries its own radius, rim and background — the prototype's bytes. Without this the
-   window read as a square on screen («карточка сеттингс вообще квадратная»). */
-body[data-surface="settings"], body[data-surface="onboarding"],
-body[data-surface="effective"], body[data-surface="history"] { background: transparent; }
 
-/* Settings, onboarding and the sheets are the prototype's `.window` and `.sheet` cards, and
-   here each one *is* a window: it fills the frame. The card's own radius (--r-md), hairline
-   rim and background stay — they are the window's chrome now. */
+/* Settings is a real macOS window — decorated, overlay titlebar. The OS draws the traffic
+   lights, the drag, the rounded corners and the shadow, so the page is square and fills
+   everything; a card drawn by CSS here is precisely the «кастомное кривое окно». */
+body[data-surface="settings"] { background: var(--win-bg); }
+body[data-surface="settings"] #surface.window { width: 100%; height: 100%;
+  border-radius: 0; box-shadow: none; border: 0; }
+
+/* Onboarding and the sheets are the prototype's rounded cards in undecorated, transparent
+   windows: the OS draws no chrome for them at all, so the card carries its own radius, rim
+   and background — the prototype's bytes. */
+body[data-surface="onboarding"], body[data-surface="effective"],
+body[data-surface="history"] { background: transparent; }
 #surface.window, #surface.sheet { width: 100%; height: 100%; }
 #surface.window { display: flex; flex-direction: column; overflow: hidden; }
 #surface.window .content { flex: 1; min-height: 0; overflow-y: auto; }
@@ -51,15 +54,6 @@ body[data-surface="effective"], body[data-surface="history"] { background: trans
 /* The HUD is centred in its own small window instead of being anchored to a mocked desktop. */
 body[data-surface="hud"] { display: grid; place-items: center; }
 #surface.hud { width: max-content; }
-
-/* The undecorated windowed surfaces wear the prototype's traffic-light dots as their own
-   window verbs — close, minimize, zoom. The dots' styling is the prototype's bytes; the
-   extraction classed them as stand furniture (mock decoration on a page), and here they are
-   real buttons, so the styling must come back. */
-.titlebar .tl { width: 12px; height: 12px; border-radius: 50%; }
-.titlebar .tl.r { background: #ff5f57; }
-.titlebar .tl.y { background: #febc2e; }
-.titlebar .tl.g { background: #28c840; }
 
 /* The settings window's two columns come from the prototype's own `.win-body` grid; only the
    height is ours, because a page's grid never had to fit inside a frame. */
