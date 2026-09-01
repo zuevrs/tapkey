@@ -271,7 +271,7 @@ mod shortcuts {
                 "Alt+CommandOrControl+P",
                 |_app, _shortcut, event| {
                     if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
-                        super::cycle();
+                        super::cycle(1);
                     }
                 },
             )?;
@@ -349,10 +349,15 @@ mod tray {
                     && button_state == tauri::tray::MouseButtonState::Up
                     && button == tauri::tray::MouseButton::Left
                 {
-                    // Option-click to cycle back is the onboarding promise (`ob.done`), but muda
-                    // does not report keyboard modifiers on tray clicks. Recorded in the ticket:
-                    // it needs the panel delegate, and the cycle shortcut carries the promise
-                    // until then.
+                    // Option-click cycles back to the previous profile (`ob.done`); a plain click
+                    // toggles the panel. muda reports no keyboard modifiers on a tray click, so
+                    // the Option key is read from the HID state at the moment of the click —
+                    // the same source NSEvent reads its flags from.
+                    #[cfg(target_os = "macos")]
+                    if crate::option_held() {
+                        crate::cycle(-1);
+                        return;
+                    }
                     toggle_panel_at(tray.app_handle(), rect);
                 }
             })
@@ -423,10 +428,27 @@ mod tray {
     }
 }
 
-/// Cycle profiles: the next profile in the store's order. The list is core state, so cycling is
-/// two bridge calls — ask, then switch — and never a read of the store by the app. What is
-/// currently in effect decides where "next" starts; the response's chains name it.
-fn cycle() {
+/// Whether Option (⌥) is held right now, read from the HID system state — the source NSEvent's
+/// own `modifierFlags` reads from. muda's tray-click event carries no modifiers, so a tray click
+/// has to ask the system directly. macOS-only: on Windows the tray has no Option key.
+#[cfg(target_os = "macos")]
+fn option_held() -> bool {
+    // CGEventSourceFlagsState is public CoreGraphics, stable across the platforms we support.
+    unsafe extern "C" {
+        fn CGEventSourceFlagsState(state_id: i32) -> u64;
+    }
+    const HID_SYSTEM_STATE: i32 = 1;
+    const FLAG_ALTERNATE: u64 = 0x00080000;
+    // SAFETY: a pure read over the state id; the constants are the public CGEventSource values.
+    unsafe { CGEventSourceFlagsState(HID_SYSTEM_STATE) & FLAG_ALTERNATE != 0 }
+}
+
+/// Cycle profiles: `step` steps in the store's order (+1 next, -1 previous). The list is core
+/// state, so cycling is two bridge calls — ask, then switch — and never a read of the store by
+/// the app. What is currently in effect decides where the step starts; the response's chains
+/// name it. The shortcut cycles forward (+1); the tray ⌥-click cycles back (−1), the onboarding
+/// promise «returns to the previous profile».
+fn cycle(step: isize) {
     let env = Env::real();
     let list = tapkey_core::handle_with(&env, r#"{"version":1,"op":"list_profiles","params":{}}"#);
     let state =
@@ -444,7 +466,8 @@ fn cycle() {
         return;
     }
     // The first owned slot value per tool is what the tool will use; the id whose row it matches
-    // is the current selection. Nothing matches — start at the top.
+    // is the current selection. Nothing matches — the first step from nowhere starts at the top,
+    // the backward step at the bottom, so both wrap cleanly.
     let now = state["tools"].as_array().and_then(|tools| {
         tools.iter().find_map(|tool| {
             tool["slots"].as_array().and_then(|slots| {
@@ -461,12 +484,28 @@ fn cycle() {
                 || value.contains(row["name"].as_str().unwrap_or_default())
         })
     });
-    let next = rows[(at.unwrap_or(rows.len().saturating_sub(1)) + 1) % rows.len()]["id"]
-        .as_str()
-        .unwrap_or_default()
-        .to_string();
+    let idx = step_index(at, rows.len(), step);
+    let next = rows[idx]["id"].as_str().unwrap_or_default().to_string();
     let request = format!(r#"{{"version":1,"op":"switch","params":{{"profile_id":"{next}"}}}}"#);
     let _ = tapkey_core::handle_with(&env, &request);
+}
+
+/// The index `step` steps from `at`, wrapping; from nowhere a forward step starts at the top and
+/// a backward step at the bottom, so both wrap cleanly.
+fn step_index(at: Option<usize>, len: usize, step: isize) -> usize {
+    if len == 0 {
+        return 0;
+    }
+    match at {
+        Some(i) => (i as isize + step).rem_euclid(len as isize) as usize,
+        None => {
+            if step > 0 {
+                0
+            } else {
+                len - 1
+            }
+        }
+    }
 }
 
 /// Copy this bundle's helper into the store, unless the stored one is byte-identical.
@@ -530,4 +569,32 @@ fn bundled_helper() -> Option<std::path::PathBuf> {
     dir.parent()
         .map(|target| target.join(&exe))
         .filter(|p| p.exists())
+}
+
+#[cfg(test)]
+mod cycle_tests {
+    use super::step_index;
+
+    #[test]
+    fn forward_steps_and_wraps() {
+        assert_eq!(step_index(Some(1), 3, 1), 2);
+        assert_eq!(step_index(Some(2), 3, 1), 0);
+    }
+
+    #[test]
+    fn backward_steps_and_wraps() {
+        assert_eq!(step_index(Some(1), 3, -1), 0);
+        assert_eq!(step_index(Some(0), 3, -1), 2);
+    }
+
+    #[test]
+    fn from_nowhere_starts_at_the_ends() {
+        assert_eq!(step_index(None, 3, 1), 0);
+        assert_eq!(step_index(None, 3, -1), 2);
+    }
+
+    #[test]
+    fn an_empty_list_never_indexes() {
+        assert_eq!(step_index(None, 0, 1), 0);
+    }
 }
