@@ -15,7 +15,6 @@ document.addEventListener("keydown", (e) => {
 
 export function effectiveState() {
   surface.className = "sheet";
-  surface.setAttribute("data-tauri-drag-region", "");
   drawEffective();
 }
 
@@ -62,7 +61,13 @@ async function drawEffective() {
       </section>`
       )
       .join("")}
-    <div class="card-note">Chains name every place that had an opinion</div>`;
+    <div class="card-note">Chains name every place that had an opinion</div>
+    <div class="sheet-foot">
+      <button class="btn sm" id="refresh">Refresh</button>
+      <button class="btn primary" id="done">Done</button>
+    </div>`;
+  document.getElementById("done")?.addEventListener("click", () => getCurrentWindow().hide());
+  document.getElementById("refresh")?.addEventListener("click", drawEffective);
 }
 
 function attentions(tool, list) {
@@ -97,7 +102,6 @@ function attentionText(tool, a) {
 
 export function history() {
   surface.className = "sheet";
-  surface.setAttribute("data-tauri-drag-region", "");
   drawHistory();
 }
 
@@ -106,11 +110,14 @@ async function drawHistory() {
   if (!entries.length) {
     surface.innerHTML = `
       <h4>Switch history</h4>
-      <div class="card-note">Nothing switched yet</div>`;
+      <div class="card-note">Nothing switched yet</div>
+      <div class="sheet-foot"><button class="btn primary" id="done">Done</button></div>`;
+    document.getElementById("done").addEventListener("click", () => getCurrentWindow().hide());
     return;
   }
   // The prototype's history: one group of tall rows, each a mark, a name, the instant and the
-  // file count as its description, and Restore in the trail.
+  // file count as its description, and Restore in the trail — and the sheet-foot with Done, the
+  // close the prototype's sheet carries (the native close is the OS's; Done is the sheet's).
   surface.innerHTML = `
     <h4>Switch history</h4>
     <div class="eff-lede">Last 50 switches are restorable</div>
@@ -131,7 +138,10 @@ async function drawHistory() {
         </div>`
         )
         .join("")}
-    </div>`;
+    </div>
+    <div class="sheet-foot"><button class="btn primary" id="done">Done</button></div>`;
+
+  document.getElementById("done").addEventListener("click", () => getCurrentWindow().hide());
 
   surface.querySelectorAll("button[data-id]").forEach((button) =>
     button.addEventListener("click", async () => {

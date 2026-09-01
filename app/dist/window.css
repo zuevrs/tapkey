@@ -35,14 +35,19 @@ body[data-surface="settings"] { background: var(--win-bg); }
 body[data-surface="settings"] #surface.window { width: 100%; height: 100%;
   border-radius: 0; box-shadow: none; border: 0; }
 
-/* Onboarding and the sheets are the prototype's rounded cards in undecorated, transparent
-   windows: the OS draws no chrome for them at all, so the card carries its own radius, rim
-   and background — the prototype's bytes. */
-body[data-surface="onboarding"], body[data-surface="effective"],
-body[data-surface="history"] { background: transparent; }
-#surface.window, #surface.sheet { width: 100%; height: 100%; }
+/* Onboarding is the prototype's rounded card in an undecorated, transparent window: the OS
+   draws no chrome for it, so the card carries its own radius, rim and background. */
+body[data-surface="onboarding"] { background: transparent; }
+#surface.window { width: 100%; height: 100%; }
 #surface.window { display: flex; flex-direction: column; overflow: hidden; }
 #surface.window .content { flex: 1; min-height: 0; overflow-y: auto; }
+
+/* The sheets are real macOS windows — decorated, like Settings. The OS draws the titlebar,
+   traffic lights, drag, rounded corners and shadow; the page is square and fills everything.
+   The `.sheet` card's radius, rim and shadow belonged to a card on the prototype's page. */
+body[data-surface="effective"], body[data-surface="history"] { background: var(--win-bg); }
+body[data-surface="effective"] #surface.sheet, body[data-surface="history"] #surface.sheet {
+  width: 100%; height: 100%; border-radius: 0; box-shadow: none; border: 0; }
 #surface.sheet { overflow-y: auto; padding: 16px 18px; }
 /* The panel keeps its content height so `fitWindow` measures the card and not the window it is
    about to resize; only its width comes from the window. */

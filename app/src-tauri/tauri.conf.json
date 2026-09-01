@@ -65,9 +65,7 @@
         "title": "What is in effect right now",
         "width": 460,
         "height": 520,
-        "decorations": false,
-        "transparent": true,
-        "shadow": false
+        "decorations": true
       },
       {
         "label": "history",
@@ -76,9 +74,7 @@
         "title": "Switch history",
         "width": 460,
         "height": 520,
-        "decorations": false,
-        "transparent": true,
-        "shadow": false
+        "decorations": true
       }
     ],
     "security": {

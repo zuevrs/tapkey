@@ -214,10 +214,17 @@ function renderNewProvider(pane) {
       <div class="g-status">Test fills this in</div>
       <div class="g-row"><span class="gl">Connection</span>
         <span class="gv"><span class="hint">Not tested yet</span>
-          <button class="btn" id="np-add">Add provider</button></span></div>
+          <button class="btn" id="np-cancel">Cancel</button>
+          <button class="btn primary" id="np-add">Add provider</button></span></div>
     </div>
     <div class="g-note">You can add it untested — Test later fills the format</div>
     <div class="g-note" id="np-result" role="status"></div>`;
+  document.getElementById("np-cancel").addEventListener("click", () => {
+    // The form has no "close" of its own — Cancel returns to the presets view, the same
+    // "back" the detail pane gets by choosing another row («форма не понятно как закрыть»).
+    selected = null;
+    draw();
+  });
   document.getElementById("np-add").addEventListener("click", async () => {
     const name = document.getElementById("np-name").value.trim();
     const base_url = document.getElementById("np-url").value.trim();
