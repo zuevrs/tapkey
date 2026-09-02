@@ -132,9 +132,11 @@ async function drawHistory() {
               plural("1 file", "{count} files", e.files)
             )}</span>
             <span class="desc" role="status"></span></span>
-          <span class="trail"><button class="btn sm" data-id="${esc(e.id)}" data-kind="${esc(e.kind)}"
-                  data-name="${esc(e.name)}" ${e.restorable ? "" : "disabled"}>
-            ${e.restorable ? "Restore" : "Can’t be restored"}</button></span>
+          <span class="trail">${
+            e.restorable
+              ? `<button class="btn sm" data-id="${esc(e.id)}" data-kind="${esc(e.kind)}" data-name="${esc(e.name)}">Restore</button>`
+              : `<span class="hint">Can’t be restored</span>`
+          }</span>
         </div>`
         )
         .join("")}
@@ -142,18 +144,6 @@ async function drawHistory() {
     <div class="sheet-foot"><button class="btn primary" id="done">Done</button></div>`;
 
   document.getElementById("done").addEventListener("click", () => getCurrentWindow().hide());
-
-  // The row's Restore is opacity:0 until hover (the prototype's row-actions idiom). WKWebView
-  // can latch `:hover` on a row — especially a disabled button, which stops tracking mouse
-  // events — so the button stayed lit after the pointer left («не исчезает после наведения»).
-  // JS mouseenter/mouseleave force the show/hide: the pointer is the single source of truth,
-  // and a leave always puts the button away.
-  surface.querySelectorAll(".row").forEach((row) => {
-    const btn = row.querySelector(".btn");
-    if (!btn) return;
-    row.addEventListener("mouseenter", () => btn.style.removeProperty("opacity"));
-    row.addEventListener("mouseleave", () => { btn.style.opacity = "0"; });
-  });
 
   surface.querySelectorAll("button[data-id]").forEach((button) =>
     button.addEventListener("click", async () => {

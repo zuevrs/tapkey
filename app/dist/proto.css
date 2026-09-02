@@ -975,8 +975,10 @@
   .row.snap{background:var(--chip)}
   .row .desc.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:1rem}
   [data-platform="win"] .row .desc.mono{font-size:1.2rem}
-  .row .btn{opacity:0;transition:opacity var(--dur-faster) var(--ease-entrance)}
-  .row:hover .btn,.row .btn:focus-visible{opacity:1}
+  /* The row's Restore is always visible: an accessory menu-bar window never receives a
+     mouseleave when the pointer exits, so a hover-revealed button latches lit («не исчезает
+     после наведения») and there is no JS event to unhang it. Always-visible is also the
+     accessible reading. A disabled row's button still dims via .btn:disabled. */
   .card{background:var(--card);border-radius:12px;overflow:hidden;
     box-shadow:0 0 0 var(--hairline) var(--sys-sep)}
   .card + .card{margin-top:10px}
