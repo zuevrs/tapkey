@@ -143,6 +143,18 @@ async function drawHistory() {
 
   document.getElementById("done").addEventListener("click", () => getCurrentWindow().hide());
 
+  // The row's Restore is opacity:0 until hover (the prototype's row-actions idiom). WKWebView
+  // can latch `:hover` on a row — especially a disabled button, which stops tracking mouse
+  // events — so the button stayed lit after the pointer left («не исчезает после наведения»).
+  // JS mouseenter/mouseleave force the show/hide: the pointer is the single source of truth,
+  // and a leave always puts the button away.
+  surface.querySelectorAll(".row").forEach((row) => {
+    const btn = row.querySelector(".btn");
+    if (!btn) return;
+    row.addEventListener("mouseenter", () => btn.style.removeProperty("opacity"));
+    row.addEventListener("mouseleave", () => { btn.style.opacity = "0"; });
+  });
+
   surface.querySelectorAll("button[data-id]").forEach((button) =>
     button.addEventListener("click", async () => {
       const result = button.closest(".row").querySelector('[role="status"]');
@@ -159,7 +171,9 @@ async function drawHistory() {
           : r.failure
             ? `${r.failure.kind} — nothing was changed`
             : "";
-      if (r.outcome === "applied") button.disabled = true;
+      // A restored row no longer offers Restore: remove it rather than disabling, so no
+      // disabled button is left behind to hold a latched hover.
+      if (r.outcome === "applied") button.remove();
     })
   );
 }
