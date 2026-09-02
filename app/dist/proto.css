@@ -976,7 +976,7 @@
   .row .desc.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:1rem}
   [data-platform="win"] .row .desc.mono{font-size:1.2rem}
   .row .btn{opacity:0;transition:opacity var(--dur-faster) var(--ease-entrance)}
-  .row:hover .btn,.row:focus-within .btn{opacity:1}
+  .row:hover .btn,.row .btn:focus-visible{opacity:1}
   .card{background:var(--card);border-radius:12px;overflow:hidden;
     box-shadow:0 0 0 var(--hairline) var(--sys-sep)}
   .card + .card{margin-top:10px}
